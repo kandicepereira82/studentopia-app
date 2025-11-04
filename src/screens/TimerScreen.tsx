@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Pressable, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -26,60 +26,33 @@ const TimerScreen = () => {
   const setMode = useTimerStore((s) => s.setMode);
   const setMinutes = useTimerStore((s) => s.setMinutes);
   const setSeconds = useTimerStore((s) => s.setSeconds);
-  const setIsRunning = useTimerStore((s) => s.setIsRunning);
   const setStudyDuration = useTimerStore((s) => s.setStudyDuration);
   const setBreakDuration = useTimerStore((s) => s.setBreakDuration);
   const startTimer = useTimerStore((s) => s.startTimer);
   const pauseTimer = useTimerStore((s) => s.pauseTimer);
   const stopTimer = useTimerStore((s) => s.stopTimer);
-  const decrementTime = useTimerStore((s) => s.decrementTime);
 
   const [musicEnabled, setMusicEnabled] = useState(false);
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const soundRef = useRef<Audio.Sound | null>(null);
 
+  // Watch for timer completion and handle mode switching
   useEffect(() => {
-    if (isRunning) {
-      intervalRef.current = setInterval(() => {
-        const state = useTimerStore.getState();
-
-        // Check if timer is complete BEFORE decrementing
-        if (state.minutes === 0 && state.seconds === 0) {
-          handleTimerComplete();
-          return;
-        }
-
-        decrementTime();
-      }, 1000);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
+    if (minutes === 0 && seconds === 0 && !isRunning) {
+      // Timer just completed
+      if (mode === "study") {
+        addStudyMinutes(studyDuration);
+        setMode("break");
+        setMinutes(breakDuration);
+        setSeconds(0);
+      } else {
+        setMode("study");
+        setMinutes(studyDuration);
+        setSeconds(0);
       }
     }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isRunning]);
-
-  const handleTimerComplete = () => {
-    pauseTimer();
-    if (mode === "study") {
-      addStudyMinutes(studyDuration);
-      setMode("break");
-      setMinutes(breakDuration);
-      setSeconds(0);
-    } else {
-      setMode("study");
-      setMinutes(studyDuration);
-      setSeconds(0);
-    }
-  };
+  }, [minutes, seconds, isRunning]);
 
   const handleModeSwitch = (newMode: TimerMode) => {
     setMode(newMode);

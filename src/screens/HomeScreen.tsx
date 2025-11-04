@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
@@ -35,7 +35,6 @@ const HomeScreen = () => {
   const startTimer = useTimerStore((s) => s.startTimer);
   const pauseTimer = useTimerStore((s) => s.pauseTimer);
   const stopTimer = useTimerStore((s) => s.stopTimer);
-  const decrementTime = useTimerStore((s) => s.decrementTime);
   const setMode = useTimerStore((s) => s.setMode);
   const setMinutes = useTimerStore((s) => s.setMinutes);
   const setSeconds = useTimerStore((s) => s.setSeconds);
@@ -43,8 +42,6 @@ const HomeScreen = () => {
   const [quote, setQuote] = useState<MotivationalQuote | null>(null);
   const [tip, setTip] = useState<StudyTip | null>(null);
   const [selectedWeekDate, setSelectedWeekDate] = useState(new Date());
-
-  const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
@@ -57,43 +54,17 @@ const HomeScreen = () => {
     console.log("[HomeScreen] Rendered. User:", user ? "exists" : "null");
   }, [user]);
 
-  // Timer effect
+  // Watch for timer completion
   useEffect(() => {
-    if (isTimerRunning) {
-      timerIntervalRef.current = setInterval(() => {
-        const state = useTimerStore.getState();
-
-        // Check if timer is complete BEFORE decrementing
-        if (state.minutes === 0 && state.seconds === 0) {
-          handleTimerComplete();
-          return;
-        }
-
-        decrementTime();
-      }, 1000);
-    } else {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    }
-
-    return () => {
-      if (timerIntervalRef.current) {
-        clearInterval(timerIntervalRef.current);
-      }
-    };
-  }, [isTimerRunning]);
-
-  const handleTimerComplete = () => {
-    pauseTimer();
-    if (timerMode === "study") {
+    if (timerMinutes === 0 && timerSeconds === 0 && !isTimerRunning && timerMode === "study") {
+      // Timer just completed
       addStudyMinutes(studyDuration);
+      // Reset for next session
+      setMode("study");
+      setMinutes(studyDuration);
+      setSeconds(0);
     }
-    // Reset to study mode
-    setMode("study");
-    setMinutes(studyDuration);
-    setSeconds(0);
-  };
+  }, [timerMinutes, timerSeconds, isTimerRunning]);
 
   const getTasksForDate = (date: Date) => {
     return tasks.filter((task) => {
