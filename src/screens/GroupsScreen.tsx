@@ -28,6 +28,7 @@ const GroupsScreen = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [showQRModal, setShowQRModal] = useState(false);
+  const [showHowToModal, setShowHowToModal] = useState(false);
   const [qrGroupCode, setQRGroupCode] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
@@ -141,7 +142,7 @@ const GroupsScreen = () => {
       <SafeAreaView className="flex-1">
         {/* Header with Poppins */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={{
               fontSize: 32,
               fontFamily: 'Poppins_700Bold',
@@ -158,45 +159,69 @@ const GroupsScreen = () => {
               {isTeacher ? "Manage your classes" : "Your study groups"}
             </Text>
           </View>
-          {isTeacher ? (
+
+          <View style={{ flexDirection: 'row', gap: 8 }}>
+            {/* Help Button */}
             <Pressable
-              onPress={() => setShowCreateModal(true)}
+              onPress={() => setShowHowToModal(true)}
               style={{
                 width: 48,
                 height: 48,
                 borderRadius: 24,
-                backgroundColor: theme.primary,
+                backgroundColor: 'white',
                 alignItems: 'center',
                 justifyContent: 'center',
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                elevation: 3
+                shadowOpacity: 0.06,
+                shadowRadius: 4,
+                elevation: 2
               }}
             >
-              <Ionicons name="add" size={28} color="white" />
+              <Ionicons name="help-circle-outline" size={24} color={theme.primary} />
             </Pressable>
-          ) : (
-            <Pressable
-              onPress={() => setShowJoinModal(true)}
-              style={{
-                width: 48,
-                height: 48,
-                borderRadius: 24,
-                backgroundColor: theme.primary,
-                alignItems: 'center',
-                justifyContent: 'center',
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.15,
-                shadowRadius: 8,
-                elevation: 3
-              }}
-            >
-              <Ionicons name="enter" size={24} color="white" />
-            </Pressable>
-          )}
+
+            {/* Create/Join Button */}
+            {isTeacher ? (
+              <Pressable
+                onPress={() => setShowCreateModal(true)}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: theme.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 3
+                }}
+              >
+                <Ionicons name="add" size={28} color="white" />
+              </Pressable>
+            ) : (
+              <Pressable
+                onPress={() => setShowJoinModal(true)}
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 24,
+                  backgroundColor: theme.primary,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 3
+                }}
+              >
+                <Ionicons name="enter" size={24} color="white" />
+              </Pressable>
+            )}
+          </View>
         </View>
 
         <ScrollView className="flex-1 px-6 py-2" showsVerticalScrollIndicator={false}>
@@ -627,6 +652,189 @@ const GroupsScreen = () => {
               </Pressable>
             </Pressable>
           </Pressable>
+        </Modal>
+
+        {/* How To Modal */}
+        <Modal
+          visible={showHowToModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowHowToModal(false)}
+        >
+          <SafeAreaView className="flex-1" style={{ backgroundColor: theme.backgroundGradient[0] }}>
+            {/* Modal Header */}
+            <View className="px-6 py-4 flex-row items-center justify-between" style={{ borderBottomWidth: 1, borderBottomColor: theme.textSecondary + "20" }}>
+              <View style={{ width: 60 }} />
+              <Text className="text-xl" style={{ color: theme.textPrimary, fontFamily: 'Poppins_700Bold' }}>
+                How To Use Groups
+              </Text>
+              <Pressable onPress={() => setShowHowToModal(false)}>
+                <Ionicons name="close" size={28} color={theme.textPrimary} />
+              </Pressable>
+            </View>
+
+            <ScrollView className="flex-1 px-6 py-6" showsVerticalScrollIndicator={false}>
+              {/* For Teachers */}
+              {isTeacher && (
+                <>
+                  <View className="mb-6">
+                    <View className="flex-row items-center mb-3">
+                      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                        <Ionicons name="add-circle" size={22} color="white" />
+                      </View>
+                      <Text className="text-lg" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        Creating a Group
+                      </Text>
+                    </View>
+                    <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        Step 1: Tap the + Button
+                      </Text>
+                      <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        In the top-right corner, tap the blue + button to open the create group form.
+                      </Text>
+
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        Step 2: Fill in Details
+                      </Text>
+                      <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        Enter a group name (required) and description (optional). Then tap &quot;Create&quot;.
+                      </Text>
+
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        Step 3: Share Your Code
+                      </Text>
+                      <Text className="text-sm" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        {"A unique 6-character code is automatically generated. You'll see it displayed in your group card."}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="mb-6">
+                    <View className="flex-row items-center mb-3">
+                      <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.secondary, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                        <Ionicons name="share-social" size={22} color="white" />
+                      </View>
+                      <Text className="text-lg" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        Sharing Your Group Code
+                      </Text>
+                    </View>
+                    <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        • Copy Button
+                      </Text>
+                      <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        Tap &quot;Copy&quot; to copy the code to your clipboard. Then paste it in messages, emails, or announcements.
+                      </Text>
+
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        • QR Code Button
+                      </Text>
+                      <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        Tap &quot;QR Code&quot; to show a scannable QR code. Students can scan it with their phone camera to get the code instantly.
+                      </Text>
+
+                      <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                        • New Button
+                      </Text>
+                      <Text className="text-sm" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                        {"Tap \"New\" to regenerate a fresh code. Useful if you need to reset access. The old code will stop working."}
+                      </Text>
+                    </View>
+                  </View>
+                </>
+              )}
+
+              {/* For Students */}
+              {!isTeacher && (
+                <View className="mb-6">
+                  <View className="flex-row items-center mb-3">
+                    <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.primary, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                      <Ionicons name="enter" size={22} color="white" />
+                    </View>
+                    <Text className="text-lg" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                      Joining a Group
+                    </Text>
+                  </View>
+                  <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+                    <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                      Step 1: Get the Code
+                    </Text>
+                    <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                      Ask your teacher for the 6-character group code. They can send it via message, email, or show a QR code.
+                    </Text>
+
+                    <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                      Step 2: Tap Join Button
+                    </Text>
+                    <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                      In the top-right corner, tap the enter/join button to open the join form.
+                    </Text>
+
+                    <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                      Step 3: Enter Code
+                    </Text>
+                    <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                      Type in the 6-character code and tap &quot;Join&quot;. You will immediately see the group and any assigned tasks.
+                    </Text>
+                  </View>
+                </View>
+              )}
+
+              {/* Managing Groups (Common) */}
+              <View className="mb-6">
+                <View className="flex-row items-center mb-3">
+                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.accentColor, alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Ionicons name="settings" size={22} color="white" />
+                  </View>
+                  <Text className="text-lg" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                    Managing Groups
+                  </Text>
+                </View>
+                <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+                  <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                    • View Group Details
+                  </Text>
+                  <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    Tap on any group card to expand and see tasks, member count, and other details.
+                  </Text>
+
+                  <Text className="text-sm mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                    • Leave a Group
+                  </Text>
+                  <Text className="text-sm" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    {isTeacher ? "As a teacher, you cannot leave groups you created. You can regenerate the code to reset access." : "Students can leave a group anytime by tapping the \"Leave Group\" button in the expanded view."}
+                  </Text>
+                </View>
+              </View>
+
+              {/* Pro Tips */}
+              <View className="mb-8">
+                <View className="flex-row items-center mb-3">
+                  <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: '#FFB800', alignItems: 'center', justifyContent: 'center', marginRight: 12 }}>
+                    <Ionicons name="bulb" size={22} color="white" />
+                  </View>
+                  <Text className="text-lg" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
+                    Pro Tips
+                  </Text>
+                </View>
+                <View className="rounded-2xl p-4" style={{ backgroundColor: 'white', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.06, shadowRadius: 8, elevation: 2 }}>
+                  <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    • Codes are case-insensitive and automatically capitalize as you type
+                  </Text>
+                  <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    • Each group gets a unique code that never expires (unless regenerated)
+                  </Text>
+                  <Text className="text-sm mb-3" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    • You can be a member of multiple groups at the same time
+                  </Text>
+                  <Text className="text-sm" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
+                    • Group tasks and progress are shared with all members
+                  </Text>
+                </View>
+              </View>
+            </ScrollView>
+          </SafeAreaView>
         </Modal>
       </SafeAreaView>
     </View>
