@@ -1,0 +1,244 @@
+import React, { useState } from "react";
+import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
+import useUserStore from "../state/userStore";
+import useStatsStore from "../state/statsStore";
+import { StudyPalAnimal, ThemeColor } from "../types";
+import { cn } from "../utils/cn";
+
+interface OnboardingScreenProps {
+  onComplete: () => void;
+}
+
+const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
+  const setUser = useUserStore((s) => s.setUser);
+  const initStats = useStatsStore((s) => s.initStats);
+
+  const [step, setStep] = useState(1);
+  const [username, setUsername] = useState("");
+  const [studyPalName, setStudyPalName] = useState("Buddy");
+  const [animal, setAnimal] = useState<StudyPalAnimal>("cat");
+  const [themeColor, setThemeColor] = useState<ThemeColor>("blue");
+
+  const animals: StudyPalAnimal[] = ["cat", "bunny", "bear", "dog", "fox", "panda"];
+
+  const themes: { color: ThemeColor; colors: [string, string] }[] = [
+    { color: "blue", colors: ["#3B82F6", "#1D4ED8"] },
+    { color: "purple", colors: ["#A855F7", "#7C3AED"] },
+    { color: "pink", colors: ["#EC4899", "#DB2777"] },
+    { color: "green", colors: ["#10B981", "#059669"] },
+    { color: "orange", colors: ["#F97316", "#EA580C"] },
+    { color: "red", colors: ["#EF4444", "#DC2626"] },
+  ];
+
+  const handleComplete = () => {
+    const userId = Date.now().toString();
+    setUser({
+      id: userId,
+      username: username.trim() || "Student",
+      role: "student",
+      language: "en",
+      themeColor,
+      studyPalConfig: {
+        name: studyPalName,
+        animal,
+        animationsEnabled: true,
+      },
+      notificationEnabled: true,
+      createdAt: new Date(),
+    });
+    initStats(userId);
+    onComplete();
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-gray-900 dark:to-gray-800">
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        <View className="px-6 py-8">
+          {/* Logo/Title */}
+          <View className="items-center mb-8">
+            <Text className="text-5xl mb-4">📚</Text>
+            <Text className="text-4xl font-bold text-gray-800 dark:text-gray-100">
+              StudyPal
+            </Text>
+            <Text className="text-lg text-gray-600 dark:text-gray-400 mt-2 text-center">
+              Your personal study companion
+            </Text>
+          </View>
+
+          {/* Step Indicator */}
+          <View className="flex-row justify-center mb-8">
+            {[1, 2, 3, 4].map((s) => (
+              <View
+                key={s}
+                className={cn(
+                  "w-10 h-2 rounded-full mx-1",
+                  s === step
+                    ? "bg-blue-500"
+                    : s < step
+                    ? "bg-blue-300"
+                    : "bg-gray-300 dark:bg-gray-700"
+                )}
+              />
+            ))}
+          </View>
+
+          {/* Step 1: Username */}
+          {step === 1 && (
+            <View>
+              <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                What should we call you?
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400 mb-6">
+                Enter your name or nickname
+              </Text>
+              <TextInput
+                value={username}
+                onChangeText={setUsername}
+                placeholder="Enter your name"
+                placeholderTextColor="#9CA3AF"
+                className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl px-6 py-4 text-lg mb-6"
+                autoFocus
+              />
+            </View>
+          )}
+
+          {/* Step 2: Study Pal Name */}
+          {step === 2 && (
+            <View>
+              <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                Name your Study Pal
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400 mb-6">
+                This cute companion will help keep you motivated
+              </Text>
+              <TextInput
+                value={studyPalName}
+                onChangeText={setStudyPalName}
+                placeholder="Enter a name"
+                placeholderTextColor="#9CA3AF"
+                className="bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-100 rounded-2xl px-6 py-4 text-lg mb-6"
+              />
+            </View>
+          )}
+
+          {/* Step 3: Choose Animal */}
+          {step === 3 && (
+            <View>
+              <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                Choose your Study Pal
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400 mb-6">
+                Pick your favorite animal companion
+              </Text>
+              <View className="flex-row flex-wrap gap-3">
+                {animals.map((a) => (
+                  <Pressable
+                    key={a}
+                    onPress={() => setAnimal(a)}
+                    className={cn(
+                      "w-[30%] aspect-square bg-white dark:bg-gray-800 rounded-2xl items-center justify-center",
+                      animal === a && "border-4 border-blue-500"
+                    )}
+                  >
+                    <Text className="text-5xl">
+                      {a === "cat" && "🐱"}
+                      {a === "bunny" && "🐰"}
+                      {a === "bear" && "🐻"}
+                      {a === "dog" && "🐶"}
+                      {a === "fox" && "🦊"}
+                      {a === "panda" && "🐼"}
+                    </Text>
+                    <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-2 capitalize">
+                      {a}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Step 4: Choose Theme */}
+          {step === 4 && (
+            <View>
+              <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">
+                Choose your theme
+              </Text>
+              <Text className="text-gray-600 dark:text-gray-400 mb-6">
+                Pick your favorite color
+              </Text>
+              <View className="flex-row flex-wrap gap-3">
+                {themes.map((theme) => (
+                  <Pressable
+                    key={theme.color}
+                    onPress={() => setThemeColor(theme.color)}
+                    className={cn(
+                      "w-[30%] aspect-square rounded-2xl items-center justify-center",
+                      themeColor === theme.color && "border-4 border-gray-800 dark:border-white"
+                    )}
+                  >
+                    <LinearGradient
+                      colors={theme.colors}
+                      className="w-full h-full rounded-2xl items-center justify-center"
+                    >
+                      {themeColor === theme.color && (
+                        <Ionicons name="checkmark-circle" size={40} color="white" />
+                      )}
+                    </LinearGradient>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* Navigation Buttons */}
+          <View className="flex-row gap-3 mt-8">
+            {step > 1 && (
+              <Pressable
+                onPress={() => setStep(step - 1)}
+                className="flex-1 bg-gray-200 dark:bg-gray-700 py-4 rounded-2xl items-center"
+              >
+                <Text className="text-gray-700 dark:text-gray-300 font-semibold text-lg">
+                  Back
+                </Text>
+              </Pressable>
+            )}
+            <Pressable
+              onPress={() => {
+                if (step < 4) {
+                  setStep(step + 1);
+                } else {
+                  handleComplete();
+                }
+              }}
+              disabled={step === 1 && !username.trim()}
+              className={cn(
+                "flex-1 py-4 rounded-2xl items-center",
+                step === 1 && !username.trim()
+                  ? "bg-gray-300 dark:bg-gray-700"
+                  : ""
+              )}
+            >
+              <LinearGradient
+                colors={
+                  step === 1 && !username.trim()
+                    ? ["#D1D5DB", "#9CA3AF"]
+                    : ["#3B82F6", "#1D4ED8"]
+                }
+                className="w-full py-4 rounded-2xl items-center"
+              >
+                <Text className="text-white font-bold text-lg">
+                  {step === 4 ? "Get Started" : "Next"}
+                </Text>
+              </LinearGradient>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+};
+
+export default OnboardingScreen;

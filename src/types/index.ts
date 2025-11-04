@@ -1,0 +1,102 @@
+// Core type definitions for StudyPal app
+
+export type TaskCategory = "homework" | "project" | "exam" | "other";
+export type TaskStatus = "pending" | "completed";
+export type UserRole = "student" | "teacher";
+export type Language = "en" | "es" | "fr" | "de" | "zh" | "ja" | "ar";
+export type StudyPalAnimal = "cat" | "bunny" | "bear" | "dog" | "fox" | "panda";
+export type TimerMode = "study" | "break";
+export type AIChatMode = "chat" | "grammar";
+export type ThemeColor = "blue" | "purple" | "pink" | "green" | "orange" | "red";
+
+export interface Task {
+  id: string;
+  userId: string;
+  groupId?: string;
+  title: string;
+  description: string;
+  category: TaskCategory;
+  dueDate: Date;
+  reminder?: Date;
+  reminderSound?: string;
+  status: TaskStatus;
+  createdAt: Date;
+  completedAt?: Date;
+  assignedBy?: string; // teacher userId if assigned
+}
+
+export interface User {
+  id: string;
+  username: string;
+  email?: string;
+  role: UserRole;
+  language: Language;
+  themeColor: ThemeColor;
+  studyPalConfig: StudyPalConfig;
+  notificationEnabled: boolean;
+  createdAt: Date;
+}
+
+export interface StudyPalConfig {
+  name: string;
+  animal: StudyPalAnimal;
+  animationsEnabled: boolean;
+}
+
+export interface Group {
+  id: string;
+  name: string;
+  description: string;
+  teacherId: string;
+  studentIds: string[];
+  createdAt: Date;
+}
+
+export interface StudySession {
+  id: string;
+  userId: string;
+  startTime: Date;
+  endTime?: Date;
+  studyDuration: number; // minutes
+  breakDuration: number; // minutes
+  completed: boolean;
+}
+
+export interface AIChatMessage {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: Date;
+}
+
+export interface MotivationalQuote {
+  id: string;
+  text: string;
+  author: string;
+  language: Language;
+}
+
+export interface StudyTip {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  language: Language;
+}
+
+export interface Achievement {
+  id: string;
+  name: string;
+  description: string;
+  icon: string;
+  unlockedAt?: Date;
+}
+
+export interface UserStats {
+  userId: string;
+  totalTasksCompleted: number;
+  currentStreak: number;
+  longestStreak: number;
+  totalStudyMinutes: number;
+  achievements: Achievement[];
+}
