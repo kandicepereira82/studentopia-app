@@ -1,27 +1,40 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
-import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, isToday, addMonths, subMonths } from "date-fns";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, isToday, addMonths, subMonths, startOfWeek, endOfWeek, addWeeks, subWeeks } from "date-fns";
 import useUserStore from "../state/userStore";
 import useTaskStore from "../state/taskStore";
 import { useTranslation } from "../utils/translations";
 import { getTheme } from "../utils/themes";
+import { TaskCategory } from "../types";
 import { cn } from "../utils/cn";
 
 const CalendarScreen = () => {
   const user = useUserStore((s) => s.user);
   const tasks = useTaskStore((s) => s.tasks);
   const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
+  const addTask = useTaskStore((s) => s.addTask);
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
 
+  // Task creation modal state
+  const [modalVisible, setModalVisible] = useState(false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [category, setCategory] = useState<TaskCategory>("homework");
+  const [taskDate, setTaskDate] = useState(new Date());
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
+
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
 
+  // Month view data
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
   const daysInMonth = eachDayOfInterval({ start: monthStart, end: monthEnd });
@@ -29,22 +42,62 @@ const CalendarScreen = () => {
   const startDayOfWeek = monthStart.getDay();
   const emptyDays = Array(startDayOfWeek).fill(null);
 
-  const handlePreviousMonth = () => {
-    setCurrentDate(subMonths(currentDate, 1));
+  // Week view data
+  const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+  const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
+  const daysInWeek = eachDayOfInterval({ start: weekStart, end: weekEnd });
+
+  const handlePrevious = () => {
+    if (viewMode === "month") {
+      setCurrentDate(subMonths(currentDate, 1));
+    } else {
+      setCurrentDate(subWeeks(currentDate, 1));
+    }
   };
 
-  const handleNextMonth = () => {
-    setCurrentDate(addMonths(currentDate, 1));
+  const handleNext = () => {
+    if (viewMode === "month") {
+      setCurrentDate(addMonths(currentDate, 1));
+    } else {
+      setCurrentDate(addWeeks(currentDate, 1));
+    }
   };
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
   };
 
+  const handleDateLongPress = (date: Date) => {
+    setSelectedDate(date);
+    setTaskDate(date);
+    setTitle("");
+    setDescription("");
+    setCategory("homework");
+    setModalVisible(true);
+  };
+
+  const handleSaveTask = () => {
+    if (!title.trim()) {
+      return;
+    }
+
+    addTask({
+      userId: user?.id || "default",
+      title,
+      description,
+      category,
+      dueDate: taskDate,
+    });
+
+    setModalVisible(false);
+    setTitle("");
+    setDescription("");
+  };
+
   const getTasksForDate = (date: Date) => {
     return tasks.filter((task) => {
-      const taskDate = new Date(task.dueDate);
-      return isSameDay(taskDate, date);
+      const taskDateObj = new Date(task.dueDate);
+      return isSameDay(taskDateObj, date);
     });
   };
 
@@ -123,18 +176,18 @@ const CalendarScreen = () => {
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Month/Year Header */}
         <View style={{ paddingHorizontal: 24, paddingVertical: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Pressable onPress={handlePreviousMonth} style={{ padding: 8 }}>
+          <Pressable onPress={handlePrevious} style={{ padding: 8 }}>
             <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
           </Pressable>
           <Text style={{ fontSize: 20, fontFamily: 'Poppins_700Bold', color: theme.textPrimary }}>
-            {format(currentDate, "MMMM yyyy")}
+            {viewMode === "month" ? format(currentDate, "MMMM yyyy") : `Week of ${format(weekStart, "MMM d")}`}
           </Text>
-          <Pressable onPress={handleNextMonth} style={{ padding: 8 }}>
+          <Pressable onPress={handleNext} style={{ padding: 8 }}>
             <Ionicons name="chevron-forward" size={24} color={theme.textPrimary} />
           </Pressable>
         </View>
 
-        {/* Calendar Grid */}
+        {/* Calendar Grid - Conditional rendering based on view mode */}
         <View style={{ paddingHorizontal: 24 }}>
           <View style={{
             backgroundColor: 'white',
@@ -146,72 +199,142 @@ const CalendarScreen = () => {
             shadowRadius: 8,
             elevation: 2
           }}>
-            {/* Day Headers */}
-            <View style={{ flexDirection: 'row', marginBottom: 8 }}>
-              {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
-                <View key={index} style={{ flex: 1, alignItems: 'center' }}>
-                  <Text style={{ fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: theme.textSecondary }}>
-                    {day}
-                  </Text>
-                </View>
-              ))}
-            </View>
-
-            {/* Days Grid */}
-            <View className="flex-row flex-wrap">
-              {emptyDays.map((_, index) => (
-                <View key={`empty-${index}`} className="w-[14.28%] aspect-square p-1" />
-              ))}
-              {daysInMonth.map((day) => {
-                const dayTasks = getTasksForDate(day);
-                const hasCompletedTasks = dayTasks.some(t => t.status === "completed");
-                const hasPendingTasks = dayTasks.some(t => t.status === "pending");
-                const isSelected = isSameDay(day, selectedDate);
-                const isTodayDate = isToday(day);
-
-                return (
-                  <Pressable
-                    key={day.toString()}
-                    onPress={() => handleDateSelect(day)}
-                    className="w-[14.28%] aspect-square p-1"
-                  >
-                    <View
-                      className={cn(
-                        "flex-1 items-center justify-center rounded-lg"
-                      )}
-                      style={{
-                        backgroundColor: isSelected ? theme.primary : undefined,
-                        borderWidth: isTodayDate && !isSelected ? 2 : 0,
-                        borderColor: isTodayDate && !isSelected ? theme.primary : undefined,
-                      }}
-                    >
-                      <Text
-                        className="text-sm font-medium"
-                        style={{ color: isSelected ? "white" : theme.textPrimary }}
-                      >
-                        {format(day, "d")}
+            {viewMode === "month" ? (
+              <>
+                {/* Day Headers */}
+                <View style={{ flexDirection: 'row', marginBottom: 8 }}>
+                  {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
+                    <View key={index} style={{ flex: 1, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: theme.textSecondary }}>
+                        {day}
                       </Text>
-                      {dayTasks.length > 0 && (
-                        <View className="flex-row gap-0.5 mt-0.5">
-                          {hasPendingTasks && (
-                            <View
-                              className="w-1 h-1 rounded-full"
-                              style={{ backgroundColor: isSelected ? "white" : theme.accentColor }}
-                            />
+                    </View>
+                  ))}
+                </View>
+
+                {/* Days Grid */}
+                <View className="flex-row flex-wrap">
+                  {emptyDays.map((_, index) => (
+                    <View key={`empty-${index}`} className="w-[14.28%] aspect-square p-1" />
+                  ))}
+                  {daysInMonth.map((day) => {
+                    const dayTasks = getTasksForDate(day);
+                    const hasCompletedTasks = dayTasks.some(t => t.status === "completed");
+                    const hasPendingTasks = dayTasks.some(t => t.status === "pending");
+                    const isSelected = isSameDay(day, selectedDate);
+                    const isTodayDate = isToday(day);
+
+                    return (
+                      <Pressable
+                        key={day.toString()}
+                        onPress={() => handleDateSelect(day)}
+                        onLongPress={() => handleDateLongPress(day)}
+                        className="w-[14.28%] aspect-square p-1"
+                      >
+                        <View
+                          className={cn(
+                            "flex-1 items-center justify-center rounded-lg"
                           )}
-                          {hasCompletedTasks && (
-                            <View
-                              className="w-1 h-1 rounded-full"
-                              style={{ backgroundColor: isSelected ? "white" : theme.secondary }}
-                            />
+                          style={{
+                            backgroundColor: isSelected ? theme.primary : undefined,
+                            borderWidth: isTodayDate && !isSelected ? 2 : 0,
+                            borderColor: isTodayDate && !isSelected ? theme.primary : undefined,
+                          }}
+                        >
+                          <Text
+                            className="text-sm font-medium"
+                            style={{ color: isSelected ? "white" : theme.textPrimary }}
+                          >
+                            {format(day, "d")}
+                          </Text>
+                          {dayTasks.length > 0 && (
+                            <View className="flex-row gap-0.5 mt-0.5">
+                              {hasPendingTasks && (
+                                <View
+                                  className="w-1 h-1 rounded-full"
+                                  style={{ backgroundColor: isSelected ? "white" : theme.accentColor }}
+                                />
+                              )}
+                              {hasCompletedTasks && (
+                                <View
+                                  className="w-1 h-1 rounded-full"
+                                  style={{ backgroundColor: isSelected ? "white" : theme.secondary }}
+                                />
+                              )}
+                            </View>
                           )}
                         </View>
-                      )}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </>
+            ) : (
+              /* Week View */
+              <>
+                {/* Day Headers for Week */}
+                <View style={{ flexDirection: 'row', marginBottom: 12 }}>
+                  {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((day, index) => (
+                    <View key={index} style={{ flex: 1, alignItems: 'center' }}>
+                      <Text style={{ fontSize: 11, fontFamily: 'Poppins_600SemiBold', color: theme.textSecondary }}>
+                        {day}
+                      </Text>
                     </View>
-                  </Pressable>
-                );
-              })}
-            </View>
+                  ))}
+                </View>
+
+                {/* Week Days */}
+                <View style={{ flexDirection: 'row', marginBottom: 16 }}>
+                  {daysInWeek.map((day) => {
+                    const dayTasks = getTasksForDate(day);
+                    const isSelected = isSameDay(day, selectedDate);
+                    const isTodayDate = isToday(day);
+
+                    return (
+                      <Pressable
+                        key={day.toString()}
+                        onPress={() => handleDateSelect(day)}
+                        onLongPress={() => handleDateLongPress(day)}
+                        style={{ flex: 1, alignItems: 'center', padding: 8 }}
+                      >
+                        <View
+                          style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            backgroundColor: isSelected ? theme.primary : (isTodayDate ? theme.primary + '20' : '#F3F4F6')
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              fontFamily: 'Poppins_600SemiBold',
+                              color: isSelected ? 'white' : theme.textPrimary
+                            }}
+                          >
+                            {format(day, "d")}
+                          </Text>
+                        </View>
+                        {dayTasks.length > 0 && (
+                          <View style={{ flexDirection: 'row', gap: 2, marginTop: 4 }}>
+                            <View
+                              style={{
+                                width: 4,
+                                height: 4,
+                                borderRadius: 2,
+                                backgroundColor: theme.accentColor
+                              }}
+                            />
+                          </View>
+                        )}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              </>
+            )}
           </View>
         </View>
 
@@ -279,6 +402,163 @@ const CalendarScreen = () => {
           )}
         </View>
       </ScrollView>
+
+      {/* Add Task Modal */}
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <SafeAreaView className="flex-1" style={{ backgroundColor: theme.backgroundGradient[0] }}>
+          <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            className="flex-1"
+          >
+            {/* Modal Header */}
+            <View className="px-6 py-4 flex-row items-center justify-between" style={{ borderBottomWidth: 1, borderBottomColor: theme.textSecondary + "20" }}>
+              <Pressable onPress={() => setModalVisible(false)}>
+                <Text style={{ color: theme.primary }} className="text-lg">Cancel</Text>
+              </Pressable>
+              <Text className="text-xl font-bold" style={{ color: theme.textPrimary }}>
+                Add Task
+              </Text>
+              <Pressable onPress={handleSaveTask}>
+                <Text style={{ color: theme.primary }} className="text-lg font-semibold">
+                  Save
+                </Text>
+              </Pressable>
+            </View>
+
+            <ScrollView className="flex-1 px-6 py-4" showsVerticalScrollIndicator={false}>
+              {/* Title */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
+                  Task Title
+                </Text>
+                <TextInput
+                  value={title}
+                  onChangeText={setTitle}
+                  placeholder="Enter task title"
+                  placeholderTextColor={theme.textSecondary}
+                  className="rounded-xl px-4 py-3 text-base"
+                  style={{ backgroundColor: 'white', color: theme.textPrimary }}
+                />
+              </View>
+
+              {/* Description */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
+                  Description (Optional)
+                </Text>
+                <TextInput
+                  value={description}
+                  onChangeText={setDescription}
+                  placeholder="Enter description"
+                  placeholderTextColor={theme.textSecondary}
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                  className="rounded-xl px-4 py-3 text-base min-h-[100px]"
+                  style={{ backgroundColor: 'white', color: theme.textPrimary }}
+                />
+              </View>
+
+              {/* Category */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
+                  Category
+                </Text>
+                <View className="flex-row flex-wrap gap-2">
+                  {(["homework", "project", "exam", "other"] as TaskCategory[]).map((cat) => (
+                    <Pressable
+                      key={cat}
+                      onPress={() => setCategory(cat)}
+                      className="px-4 py-2 rounded-xl"
+                      style={{ backgroundColor: category === cat ? theme.primary : 'white' }}
+                    >
+                      <Text
+                        className="font-medium capitalize"
+                        style={{ color: category === cat ? "white" : theme.textSecondary }}
+                      >
+                        {t(cat)}
+                      </Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+
+              {/* Due Date */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
+                  Due Date
+                </Text>
+                <Pressable
+                  onPress={() => setShowDatePicker(true)}
+                  className="rounded-xl px-4 py-3 flex-row items-center justify-between"
+                  style={{ backgroundColor: 'white' }}
+                >
+                  <Text className="text-base" style={{ color: theme.textPrimary }}>
+                    {taskDate.toLocaleDateString()}
+                  </Text>
+                  <Ionicons name="calendar-outline" size={20} color={theme.textSecondary} />
+                </Pressable>
+              </View>
+
+              {/* Due Time */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
+                  Due Time
+                </Text>
+                <Pressable
+                  onPress={() => setShowTimePicker(true)}
+                  className="rounded-xl px-4 py-3 flex-row items-center justify-between"
+                  style={{ backgroundColor: 'white' }}
+                >
+                  <Text className="text-base" style={{ color: theme.textPrimary }}>
+                    {taskDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                  <Ionicons name="time-outline" size={20} color={theme.textSecondary} />
+                </Pressable>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={taskDate}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowDatePicker(false);
+                    if (selectedDate) {
+                      const newDate = new Date(selectedDate);
+                      newDate.setHours(taskDate.getHours());
+                      newDate.setMinutes(taskDate.getMinutes());
+                      setTaskDate(newDate);
+                    }
+                  }}
+                />
+              )}
+
+              {showTimePicker && (
+                <DateTimePicker
+                  value={taskDate}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowTimePicker(false);
+                    if (selectedTime) {
+                      const newDate = new Date(taskDate);
+                      newDate.setHours(selectedTime.getHours());
+                      newDate.setMinutes(selectedTime.getMinutes());
+                      setTaskDate(newDate);
+                    }
+                  }}
+                />
+              )}
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
+      </Modal>
       </SafeAreaView>
     </View>
   );

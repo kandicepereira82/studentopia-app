@@ -4,6 +4,10 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ## ✨ Latest Updates
 
+- ✅ **Calendar Week View** - Toggle between month and week views with fully functional navigation
+- ✅ **Add Tasks from Calendar** - Long-press any date to quickly create tasks for that day
+- ✅ **Calendar Integration Guide** - Complete guide for syncing with Google Calendar and Apple Calendar (see CALENDAR_INTEGRATION.md)
+- ✅ **Fixed Timer Display** - Timer now displays correctly as "25:00" on a single line
 - ✅ **Task Time Selection** - Added time picker to tasks alongside date selection for precise scheduling
 - ✅ **Enhanced Task Display** - All task views now show both date and time (Home, Tasks, Calendar screens)
 - ✅ **Enhanced Home Screen** - Added week calendar view and replaced progress card with interactive Quick Timer
@@ -37,10 +41,13 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 - **Task Status**: Mark tasks as pending or completed with instant feedback
 
 ### 📅 Calendar Integration
-- **Month View**: Full calendar with color-coded task indicators
-- **Date Selection**: Tap any date to view tasks scheduled for that day
+- **Month & Week Views**: Toggle between comprehensive month view and focused week view
+- **Interactive Calendar**: Long-press any date to quickly create tasks for that day
+- **Date Selection**: Tap any date to view all tasks scheduled for that day
 - **Task Indicators**: Visual dots showing pending (orange) and completed (green) tasks
-- **Navigation**: Easy month-to-month navigation with previous/next buttons
+- **Smart Navigation**: Easy navigation between months or weeks with previous/next buttons
+- **Calendar Sync**: Integration with Google Calendar and Apple Calendar (see CALENDAR_INTEGRATION.md)
+- **Export/Import**: Export tasks as .ics files for calendar apps
 
 ### ⏱️ Study Timer (Pomodoro)
 - **Customizable Sessions**: Adjustable study (1-120 min) and break (1-60 min) durations

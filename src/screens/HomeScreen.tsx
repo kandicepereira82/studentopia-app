@@ -743,12 +743,14 @@ const HomeScreen = () => {
                 paddingHorizontal: 40,
                 marginBottom: 16
               }}>
-                <Text style={{
-                  fontSize: 48,
-                  fontFamily: 'Poppins_700Bold',
-                  color: theme.primary,
-                  letterSpacing: 2
-                }}>
+                <Text
+                  numberOfLines={1}
+                  style={{
+                    fontSize: 48,
+                    fontFamily: 'Poppins_700Bold',
+                    color: theme.primary,
+                    letterSpacing: 2
+                  }}>
                   {String(timerMinutes).padStart(2, "0")}:{String(timerSeconds).padStart(2, "0")}
                 </Text>
               </View>
