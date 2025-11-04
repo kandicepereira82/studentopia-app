@@ -50,12 +50,21 @@ const CalendarScreen = () => {
 
   const selectedDateTasks = getTasksForDate(selectedDate);
 
+  console.log("[CalendarScreen] Rendering. User:", user ? "exists" : "null");
+
   return (
     <LinearGradient
       colors={theme.backgroundGradient as [string, string, ...string[]]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
+        {/* Debug Banner */}
+        <View style={{ backgroundColor: "green", padding: 10 }}>
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+            CALENDAR SCREEN LOADED
+          </Text>
+        </View>
+
         {/* Header */}
         <View className="px-6 pt-4 pb-2">
           <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>

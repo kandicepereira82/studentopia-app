@@ -143,12 +143,21 @@ const TasksScreen = () => {
     return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
   });
 
+  console.log("[TasksScreen] Rendering. User:", user ? "exists" : "null", "Tasks count:", tasks.length);
+
   return (
     <LinearGradient
       colors={theme.backgroundGradient as [string, string, ...string[]]}
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
+        {/* Debug Banner */}
+        <View style={{ backgroundColor: "blue", padding: 10 }}>
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+            TASKS SCREEN LOADED - {tasks.length} tasks
+          </Text>
+        </View>
+
         {/* Header */}
         <View className="px-6 pt-4 pb-2 flex-row items-center justify-between">
           <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>

@@ -74,6 +74,13 @@ const HomeScreen = () => {
       className="flex-1"
     >
       <SafeAreaView className="flex-1">
+        {/* Debug Banner - Remove after testing */}
+        <View style={{ backgroundColor: "red", padding: 10 }}>
+          <Text style={{ color: "white", fontSize: 16, fontWeight: "bold" }}>
+            HOME SCREEN LOADED - User: {user.username}
+          </Text>
+        </View>
+
         {/* Header */}
         <View className="px-6 pt-2 pb-3">
           <Text className="text-2xl font-bold" style={{ color: theme.textPrimary }}>
