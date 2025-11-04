@@ -11,8 +11,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import useUserStore from "../state/userStore";
 import { useTranslation } from "../utils/translations";
+import { getTheme } from "../utils/themes";
 import { getOpenAITextResponse } from "../api/chat-service";
 import { AIChatMessage, AIChatMode } from "../types";
 import { cn } from "../utils/cn";
@@ -20,6 +22,7 @@ import { cn } from "../utils/cn";
 const AIHelperScreen = () => {
   const user = useUserStore((s) => s.user);
   const { t } = useTranslation(user?.language || "en");
+  const theme = getTheme(user?.themeColor);
 
   const [mode, setMode] = useState<AIChatMode>("chat");
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
@@ -84,16 +87,20 @@ const AIHelperScreen = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900" edges={["top"]}>
+    <LinearGradient
+      colors={theme.backgroundGradient as [string, string, ...string[]]}
+      className="flex-1"
+    >
+    <SafeAreaView className="flex-1" edges={["top"]}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
         keyboardVerticalOffset={Platform.OS === "ios" ? 90 : 0}
       >
         {/* Header */}
-        <View className="px-6 pt-4 pb-3 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800">
+        <View className="px-6 pt-4 pb-3 border-b" style={{ backgroundColor: theme.backgroundGradient[0], borderBottomColor: theme.textSecondary + "20" }}>
           <View className="flex-row items-center justify-between mb-3">
-            <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+            <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
               {t("aiHelper")}
             </Text>
             {messages.length > 0 && (
@@ -107,26 +114,18 @@ const AIHelperScreen = () => {
           <View className="flex-row gap-2">
             <Pressable
               onPress={() => setMode("chat")}
-              className={cn(
-                "flex-1 py-3 rounded-xl items-center",
-                mode === "chat"
-                  ? "bg-blue-500"
-                  : "bg-white dark:bg-gray-800"
-              )}
+              className="flex-1 py-3 rounded-xl items-center"
+              style={{ backgroundColor: mode === "chat" ? theme.primary : theme.cardBackground }}
             >
               <View className="flex-row items-center">
                 <Ionicons
                   name="chatbubbles"
                   size={18}
-                  color={mode === "chat" ? "white" : "#6B7280"}
+                  color={mode === "chat" ? "white" : theme.textSecondary}
                 />
                 <Text
-                  className={cn(
-                    "ml-2 font-semibold",
-                    mode === "chat"
-                      ? "text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  )}
+                  className="ml-2 font-semibold"
+                  style={{ color: mode === "chat" ? "white" : theme.textSecondary }}
                 >
                   {t("chatMode")}
                 </Text>
@@ -135,26 +134,18 @@ const AIHelperScreen = () => {
 
             <Pressable
               onPress={() => setMode("grammar")}
-              className={cn(
-                "flex-1 py-3 rounded-xl items-center",
-                mode === "grammar"
-                  ? "bg-purple-500"
-                  : "bg-white dark:bg-gray-800"
-              )}
+              className="flex-1 py-3 rounded-xl items-center"
+              style={{ backgroundColor: mode === "grammar" ? theme.secondary : theme.cardBackground }}
             >
               <View className="flex-row items-center">
                 <Ionicons
                   name="checkmark-done"
                   size={18}
-                  color={mode === "grammar" ? "white" : "#6B7280"}
+                  color={mode === "grammar" ? "white" : theme.textSecondary}
                 />
                 <Text
-                  className={cn(
-                    "ml-2 font-semibold",
-                    mode === "grammar"
-                      ? "text-white"
-                      : "text-gray-700 dark:text-gray-300"
-                  )}
+                  className="ml-2 font-semibold"
+                  style={{ color: mode === "grammar" ? "white" : theme.textSecondary }}
                 >
                   {t("grammarMode")}
                 </Text>
@@ -175,9 +166,9 @@ const AIHelperScreen = () => {
               <Ionicons
                 name={mode === "chat" ? "chatbubbles-outline" : "checkmark-done-outline"}
                 size={80}
-                color="#9CA3AF"
+                color={theme.textSecondary}
               />
-              <Text className="text-gray-500 dark:text-gray-400 text-lg mt-4 text-center">
+              <Text className="text-lg mt-4 text-center" style={{ color: theme.textSecondary }}>
                 {mode === "chat"
                   ? "Ask me anything about your homework or studies!"
                   : "Paste your text to check for grammar errors"}
@@ -194,25 +185,25 @@ const AIHelperScreen = () => {
                   )}
                 >
                   <View
-                    className={cn(
-                      "max-w-[80%] px-4 py-3 rounded-2xl",
-                      message.role === "user"
-                        ? "bg-blue-500"
-                        : "bg-white dark:bg-gray-800"
-                    )}
+                    className="max-w-[80%] px-4 py-3 rounded-2xl"
+                    style={{
+                      backgroundColor: message.role === "user"
+                        ? theme.primary
+                        : theme.cardBackground
+                    }}
                   >
                     <Text
-                      className={cn(
-                        "text-base",
-                        message.role === "user"
-                          ? "text-white"
-                          : "text-gray-800 dark:text-gray-100"
-                      )}
+                      className="text-base"
+                      style={{
+                        color: message.role === "user"
+                          ? "white"
+                          : theme.textPrimary
+                      }}
                     >
                       {message.content}
                     </Text>
                   </View>
-                  <Text className="text-xs text-gray-400 dark:text-gray-500 mt-1 px-2">
+                  <Text className="text-xs mt-1 px-2" style={{ color: theme.textSecondary }}>
                     {new Date(message.timestamp).toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
@@ -222,8 +213,8 @@ const AIHelperScreen = () => {
               ))}
               {isLoading && (
                 <View className="items-start mb-4">
-                  <View className="bg-white dark:bg-gray-800 px-4 py-3 rounded-2xl">
-                    <ActivityIndicator size="small" color="#3B82F6" />
+                  <View className="px-4 py-3 rounded-2xl" style={{ backgroundColor: theme.cardBackground }}>
+                    <ActivityIndicator size="small" color={theme.primary} />
                   </View>
                 </View>
               )}
@@ -232,42 +223,42 @@ const AIHelperScreen = () => {
         </ScrollView>
 
         {/* Input */}
-        <View className="px-6 py-3 bg-gray-50 dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800">
+        <View className="px-6 py-3 border-t" style={{ backgroundColor: theme.backgroundGradient[0], borderTopColor: theme.textSecondary + "20" }}>
           <View className="flex-row items-end gap-2">
-            <View className="flex-1 bg-white dark:bg-gray-800 rounded-2xl px-4 py-2">
+            <View className="flex-1 rounded-2xl px-4 py-2" style={{ backgroundColor: theme.cardBackground }}>
               <TextInput
                 value={inputText}
                 onChangeText={setInputText}
                 placeholder={t("askQuestion")}
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={theme.textSecondary}
                 multiline
                 maxLength={1000}
-                className="text-gray-800 dark:text-gray-100 text-base max-h-32"
+                className="text-base max-h-32"
+                style={{ color: theme.textPrimary }}
                 editable={!isLoading}
               />
             </View>
             <Pressable
               onPress={handleSend}
               disabled={!inputText.trim() || isLoading}
-              className={cn(
-                "w-12 h-12 rounded-full items-center justify-center",
-                inputText.trim() && !isLoading
-                  ? mode === "chat"
-                    ? "bg-blue-500"
-                    : "bg-purple-500"
-                  : "bg-gray-300 dark:bg-gray-700"
-              )}
+              className="w-12 h-12 rounded-full items-center justify-center"
+              style={{
+                backgroundColor: inputText.trim() && !isLoading
+                  ? (mode === "chat" ? theme.primary : theme.secondary)
+                  : theme.textSecondary + "50"
+              }}
             >
               <Ionicons
                 name="send"
                 size={20}
-                color={inputText.trim() && !isLoading ? "white" : "#9CA3AF"}
+                color={inputText.trim() && !isLoading ? "white" : theme.textSecondary}
               />
             </Pressable>
           </View>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
+    </LinearGradient>
   );
 };
 

@@ -12,6 +12,7 @@ import Animated, {
 import { Ionicons } from "@expo/vector-icons";
 import StudyPal from "./StudyPal";
 import useUserStore from "../state/userStore";
+import { getTheme } from "../utils/themes";
 
 interface CelebrationModalProps {
   visible: boolean;
@@ -25,6 +26,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({
   taskTitle,
 }) => {
   const user = useUserStore((s) => s.user);
+  const theme = getTheme(user?.themeColor);
   const scale = useSharedValue(0);
   const rotation = useSharedValue(0);
   const confettiScale = useSharedValue(0);
@@ -70,8 +72,8 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({
     >
       <View className="flex-1 bg-black/50 items-center justify-center">
         <Animated.View
-          style={animatedStyle}
-          className="bg-white dark:bg-gray-800 rounded-3xl p-8 mx-6 max-w-sm items-center"
+          style={[animatedStyle, { backgroundColor: theme.cardBackground }]}
+          className="rounded-3xl p-8 mx-6 max-w-sm items-center"
         >
           {/* Confetti */}
           <Animated.View style={confettiStyle} className="absolute top-0">
@@ -90,22 +92,23 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({
           </View>
 
           {/* Trophy */}
-          <View className="bg-amber-100 dark:bg-amber-900/30 rounded-full p-4 mb-4">
-            <Ionicons name="trophy" size={48} color="#F59E0B" />
+          <View className="rounded-full p-4 mb-4" style={{ backgroundColor: theme.secondary + "20" }}>
+            <Ionicons name="trophy" size={48} color={theme.secondary} />
           </View>
 
           {/* Message */}
-          <Text className="text-2xl font-bold text-gray-800 dark:text-gray-100 text-center mb-2">
+          <Text className="text-2xl font-bold text-center mb-2" style={{ color: theme.textPrimary }}>
             Task Completed!
           </Text>
-          <Text className="text-base text-gray-600 dark:text-gray-400 text-center mb-6">
+          <Text className="text-base text-center mb-6" style={{ color: theme.textSecondary }}>
             {taskTitle}
           </Text>
 
           {/* Close Button */}
           <Pressable
             onPress={onClose}
-            className="bg-blue-500 rounded-2xl px-8 py-3 w-full"
+            className="rounded-2xl px-8 py-3 w-full"
+            style={{ backgroundColor: theme.primary }}
           >
             <Text className="text-white font-semibold text-center text-lg">
               Awesome!

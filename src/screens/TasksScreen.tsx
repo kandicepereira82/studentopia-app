@@ -12,11 +12,13 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import useUserStore from "../state/userStore";
 import useTaskStore from "../state/taskStore";
 import useStatsStore from "../state/statsStore";
 import { useTranslation } from "../utils/translations";
+import { getTheme } from "../utils/themes";
 import { Task, TaskCategory } from "../types";
 import { cn } from "../utils/cn";
 import CelebrationModal from "../components/CelebrationModal";
@@ -42,6 +44,7 @@ const TasksScreen = () => {
   const [filterCategory, setFilterCategory] = useState<TaskCategory | "all">("all");
 
   const { t } = useTranslation(user?.language || "en");
+  const theme = getTheme(user?.themeColor);
 
   const openAddModal = () => {
     setEditingTask(null);
@@ -141,19 +144,24 @@ const TasksScreen = () => {
   });
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <View className="px-6 pt-4 pb-2 flex-row items-center justify-between">
-        <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
-          {t("tasks")}
-        </Text>
-        <Pressable
-          onPress={openAddModal}
-          className="bg-blue-500 rounded-full w-12 h-12 items-center justify-center"
-        >
-          <Ionicons name="add" size={28} color="white" />
-        </Pressable>
-      </View>
+    <LinearGradient
+      colors={theme.backgroundGradient as [string, string, ...string[]]}
+      className="flex-1"
+    >
+      <SafeAreaView className="flex-1">
+        {/* Header */}
+        <View className="px-6 pt-4 pb-2 flex-row items-center justify-between">
+          <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
+            {t("tasks")}
+          </Text>
+          <Pressable
+            onPress={openAddModal}
+            className="rounded-full w-12 h-12 items-center justify-center"
+            style={{ backgroundColor: theme.primary }}
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </Pressable>
+        </View>
 
       {/* Category Filter */}
       <ScrollView
@@ -164,19 +172,13 @@ const TasksScreen = () => {
         <Pressable
           onPress={() => setFilterCategory("all")}
           className={cn(
-            "px-4 py-2 rounded-full mr-2",
-            filterCategory === "all"
-              ? "bg-blue-500"
-              : "bg-white dark:bg-gray-800"
+            "px-4 py-2 rounded-full mr-2"
           )}
+          style={{ backgroundColor: filterCategory === "all" ? theme.primary : theme.cardBackground }}
         >
           <Text
-            className={cn(
-              "font-medium",
-              filterCategory === "all"
-                ? "text-white"
-                : "text-gray-700 dark:text-gray-300"
-            )}
+            style={{ color: filterCategory === "all" ? "white" : theme.textSecondary }}
+            className="font-medium"
           >
             All
           </Text>
@@ -185,20 +187,12 @@ const TasksScreen = () => {
           <Pressable
             key={cat}
             onPress={() => setFilterCategory(cat)}
-            className={cn(
-              "px-4 py-2 rounded-full mr-2",
-              filterCategory === cat
-                ? "bg-blue-500"
-                : "bg-white dark:bg-gray-800"
-            )}
+            className="px-4 py-2 rounded-full mr-2"
+            style={{ backgroundColor: filterCategory === cat ? theme.primary : theme.cardBackground }}
           >
             <Text
-              className={cn(
-                "font-medium capitalize",
-                filterCategory === cat
-                  ? "text-white"
-                  : "text-gray-700 dark:text-gray-300"
-              )}
+              style={{ color: filterCategory === cat ? "white" : theme.textSecondary }}
+              className="font-medium capitalize"
             >
               {t(cat)}
             </Text>
@@ -210,11 +204,11 @@ const TasksScreen = () => {
       <ScrollView className="flex-1 px-6" showsVerticalScrollIndicator={false}>
         {sortedTasks.length === 0 ? (
           <View className="flex-1 items-center justify-center py-20">
-            <Ionicons name="clipboard-outline" size={80} color="#9CA3AF" />
-            <Text className="text-gray-500 dark:text-gray-400 text-lg mt-4">
+            <Ionicons name="clipboard-outline" size={80} color={theme.textSecondary} />
+            <Text className="text-lg mt-4" style={{ color: theme.textSecondary }}>
               No tasks yet
             </Text>
-            <Text className="text-gray-400 dark:text-gray-500 text-sm mt-2">
+            <Text className="text-sm mt-2" style={{ color: theme.textSecondary }}>
               Tap the + button to add a task
             </Text>
           </View>
@@ -224,9 +218,10 @@ const TasksScreen = () => {
               <View
                 key={task.id}
                 className={cn(
-                  "bg-white dark:bg-gray-800 rounded-2xl p-4 mb-3 shadow-sm",
+                  "rounded-2xl p-4 mb-3 shadow-sm",
                   task.status === "completed" && "opacity-60"
                 )}
+                style={{ backgroundColor: theme.cardBackground }}
               >
                 <View className="flex-row items-start">
                   <Pressable
@@ -242,8 +237,8 @@ const TasksScreen = () => {
                       size={28}
                       color={
                         task.status === "completed"
-                          ? "#10B981"
-                          : "#9CA3AF"
+                          ? theme.secondary
+                          : theme.textSecondary
                       }
                     />
                   </Pressable>
@@ -251,14 +246,15 @@ const TasksScreen = () => {
                   <View className="flex-1">
                     <Text
                       className={cn(
-                        "text-lg font-semibold text-gray-800 dark:text-gray-100",
+                        "text-lg font-semibold",
                         task.status === "completed" && "line-through"
                       )}
+                      style={{ color: theme.textPrimary }}
                     >
                       {task.title}
                     </Text>
                     {task.description && (
-                      <Text className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <Text className="text-sm mt-1" style={{ color: theme.textSecondary }}>
                         {task.description}
                       </Text>
                     )}
@@ -280,8 +276,8 @@ const TasksScreen = () => {
                         </Text>
                       </View>
                       <View className="flex-row items-center">
-                        <Ionicons name="calendar-outline" size={14} color="#9CA3AF" />
-                        <Text className="text-xs text-gray-500 dark:text-gray-400 ml-1">
+                        <Ionicons name="calendar-outline" size={14} color={theme.textSecondary} />
+                        <Text className="text-xs ml-1" style={{ color: theme.textSecondary }}>
                           {new Date(task.dueDate).toLocaleDateString()}
                         </Text>
                       </View>
@@ -293,7 +289,7 @@ const TasksScreen = () => {
                       onPress={() => openEditModal(task)}
                       className="p-2"
                     >
-                      <Ionicons name="create-outline" size={20} color="#6B7280" />
+                      <Ionicons name="create-outline" size={20} color={theme.textSecondary} />
                     </Pressable>
                     <Pressable
                       onPress={() => handleDelete(task.id)}
@@ -440,7 +436,8 @@ const TasksScreen = () => {
         onClose={() => setCelebrationVisible(false)}
         taskTitle={completedTaskTitle}
       />
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 

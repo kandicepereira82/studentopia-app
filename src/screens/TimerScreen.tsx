@@ -7,6 +7,7 @@ import { Audio } from "expo-av";
 import useUserStore from "../state/userStore";
 import useStatsStore from "../state/statsStore";
 import { useTranslation } from "../utils/translations";
+import { getTheme } from "../utils/themes";
 import { TimerMode } from "../types";
 import { cn } from "../utils/cn";
 
@@ -23,6 +24,7 @@ const TimerScreen = () => {
   const [musicEnabled, setMusicEnabled] = useState(false);
 
   const { t } = useTranslation(user?.language || "en");
+  const theme = getTheme(user?.themeColor);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const soundRef = useRef<Audio.Sound | null>(null);
 
@@ -112,15 +114,19 @@ const TimerScreen = () => {
     : ((breakDuration * 60 - (minutes * 60 + seconds)) / (breakDuration * 60)) * 100;
 
   const modeColors: [string, string] = mode === "study"
-    ? ["#10B981", "#059669"]
-    : ["#3B82F6", "#1D4ED8"];
+    ? [theme.primary, theme.primaryDark]
+    : [theme.secondary, theme.primaryDark];
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <LinearGradient
+      colors={theme.backgroundGradient as [string, string, ...string[]]}
+      className="flex-1"
+    >
+      <SafeAreaView className="flex-1">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View className="px-6 pt-4 pb-2">
-          <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+          <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
             {t("timer")}
           </Text>
         </View>
@@ -186,8 +192,8 @@ const TimerScreen = () => {
                 className="w-full h-full rounded-full items-center justify-center"
                 style={{ opacity: 0.1 }}
               />
-              <View className="absolute w-64 h-64 bg-white dark:bg-gray-800 rounded-full items-center justify-center">
-                <Text className="text-6xl font-bold text-gray-800 dark:text-gray-100" style={{ letterSpacing: 4 }}>
+              <View className="absolute w-64 h-64 rounded-full items-center justify-center" style={{ backgroundColor: theme.cardBackground }}>
+                <Text className="text-6xl font-bold" style={{ letterSpacing: 4, color: theme.textPrimary }}>
                   {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
                 </Text>
                 <Text
@@ -240,73 +246,75 @@ const TimerScreen = () => {
 
         {/* Duration Settings */}
         <View className="px-6 py-6">
-          <View className="bg-white dark:bg-gray-800 rounded-2xl p-5">
-            <Text className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-4">
+          <View className="rounded-2xl p-5" style={{ backgroundColor: theme.cardBackground }}>
+            <Text className="text-lg font-bold mb-4" style={{ color: theme.textPrimary }}>
               {t("settings")}
             </Text>
 
             {/* Study Duration */}
             <View className="mb-4">
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
                 {t("studySession")} ({t("minutes")})
               </Text>
               <View className="flex-row items-center justify-between">
                 <Pressable
                   onPress={() => adjustDuration("study", -5)}
-                  className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full items-center justify-center"
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.primary + "20" }}
                 >
-                  <Ionicons name="remove" size={24} color="#6B7280" />
+                  <Ionicons name="remove" size={24} color={theme.primary} />
                 </Pressable>
-                <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
                   {studyDuration}
                 </Text>
                 <Pressable
                   onPress={() => adjustDuration("study", 5)}
-                  className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full items-center justify-center"
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.primary + "20" }}
                 >
-                  <Ionicons name="add" size={24} color="#6B7280" />
+                  <Ionicons name="add" size={24} color={theme.primary} />
                 </Pressable>
               </View>
             </View>
 
             {/* Break Duration */}
             <View className="mb-4">
-              <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <Text className="text-sm font-medium mb-2" style={{ color: theme.textSecondary }}>
                 {t("breakTime")} ({t("minutes")})
               </Text>
               <View className="flex-row items-center justify-between">
                 <Pressable
                   onPress={() => adjustDuration("break", -1)}
-                  className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full items-center justify-center"
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.secondary + "20" }}
                 >
-                  <Ionicons name="remove" size={24} color="#6B7280" />
+                  <Ionicons name="remove" size={24} color={theme.secondary} />
                 </Pressable>
-                <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
                   {breakDuration}
                 </Text>
                 <Pressable
                   onPress={() => adjustDuration("break", 1)}
-                  className="w-12 h-12 bg-gray-100 dark:bg-gray-700 rounded-full items-center justify-center"
+                  className="w-12 h-12 rounded-full items-center justify-center"
+                  style={{ backgroundColor: theme.secondary + "20" }}
                 >
-                  <Ionicons name="add" size={24} color="#6B7280" />
+                  <Ionicons name="add" size={24} color={theme.secondary} />
                 </Pressable>
               </View>
             </View>
 
             {/* Background Music Toggle */}
-            <View className="flex-row items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700">
+            <View className="flex-row items-center justify-between pt-4" style={{ borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
               <View className="flex-row items-center">
-                <Ionicons name="musical-notes" size={20} color="#6B7280" />
-                <Text className="ml-2 text-base text-gray-800 dark:text-gray-100">
+                <Ionicons name="musical-notes" size={20} color={theme.textSecondary} />
+                <Text className="ml-2 text-base" style={{ color: theme.textPrimary }}>
                   {t("backgroundMusic")}
                 </Text>
               </View>
               <Pressable
                 onPress={() => setMusicEnabled(!musicEnabled)}
-                className={cn(
-                  "w-12 h-7 rounded-full justify-center px-1",
-                  musicEnabled ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
-                )}
+                className="w-12 h-7 rounded-full justify-center px-1"
+                style={{ backgroundColor: musicEnabled ? theme.secondary : theme.textSecondary + "50" }}
               >
                 <View
                   className={cn(
@@ -319,7 +327,8 @@ const TimerScreen = () => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 

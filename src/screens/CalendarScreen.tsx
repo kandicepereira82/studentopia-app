@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { View, Text, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
+import { LinearGradient } from "expo-linear-gradient";
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameDay, isToday, addMonths, subMonths } from "date-fns";
 import useUserStore from "../state/userStore";
 import useTaskStore from "../state/taskStore";
 import { useTranslation } from "../utils/translations";
+import { getTheme } from "../utils/themes";
 import { cn } from "../utils/cn";
 
 const CalendarScreen = () => {
@@ -18,6 +20,7 @@ const CalendarScreen = () => {
   const [viewMode, setViewMode] = useState<"month" | "week">("month");
 
   const { t } = useTranslation(user?.language || "en");
+  const theme = getTheme(user?.themeColor);
 
   const monthStart = startOfMonth(currentDate);
   const monthEnd = endOfMonth(currentDate);
@@ -48,52 +51,40 @@ const CalendarScreen = () => {
   const selectedDateTasks = getTasksForDate(selectedDate);
 
   return (
-    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <View className="px-6 pt-4 pb-2">
-        <Text className="text-3xl font-bold text-gray-800 dark:text-gray-100">
-          {t("calendar")}
-        </Text>
-      </View>
+    <LinearGradient
+      colors={theme.backgroundGradient as [string, string, ...string[]]}
+      className="flex-1"
+    >
+      <SafeAreaView className="flex-1">
+        {/* Header */}
+        <View className="px-6 pt-4 pb-2">
+          <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
+            {t("calendar")}
+          </Text>
+        </View>
 
       {/* View Mode Toggle */}
       <View className="px-6 py-3 flex-row gap-2">
         <Pressable
           onPress={() => setViewMode("month")}
-          className={cn(
-            "flex-1 py-3 rounded-xl items-center",
-            viewMode === "month"
-              ? "bg-blue-500"
-              : "bg-white dark:bg-gray-800"
-          )}
+          className="flex-1 py-3 rounded-xl items-center"
+          style={{ backgroundColor: viewMode === "month" ? theme.primary : theme.cardBackground }}
         >
           <Text
-            className={cn(
-              "font-semibold",
-              viewMode === "month"
-                ? "text-white"
-                : "text-gray-700 dark:text-gray-300"
-            )}
+            className="font-semibold"
+            style={{ color: viewMode === "month" ? "white" : theme.textSecondary }}
           >
             Month
           </Text>
         </Pressable>
         <Pressable
           onPress={() => setViewMode("week")}
-          className={cn(
-            "flex-1 py-3 rounded-xl items-center",
-            viewMode === "week"
-              ? "bg-blue-500"
-              : "bg-white dark:bg-gray-800"
-          )}
+          className="flex-1 py-3 rounded-xl items-center"
+          style={{ backgroundColor: viewMode === "week" ? theme.primary : theme.cardBackground }}
         >
           <Text
-            className={cn(
-              "font-semibold",
-              viewMode === "week"
-                ? "text-white"
-                : "text-gray-700 dark:text-gray-300"
-            )}
+            className="font-semibold"
+            style={{ color: viewMode === "week" ? "white" : theme.textSecondary }}
           >
             Week
           </Text>
@@ -104,24 +95,24 @@ const CalendarScreen = () => {
         {/* Month/Year Header */}
         <View className="px-6 py-4 flex-row items-center justify-between">
           <Pressable onPress={handlePreviousMonth} className="p-2">
-            <Ionicons name="chevron-back" size={24} color="#6B7280" />
+            <Ionicons name="chevron-back" size={24} color={theme.textPrimary} />
           </Pressable>
-          <Text className="text-xl font-bold text-gray-800 dark:text-gray-100">
+          <Text className="text-xl font-bold" style={{ color: theme.textPrimary }}>
             {format(currentDate, "MMMM yyyy")}
           </Text>
           <Pressable onPress={handleNextMonth} className="p-2">
-            <Ionicons name="chevron-forward" size={24} color="#6B7280" />
+            <Ionicons name="chevron-forward" size={24} color={theme.textPrimary} />
           </Pressable>
         </View>
 
         {/* Calendar Grid */}
         <View className="px-6">
-          <View className="bg-white dark:bg-gray-800 rounded-2xl p-4">
+          <View className="rounded-2xl p-4" style={{ backgroundColor: theme.cardBackground }}>
             {/* Day Headers */}
             <View className="flex-row mb-2">
               {["S", "M", "T", "W", "T", "F", "S"].map((day, index) => (
                 <View key={index} className="flex-1 items-center">
-                  <Text className="text-xs font-semibold text-gray-500 dark:text-gray-400">
+                  <Text className="text-xs font-semibold" style={{ color: theme.textSecondary }}>
                     {day}
                   </Text>
                 </View>
@@ -148,34 +139,33 @@ const CalendarScreen = () => {
                   >
                     <View
                       className={cn(
-                        "flex-1 items-center justify-center rounded-lg",
-                        isSelected && "bg-blue-500",
-                        isTodayDate && !isSelected && "border-2 border-blue-500"
+                        "flex-1 items-center justify-center rounded-lg"
                       )}
+                      style={{
+                        backgroundColor: isSelected ? theme.primary : undefined,
+                        borderWidth: isTodayDate && !isSelected ? 2 : 0,
+                        borderColor: isTodayDate && !isSelected ? theme.primary : undefined,
+                      }}
                     >
                       <Text
-                        className={cn(
-                          "text-sm font-medium",
-                          isSelected
-                            ? "text-white"
-                            : "text-gray-800 dark:text-gray-100"
-                        )}
+                        className="text-sm font-medium"
+                        style={{ color: isSelected ? "white" : theme.textPrimary }}
                       >
                         {format(day, "d")}
                       </Text>
                       {dayTasks.length > 0 && (
                         <View className="flex-row gap-0.5 mt-0.5">
                           {hasPendingTasks && (
-                            <View className={cn(
-                              "w-1 h-1 rounded-full",
-                              isSelected ? "bg-white" : "bg-orange-500"
-                            )} />
+                            <View
+                              className="w-1 h-1 rounded-full"
+                              style={{ backgroundColor: isSelected ? "white" : theme.accentColor }}
+                            />
                           )}
                           {hasCompletedTasks && (
-                            <View className={cn(
-                              "w-1 h-1 rounded-full",
-                              isSelected ? "bg-white" : "bg-green-500"
-                            )} />
+                            <View
+                              className="w-1 h-1 rounded-full"
+                              style={{ backgroundColor: isSelected ? "white" : theme.secondary }}
+                            />
                           )}
                         </View>
                       )}
@@ -189,13 +179,13 @@ const CalendarScreen = () => {
 
         {/* Selected Date Tasks */}
         <View className="px-6 py-4">
-          <Text className="text-lg font-bold text-gray-800 dark:text-gray-100 mb-3">
+          <Text className="text-lg font-bold mb-3" style={{ color: theme.textPrimary }}>
             {format(selectedDate, "EEEE, MMMM d, yyyy")}
           </Text>
           {selectedDateTasks.length === 0 ? (
-            <View className="bg-white dark:bg-gray-800 rounded-2xl p-8 items-center">
-              <Ionicons name="calendar-outline" size={48} color="#9CA3AF" />
-              <Text className="text-gray-500 dark:text-gray-400 text-center mt-3">
+            <View className="rounded-2xl p-8 items-center" style={{ backgroundColor: theme.cardBackground }}>
+              <Ionicons name="calendar-outline" size={48} color={theme.textSecondary} />
+              <Text className="text-center mt-3" style={{ color: theme.textSecondary }}>
                 No tasks scheduled for this day
               </Text>
             </View>
@@ -204,7 +194,8 @@ const CalendarScreen = () => {
               {selectedDateTasks.map((task) => (
                 <View
                   key={task.id}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-4"
+                  className="rounded-2xl p-4"
+                  style={{ backgroundColor: theme.cardBackground }}
                 >
                   <View className="flex-row items-start">
                     <Ionicons
@@ -215,25 +206,26 @@ const CalendarScreen = () => {
                       }
                       size={24}
                       color={
-                        task.status === "completed" ? "#10B981" : "#9CA3AF"
+                        task.status === "completed" ? theme.secondary : theme.textSecondary
                       }
                       style={{ marginRight: 12, marginTop: 2 }}
                     />
                     <View className="flex-1">
                       <Text
                         className={cn(
-                          "text-base font-semibold text-gray-800 dark:text-gray-100",
+                          "text-base font-semibold",
                           task.status === "completed" && "line-through"
                         )}
+                        style={{ color: theme.textPrimary }}
                       >
                         {task.title}
                       </Text>
                       {task.description && (
-                        <Text className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                        <Text className="text-sm mt-1" style={{ color: theme.textSecondary }}>
                           {task.description}
                         </Text>
                       )}
-                      <Text className="text-xs text-gray-500 dark:text-gray-400 mt-2 capitalize">
+                      <Text className="text-xs mt-2 capitalize" style={{ color: theme.textSecondary }}>
                         {t(task.category)}
                       </Text>
                     </View>
@@ -244,7 +236,8 @@ const CalendarScreen = () => {
           )}
         </View>
       </ScrollView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </LinearGradient>
   );
 };
 
