@@ -19,13 +19,13 @@ import {
 } from "../services/musicService";
 import useUserStore from "../state/userStore";
 import { getTheme } from "../utils/themes";
-import { translations } from "../utils/translations";
+import { useTranslation } from "../utils/translations";
 import { Language } from "../types";
 
 const MusicPlayerScreen = () => {
   const user = useUserStore((s) => s.user);
   const theme = getTheme(user?.themeColor);
-  const t = translations[user?.language || "en"];
+  const { t } = useTranslation(user?.language || "en");
 
   const [selectedTrack, setSelectedTrack] = useState<MusicTrack | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -134,10 +134,10 @@ const MusicPlayerScreen = () => {
         {/* Header */}
         <View className="px-6 py-4">
           <Text className="text-3xl font-bold text-gray-800">
-            Music Player
+            {t("musicPlayer")}
           </Text>
           <Text className="text-sm text-gray-600 mt-1">
-            Calming classical music for studying
+            {t("calmingClassicalMusic")}
           </Text>
         </View>
 
@@ -146,7 +146,7 @@ const MusicPlayerScreen = () => {
           {currentTrack && (
             <View className="mx-6 mb-6 bg-white/90 rounded-3xl p-6 shadow-lg">
               <Text className="text-lg font-semibold text-gray-800 mb-2">
-                Now Playing
+                {t("nowPlaying")}
               </Text>
               <Text className="text-2xl font-bold text-gray-900 mb-1">
                 {currentTrack.title}
@@ -234,7 +234,7 @@ const MusicPlayerScreen = () => {
           {/* Mood Filter */}
           <View className="px-6 mb-4">
             <Text className="text-lg font-semibold text-gray-800 mb-3">
-              Filter by Mood
+              {t("filterByMood")}
             </Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View className="flex-row space-x-3">
@@ -262,7 +262,7 @@ const MusicPlayerScreen = () => {
                           : "text-gray-700"
                       }`}
                     >
-                      {mood.charAt(0).toUpperCase() + mood.slice(1)}
+                      {t(mood)}
                     </Text>
                   </Pressable>
                 ))}
@@ -273,7 +273,7 @@ const MusicPlayerScreen = () => {
           {/* Music Library */}
           <View className="px-6 pb-6">
             <Text className="text-lg font-semibold text-gray-800 mb-3">
-              Music Library
+              {t("musicLibrary")}
             </Text>
             {filteredTracks.map((track) => (
               <Pressable

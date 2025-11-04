@@ -3,7 +3,21 @@
 export type TaskCategory = "homework" | "project" | "exam" | "other";
 export type TaskStatus = "pending" | "completed";
 export type UserRole = "student" | "teacher";
-export type Language = "en" | "es" | "fr" | "de" | "zh" | "ja" | "ar";
+export type Language =
+  | "en"  // English
+  | "es"  // Spanish
+  | "fr"  // French
+  | "de"  // German
+  | "zh"  // Simplified Chinese (Mandarin)
+  | "ja"  // Japanese
+  | "ar"  // Arabic
+  | "ko"  // Korean
+  | "pt"  // Portuguese (Brazilian)
+  | "hi"  // Hindi
+  | "it"  // Italian
+  | "tr"  // Turkish
+  | "ru"  // Russian
+  | "id"; // Indonesian
 export type StudyPalAnimal =
   | "cat"
   | "bunny"

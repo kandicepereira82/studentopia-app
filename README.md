@@ -4,6 +4,7 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ## ✨ Latest Updates
 
+- ✅ **14 Languages Supported** - Full multilingual support: English, Spanish, French, German, Chinese, Japanese, Arabic, Korean, Portuguese (BR), Hindi, Italian, Turkish, Russian, and Indonesian
 - ✅ **Music Player** - Calming classical music from Pixabay with full playback controls, mood filters, and volume adjustment
 - ✅ **20 Animal Companions** - Choose from cat, bunny, bear, dog, fox, panda, koala, owl, penguin, lion, tiger, monkey, elephant, giraffe, hamster, raccoon, hedgehog, deer, duck, or frog
 - ✅ **Celebration Animations** - Animated celebration modal with your Study Pal when you complete tasks
@@ -90,9 +91,17 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 - **Customization**: Name your Study Pal and toggle animations on/off
 - **Motivational Messages**: Your Study Pal appears with encouragement throughout the app
 
+### 🌍 Multilingual Support
+- **14 Languages**: English, Spanish, French, German, Chinese (Simplified), Japanese, Arabic, Korean, Portuguese (Brazilian), Hindi, Italian, Turkish, Russian, Indonesian
+- **Instant Language Switching**: Change language in Profile settings
+- **Full Translation Coverage**: All UI text, labels, and messages translated
+- **Native Character Support**: Proper display for CJK, Devanagari, Cyrillic, and Arabic scripts
+- **RTL Support**: Right-to-left layout for Arabic
+- **Cultural Sensitivity**: Translations maintain friendly, motivating tone across all languages
+- **See**: `MULTILINGUAL_GUIDE.md` for complete documentation
+
 ### 🎨 Customization & Themes
-- **10 Dynamic Theme Colors**: Blue, Purple, Pink, Green, Orange, Red, Teal, Indigo, Rose, Amber
-- **Multi-language Support**: English, Spanish, French, German, Chinese, Japanese, Arabic
+- **10 Dynamic Theme Colors**: Nature, Ocean, Sunset, Galaxy, Rainbow, Forest, Desert, Arctic, Autumn, Cherry Blossom
 - **Personalization**: Custom username, Study Pal name and animal (20 choices!)
 - **Notifications**: Toggle push notifications on/off
 - **Animation Settings**: Enable or disable mascot animations

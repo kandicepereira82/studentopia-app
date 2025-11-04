@@ -4,7 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import useUserStore from "../state/userStore";
 import useStatsStore from "../state/statsStore";
-import { useTranslation } from "../utils/translations";
+import { useTranslation, languageNames } from "../utils/translations";
 import { Language, ThemeColor, StudyPalAnimal } from "../types";
 import { cn } from "../utils/cn";
 import StudyPal from "../components/StudyPal";
@@ -32,9 +32,16 @@ const ProfileScreen = () => {
     { code: "es", name: "Español", flag: "🇪🇸" },
     { code: "fr", name: "Français", flag: "🇫🇷" },
     { code: "de", name: "Deutsch", flag: "🇩🇪" },
-    { code: "zh", name: "中文", flag: "🇨🇳" },
+    { code: "zh", name: "简体中文", flag: "🇨🇳" },
     { code: "ja", name: "日本語", flag: "🇯🇵" },
     { code: "ar", name: "العربية", flag: "🇸🇦" },
+    { code: "ko", name: "한국어", flag: "🇰🇷" },
+    { code: "pt", name: "Português (BR)", flag: "🇧🇷" },
+    { code: "hi", name: "हिन्दी", flag: "🇮🇳" },
+    { code: "it", name: "Italiano", flag: "🇮🇹" },
+    { code: "tr", name: "Türkçe", flag: "🇹🇷" },
+    { code: "ru", name: "Русский", flag: "🇷🇺" },
+    { code: "id", name: "Bahasa Indonesia", flag: "🇮🇩" },
   ];
 
   const themes: { color: ThemeColor; name: string; colors: [string, string]; emoji: string }[] = [
