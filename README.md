@@ -4,6 +4,7 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ## ✨ Latest Updates
 
+- ✅ **Music Player** - Calming classical music from Pixabay with full playback controls, mood filters, and volume adjustment
 - ✅ **20 Animal Companions** - Choose from cat, bunny, bear, dog, fox, panda, koala, owl, penguin, lion, tiger, monkey, elephant, giraffe, hamster, raccoon, hedgehog, deer, duck, or frog
 - ✅ **Celebration Animations** - Animated celebration modal with your Study Pal when you complete tasks
 - ✅ **10 Dynamic Themes** - Blue, Purple, Pink, Green, Orange, Red, Teal, Indigo, Rose, and Amber
@@ -31,8 +32,17 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 - **Customizable Sessions**: Adjustable study (1-120 min) and break (1-60 min) durations
 - **Visual Timer**: Large, optimized countdown display that fits on one line
 - **Session Modes**: Toggle between study (green) and break (blue) modes
-- **Background Music**: Optional background music during sessions (coming soon)
 - **Study Tracking**: Automatically logs study minutes to your stats
+
+### 🎵 Music Player
+- **Curated Classical Music**: 6 calming, peaceful, and uplifting tracks from Pixabay
+- **Full Playback Controls**: Play, pause, stop, seek, and loop
+- **Volume Control**: Adjustable volume slider (0-100%)
+- **Mood Filters**: Filter music by calming, uplifting, or peaceful moods
+- **Now Playing Display**: Beautiful card showing current track with progress bar
+- **Background Playback**: Music continues playing when app is minimized
+- **Easy Integration**: Simple workflow to add Pixabay music (see PIXABAY_MUSIC_GUIDE.md)
+- **Royalty-Free**: All music is 100% free for personal and commercial use
 
 ### 🤖 AI Learning Assistant
 - **Chat Mode**: Get homework help, project research, content summarization, and resource suggestions
