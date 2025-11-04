@@ -283,7 +283,7 @@ const TimerScreen = () => {
                 className="w-20 h-20 rounded-full items-center justify-center shadow-lg"
               >
                 <LinearGradient
-                  colors={["#F97316", "#EA580C"]}
+                  colors={[theme.accentColor, theme.primaryDark]}
                   className="w-full h-full rounded-full items-center justify-center"
                 >
                   <Ionicons name="pause" size={36} color="white" />
@@ -291,7 +291,8 @@ const TimerScreen = () => {
               </Pressable>
               <Pressable
                 onPress={handleStop}
-                className="w-16 h-16 bg-red-500 rounded-full items-center justify-center shadow-lg"
+                className="w-16 h-16 rounded-full items-center justify-center shadow-lg"
+                style={{ backgroundColor: theme.textSecondary }}
               >
                 <Ionicons name="stop" size={28} color="white" />
               </Pressable>
