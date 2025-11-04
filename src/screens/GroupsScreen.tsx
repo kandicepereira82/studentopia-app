@@ -3,6 +3,8 @@ import { View, Text, ScrollView, Pressable, TextInput, Modal, Alert } from "reac
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Clipboard from "@react-native-clipboard/clipboard";
+import QRCode from "react-native-qrcode-svg";
 import useUserStore from "../state/userStore";
 import useGroupStore from "../state/groupStore";
 import useTaskStore from "../state/taskStore";
@@ -19,11 +21,14 @@ const GroupsScreen = () => {
   const addGroup = useGroupStore((s) => s.addGroup);
   const joinGroupWithCode = useGroupStore((s) => s.joinGroupWithCode);
   const leaveGroup = useGroupStore((s) => s.leaveGroup);
+  const regenerateShareCode = useGroupStore((s) => s.regenerateShareCode);
 
   const tasks = useTaskStore((s) => s.tasks);
 
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showJoinModal, setShowJoinModal] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [qrGroupCode, setQRGroupCode] = useState("");
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [joinCode, setJoinCode] = useState("");
@@ -90,6 +95,34 @@ const GroupsScreen = () => {
         },
       ]
     );
+  };
+
+  const handleCopyCode = (shareCode: string) => {
+    Clipboard.setString(shareCode);
+    Alert.alert("Copied!", `Code "${shareCode}" copied to clipboard`);
+  };
+
+  const handleRegenerateCode = (groupId: string, groupName: string) => {
+    Alert.alert(
+      "Regenerate Code",
+      `This will create a new share code for "${groupName}". The old code will no longer work. Continue?`,
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Regenerate",
+          style: "default",
+          onPress: () => {
+            const newCode = regenerateShareCode(groupId);
+            Alert.alert("Success", `New code: ${newCode}`);
+          },
+        },
+      ]
+    );
+  };
+
+  const handleShowQR = (shareCode: string) => {
+    setQRGroupCode(shareCode);
+    setShowQRModal(true);
   };
 
   const getGroupTasks = (groupId: string) => {
@@ -254,12 +287,69 @@ const GroupsScreen = () => {
                     {/* Group Code (for teachers) */}
                     {isTeacher && (
                       <View className="rounded-xl p-3 mb-3" style={{ backgroundColor: theme.accentColor + "15" }}>
-                        <Text className="text-xs font-semibold mb-1" style={{ color: theme.textSecondary }}>
+                        <Text className="text-xs font-semibold mb-2" style={{ color: theme.textSecondary, fontFamily: 'Poppins_600SemiBold' }}>
                           Share Code (for students to join):
                         </Text>
-                        <Text className="text-2xl font-bold tracking-wider" style={{ color: theme.primary }}>
+                        <Text className="text-2xl font-bold tracking-wider mb-3" style={{ color: theme.primary, fontFamily: 'Poppins_700Bold' }}>
                           {group.shareCode}
                         </Text>
+
+                        {/* Code Action Buttons */}
+                        <View style={{ flexDirection: 'row', gap: 8 }}>
+                          <Pressable
+                            onPress={() => handleCopyCode(group.shareCode)}
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              paddingVertical: 10,
+                              borderRadius: 12,
+                              backgroundColor: theme.primary
+                            }}
+                          >
+                            <Ionicons name="copy-outline" size={16} color="white" />
+                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                              Copy
+                            </Text>
+                          </Pressable>
+
+                          <Pressable
+                            onPress={() => handleShowQR(group.shareCode)}
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              paddingVertical: 10,
+                              borderRadius: 12,
+                              backgroundColor: theme.secondary
+                            }}
+                          >
+                            <Ionicons name="qr-code-outline" size={16} color="white" />
+                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                              QR Code
+                            </Text>
+                          </Pressable>
+
+                          <Pressable
+                            onPress={() => handleRegenerateCode(group.id, group.name)}
+                            style={{
+                              flex: 1,
+                              flexDirection: 'row',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              paddingVertical: 10,
+                              borderRadius: 12,
+                              backgroundColor: theme.accentColor
+                            }}
+                          >
+                            <Ionicons name="refresh-outline" size={16} color="white" />
+                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                              New
+                            </Text>
+                          </Pressable>
+                        </View>
                       </View>
                     )}
 
@@ -443,6 +533,100 @@ const GroupsScreen = () => {
               </View>
             </ScrollView>
           </SafeAreaView>
+        </Modal>
+
+        {/* QR Code Modal */}
+        <Modal
+          visible={showQRModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setShowQRModal(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: 'rgba(0,0,0,0.7)',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
+            onPress={() => setShowQRModal(false)}
+          >
+            <Pressable
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 24,
+                padding: 24,
+                alignItems: 'center',
+                maxWidth: '90%'
+              }}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <Text style={{
+                fontSize: 20,
+                fontFamily: 'Poppins_700Bold',
+                color: theme.textPrimary,
+                marginBottom: 8
+              }}>
+                Scan to Join Group
+              </Text>
+              <Text style={{
+                fontSize: 14,
+                fontFamily: 'Poppins_400Regular',
+                color: theme.textSecondary,
+                marginBottom: 20,
+                textAlign: 'center'
+              }}>
+                Students can scan this QR code to join
+              </Text>
+
+              <View style={{
+                padding: 16,
+                backgroundColor: 'white',
+                borderRadius: 16,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: 0.1,
+                shadowRadius: 12,
+                elevation: 4
+              }}>
+                <QRCode
+                  value={qrGroupCode}
+                  size={200}
+                  backgroundColor="white"
+                  color={theme.primary}
+                />
+              </View>
+
+              <Text style={{
+                fontSize: 24,
+                fontFamily: 'Poppins_700Bold',
+                color: theme.primary,
+                marginTop: 16,
+                letterSpacing: 4
+              }}>
+                {qrGroupCode}
+              </Text>
+
+              <Pressable
+                onPress={() => setShowQRModal(false)}
+                style={{
+                  marginTop: 20,
+                  paddingVertical: 12,
+                  paddingHorizontal: 32,
+                  borderRadius: 16,
+                  backgroundColor: theme.primary
+                }}
+              >
+                <Text style={{
+                  color: 'white',
+                  fontSize: 16,
+                  fontFamily: 'Poppins_600SemiBold'
+                }}>
+                  Close
+                </Text>
+              </Pressable>
+            </Pressable>
+          </Pressable>
         </Modal>
       </SafeAreaView>
     </View>

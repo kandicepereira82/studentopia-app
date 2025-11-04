@@ -9,6 +9,7 @@ interface GroupStore {
   joinGroupWithCode: (shareCode: string, studentId: string) => boolean;
   joinGroup: (groupId: string, studentId: string) => void;
   leaveGroup: (groupId: string, studentId: string) => void;
+  regenerateShareCode: (groupId: string) => string;
   getGroupsByStudent: (studentId: string) => Group[];
   getGroupsByTeacher: (teacherId: string) => Group[];
   getGroupByShareCode: (shareCode: string) => Group | undefined;
@@ -70,6 +71,17 @@ const useGroupStore = create<GroupStore>()(
               : group,
           ),
         })),
+      regenerateShareCode: (groupId: string) => {
+        const newCode = generateShareCode();
+        set((state) => ({
+          groups: state.groups.map((group) =>
+            group.id === groupId
+              ? { ...group, shareCode: newCode }
+              : group
+          ),
+        }));
+        return newCode;
+      },
       getGroupsByStudent: (studentId: string) => {
         return get().groups.filter((group) =>
           group.studentIds.includes(studentId),
