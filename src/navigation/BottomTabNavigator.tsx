@@ -6,6 +6,7 @@ import TasksScreen from "../screens/TasksScreen";
 import CalendarScreen from "../screens/CalendarScreen";
 import TimerScreen from "../screens/TimerScreen";
 import AIHelperScreen from "../screens/AIHelperScreen";
+import StudyTipsScreen from "../screens/StudyTipsScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import useUserStore from "../state/userStore";
 import { useTranslation } from "../utils/translations";
@@ -16,6 +17,7 @@ export type RootTabParamList = {
   Calendar: undefined;
   Timer: undefined;
   AIHelper: undefined;
+  StudyTips: undefined;
   Profile: undefined;
 };
 
@@ -122,6 +124,16 @@ const BottomTabNavigator = () => {
           tabBarLabel: t("aiHelper"),
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="chatbubbles" size={size} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="StudyTips"
+        component={StudyTipsScreen}
+        options={{
+          tabBarLabel: "Tips",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="bulb" size={size} color={color} />
           ),
         }}
       />
