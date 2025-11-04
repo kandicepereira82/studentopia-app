@@ -148,23 +148,28 @@ const GroupsScreen = () => {
     return tasks.filter((t) => t.groupId === groupId);
   };
 
-  const myGroups = groups.filter((g) =>
-    isTeacher ? g.teacherId === user?.id : g.studentIds.includes(user?.id || "")
+  // Separate groups into created and joined
+  const createdGroups = groups.filter((g) => g.teacherId === user?.id);
+  const joinedGroups = groups.filter((g) =>
+    g.teacherId !== user?.id && g.studentIds.includes(user?.id || "")
   );
 
   // Filter groups based on search query
-  const filteredGroups = myGroups.filter((g) => {
-    if (!searchQuery.trim()) return true;
+  const filterGroupsBySearch = (groupList: typeof groups) => {
+    if (!searchQuery.trim()) return groupList;
 
     const query = searchQuery.toLowerCase();
-    return (
+    return groupList.filter((g) =>
       g.name.toLowerCase().includes(query) ||
       g.description?.toLowerCase().includes(query) ||
       g.school?.toLowerCase().includes(query) ||
       g.className?.toLowerCase().includes(query) ||
       g.teacherEmail?.toLowerCase().includes(query)
     );
-  });
+  };
+
+  const filteredCreatedGroups = filterGroupsBySearch(createdGroups);
+  const filteredJoinedGroups = filterGroupsBySearch(joinedGroups);
 
   const selectedGroup = selectedGroupId ? groups.find((g) => g.id === selectedGroupId) : null;
   const groupTasks = selectedGroup ? getGroupTasks(selectedGroup.id) : [];
@@ -293,7 +298,7 @@ const GroupsScreen = () => {
         </View>
 
         <ScrollView className="flex-1 px-6 py-2" showsVerticalScrollIndicator={false}>
-          {filteredGroups.length === 0 ? (
+          {filteredCreatedGroups.length === 0 && filteredJoinedGroups.length === 0 ? (
             <View className="flex-1 items-center justify-center py-20">
               <View
                 className="w-20 h-20 rounded-full items-center justify-center mb-4"
@@ -301,213 +306,416 @@ const GroupsScreen = () => {
               >
                 <Ionicons name="people" size={40} color={theme.primary} />
               </View>
-              <Text className="text-lg font-semibold mb-2" style={{ color: theme.textPrimary }}>
+              <Text className="text-lg font-semibold mb-2" style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}>
                 No Groups Yet
               </Text>
-              <Text className="text-sm text-center" style={{ color: theme.textSecondary }}>
+              <Text className="text-sm text-center" style={{ color: theme.textSecondary, fontFamily: 'Poppins_400Regular' }}>
                 Create your own group or join an existing one
               </Text>
             </View>
           ) : (
             <View className="pb-6">
-              {filteredGroups.map((group) => {
-                const groupTaskCount = getGroupTasks(group.id).length;
-                const completedTasks = getGroupTasks(group.id).filter(
-                  (t) => t.status === "completed"
-                ).length;
+              {/* Created Groups Section */}
+              {filteredCreatedGroups.length > 0 && (
+                <View className="mb-6">
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                    <Ionicons name="create-outline" size={24} color={theme.primary} />
+                    <Text style={{
+                      fontSize: 18,
+                      fontFamily: 'Poppins_600SemiBold',
+                      color: theme.textPrimary,
+                      marginLeft: 8
+                    }}>
+                      Created Groups ({filteredCreatedGroups.length})
+                    </Text>
+                  </View>
+                  {filteredCreatedGroups.map((group) => {
+                    const groupTaskCount = getGroupTasks(group.id).length;
+                    const completedTasks = getGroupTasks(group.id).filter(
+                      (t) => t.status === "completed"
+                    ).length;
 
-                return (
-                  <Pressable
-                    key={group.id}
-                    onPress={() => setSelectedGroupId(selectedGroupId === group.id ? null : group.id)}
-                    className="rounded-2xl p-4 mb-3"
-                    style={{ backgroundColor: theme.cardBackground }}
-                  >
-                    {/* Group Header */}
-                    <View className="flex-row items-center justify-between mb-2">
-                      <View className="flex-row items-center flex-1">
-                        <View
-                          className="w-12 h-12 rounded-full items-center justify-center mr-3"
-                          style={{ backgroundColor: theme.primary + "20" }}
-                        >
-                          <Ionicons name="people" size={24} color={theme.primary} />
-                        </View>
-                        <View className="flex-1">
-                          <Text className="text-lg font-bold" style={{ color: theme.textPrimary }}>
-                            {group.name}
-                          </Text>
-                          <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
-                            {group.studentIds.length} {group.studentIds.length === 1 ? "member" : "members"}
-                          </Text>
-                        </View>
-                      </View>
-                      <Ionicons
-                        name={selectedGroupId === group.id ? "chevron-up" : "chevron-down"}
-                        size={24}
-                        color={theme.textSecondary}
-                      />
-                    </View>
-
-                    {/* Group Description */}
-                    {group.description && (
-                      <Text className="text-sm mb-3" style={{ color: theme.textSecondary }}>
-                        {group.description}
-                      </Text>
-                    )}
-
-                    {/* Group Stats */}
-                    <View className="flex-row gap-4 mb-3">
-                      <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.primary + "15" }}>
-                        <Text className="text-2xl font-bold" style={{ color: theme.primary }}>
-                          {groupTaskCount}
-                        </Text>
-                        <Text className="text-xs" style={{ color: theme.textSecondary }}>
-                          Total Tasks
-                        </Text>
-                      </View>
-                      <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.secondary + "15" }}>
-                        <Text className="text-2xl font-bold" style={{ color: theme.secondary }}>
-                          {completedTasks}
-                        </Text>
-                        <Text className="text-xs" style={{ color: theme.textSecondary }}>
-                          Completed
-                        </Text>
-                      </View>
-                    </View>
-
-                    {/* Group Code (for teachers) */}
-                    {isTeacher && (
-                      <View className="rounded-xl p-3 mb-3" style={{ backgroundColor: theme.accentColor + "15" }}>
-                        <Text className="text-xs font-semibold mb-2" style={{ color: theme.textSecondary, fontFamily: 'Poppins_600SemiBold' }}>
-                          Share Code (for students to join):
-                        </Text>
-                        <Text className="text-2xl font-bold tracking-wider mb-3" style={{ color: theme.primary, fontFamily: 'Poppins_700Bold' }}>
-                          {group.shareCode}
-                        </Text>
-
-                        {/* Code Action Buttons */}
-                        <View style={{ flexDirection: 'row', gap: 8 }}>
-                          <Pressable
-                            onPress={() => handleCopyCode(group.shareCode)}
-                            style={{
-                              flex: 1,
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              paddingVertical: 10,
-                              borderRadius: 12,
-                              backgroundColor: theme.primary
-                            }}
-                          >
-                            <Ionicons name="copy-outline" size={16} color="white" />
-                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
-                              Copy
-                            </Text>
-                          </Pressable>
-
-                          <Pressable
-                            onPress={() => handleShowQR(group.shareCode)}
-                            style={{
-                              flex: 1,
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              paddingVertical: 10,
-                              borderRadius: 12,
-                              backgroundColor: theme.secondary
-                            }}
-                          >
-                            <Ionicons name="qr-code-outline" size={16} color="white" />
-                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
-                              QR Code
-                            </Text>
-                          </Pressable>
-
-                          <Pressable
-                            onPress={() => handleRegenerateCode(group.id, group.name)}
-                            style={{
-                              flex: 1,
-                              flexDirection: 'row',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              paddingVertical: 10,
-                              borderRadius: 12,
-                              backgroundColor: theme.accentColor
-                            }}
-                          >
-                            <Ionicons name="refresh-outline" size={16} color="white" />
-                            <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
-                              New
-                            </Text>
-                          </Pressable>
-                        </View>
-                      </View>
-                    )}
-
-                    {/* Action Buttons */}
-                    <View className="flex-row gap-2">
-                      {!isTeacher && (
-                        <Pressable
-                          onPress={() => handleLeaveGroup(group.id)}
-                          className="flex-1 py-2 rounded-xl items-center"
-                          style={{ backgroundColor: "#EF444420" }}
-                        >
-                          <Text className="text-sm font-semibold" style={{ color: "#EF4444" }}>
-                            Leave Group
-                          </Text>
-                        </Pressable>
-                      )}
-                    </View>
-
-                    {/* Expanded Content - Group Tasks */}
-                    {selectedGroupId === group.id && (
-                      <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
-                        <Text className="text-sm font-bold mb-3" style={{ color: theme.textPrimary }}>
-                          Group Tasks
-                        </Text>
-                        {groupTasks.length === 0 ? (
-                          <Text className="text-sm text-center py-4" style={{ color: theme.textSecondary }}>
-                            No tasks assigned yet
-                          </Text>
-                        ) : (
-                          groupTasks.map((task) => (
+                    return (
+                      <Pressable
+                        key={group.id}
+                        onPress={() => setSelectedGroupId(selectedGroupId === group.id ? null : group.id)}
+                        className="rounded-2xl p-4 mb-3"
+                        style={{ backgroundColor: theme.cardBackground }}
+                      >
+                        {/* Group Header */}
+                        <View className="flex-row items-center justify-between mb-2">
+                          <View className="flex-row items-center flex-1">
                             <View
-                              key={task.id}
-                              className="rounded-xl p-3 mb-2"
-                              style={{ backgroundColor: theme.backgroundGradient[0] }}
+                              className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                              style={{ backgroundColor: theme.primary + "20" }}
                             >
-                              <View className="flex-row items-start">
-                                <Ionicons
-                                  name={task.status === "completed" ? "checkmark-circle" : "ellipse-outline"}
-                                  size={20}
-                                  color={task.status === "completed" ? theme.secondary : theme.textSecondary}
-                                  style={{ marginRight: 8, marginTop: 2 }}
-                                />
-                                <View className="flex-1">
-                                  <Text
-                                    className={cn("text-sm font-semibold", task.status === "completed" && "line-through")}
-                                    style={{ color: theme.textPrimary }}
-                                  >
-                                    {task.title}
-                                  </Text>
-                                  {task.description && (
-                                    <Text className="text-xs mt-1" style={{ color: theme.textSecondary }}>
-                                      {task.description}
-                                    </Text>
-                                  )}
-                                  <Text className="text-xs mt-1" style={{ color: theme.textSecondary }}>
-                                    Due: {new Date(task.dueDate).toLocaleDateString()}
-                                  </Text>
-                                </View>
-                              </View>
+                              <Ionicons name="people" size={24} color={theme.primary} />
                             </View>
-                          ))
+                            <View className="flex-1">
+                              <Text style={{ fontSize: 18, fontFamily: 'Poppins_700Bold', color: theme.textPrimary }}>
+                                {group.name}
+                              </Text>
+                              <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 2 }}>
+                                {group.studentIds.length} {group.studentIds.length === 1 ? "member" : "members"}
+                              </Text>
+                            </View>
+                          </View>
+                          <Ionicons
+                            name={selectedGroupId === group.id ? "chevron-up" : "chevron-down"}
+                            size={24}
+                            color={theme.textSecondary}
+                          />
+                        </View>
+
+                        {/* Group Description */}
+                        {group.description && (
+                          <Text style={{ fontSize: 14, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginBottom: 12 }}>
+                            {group.description}
+                          </Text>
                         )}
-                      </View>
-                    )}
-                  </Pressable>
-                );
-              })}
+
+                        {/* Group Metadata */}
+                        {(group.school || group.className || group.teacherEmail) && (
+                          <View style={{ marginBottom: 12 }}>
+                            {group.school && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                <Ionicons name="school-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.school}
+                                </Text>
+                              </View>
+                            )}
+                            {group.className && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                <Ionicons name="book-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.className}
+                                </Text>
+                              </View>
+                            )}
+                            {group.teacherEmail && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="mail-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.teacherEmail}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        )}
+
+                        {/* Group Stats */}
+                        <View className="flex-row gap-4 mb-3">
+                          <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.primary + "15" }}>
+                            <Text style={{ fontSize: 24, fontFamily: 'Poppins_700Bold', color: theme.primary }}>
+                              {groupTaskCount}
+                            </Text>
+                            <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary }}>
+                              Total Tasks
+                            </Text>
+                          </View>
+                          <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.secondary + "15" }}>
+                            <Text style={{ fontSize: 24, fontFamily: 'Poppins_700Bold', color: theme.secondary }}>
+                              {completedTasks}
+                            </Text>
+                            <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary }}>
+                              Completed
+                            </Text>
+                          </View>
+                        </View>
+
+                        {/* Group Code (for creators) */}
+                        <View className="rounded-xl p-3 mb-3" style={{ backgroundColor: theme.accentColor + "15" }}>
+                          <Text style={{ fontSize: 12, fontFamily: 'Poppins_600SemiBold', color: theme.textSecondary, marginBottom: 8 }}>
+                            Share Code (for students to join):
+                          </Text>
+                          <Text style={{ fontSize: 28, fontFamily: 'Poppins_700Bold', color: theme.primary, letterSpacing: 4, marginBottom: 12 }}>
+                            {group.shareCode}
+                          </Text>
+
+                          {/* Code Action Buttons */}
+                          <View style={{ flexDirection: 'row', gap: 8 }}>
+                            <Pressable
+                              onPress={() => handleCopyCode(group.shareCode)}
+                              style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingVertical: 10,
+                                borderRadius: 12,
+                                backgroundColor: theme.primary
+                              }}
+                            >
+                              <Ionicons name="copy-outline" size={16} color="white" />
+                              <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                                Copy
+                              </Text>
+                            </Pressable>
+
+                            <Pressable
+                              onPress={() => handleShowQR(group.shareCode)}
+                              style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingVertical: 10,
+                                borderRadius: 12,
+                                backgroundColor: theme.secondary
+                              }}
+                            >
+                              <Ionicons name="qr-code-outline" size={16} color="white" />
+                              <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                                QR Code
+                              </Text>
+                            </Pressable>
+
+                            <Pressable
+                              onPress={() => handleRegenerateCode(group.id, group.name)}
+                              style={{
+                                flex: 1,
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingVertical: 10,
+                                borderRadius: 12,
+                                backgroundColor: theme.accentColor
+                              }}
+                            >
+                              <Ionicons name="refresh-outline" size={16} color="white" />
+                              <Text style={{ color: 'white', marginLeft: 6, fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                                New
+                              </Text>
+                            </Pressable>
+                          </View>
+                        </View>
+
+                        {/* Expanded Content - Group Tasks */}
+                        {selectedGroupId === group.id && (
+                          <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
+                            <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: theme.textPrimary, marginBottom: 12 }}>
+                              Group Tasks
+                            </Text>
+                            {groupTasks.length === 0 ? (
+                              <Text style={{ fontSize: 14, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, textAlign: 'center', paddingVertical: 16 }}>
+                                No tasks assigned yet
+                              </Text>
+                            ) : (
+                              groupTasks.map((task) => (
+                                <View
+                                  key={task.id}
+                                  className="rounded-xl p-3 mb-2"
+                                  style={{ backgroundColor: theme.backgroundGradient[0] }}
+                                >
+                                  <View className="flex-row items-start">
+                                    <Ionicons
+                                      name={task.status === "completed" ? "checkmark-circle" : "ellipse-outline"}
+                                      size={20}
+                                      color={task.status === "completed" ? theme.secondary : theme.textSecondary}
+                                      style={{ marginRight: 8, marginTop: 2 }}
+                                    />
+                                    <View className="flex-1">
+                                      <Text
+                                        className={cn("text-sm font-semibold", task.status === "completed" && "line-through")}
+                                        style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}
+                                      >
+                                        {task.title}
+                                      </Text>
+                                      {task.description && (
+                                        <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
+                                          {task.description}
+                                        </Text>
+                                      )}
+                                      <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
+                                        Due: {new Date(task.dueDate).toLocaleDateString()}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              ))
+                            )}
+                          </View>
+                        )}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
+
+              {/* Joined Groups Section */}
+              {filteredJoinedGroups.length > 0 && (
+                <View className="mb-6">
+                  <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+                    <Ionicons name="enter-outline" size={24} color={theme.secondary} />
+                    <Text style={{
+                      fontSize: 18,
+                      fontFamily: 'Poppins_600SemiBold',
+                      color: theme.textPrimary,
+                      marginLeft: 8
+                    }}>
+                      Joined Groups ({filteredJoinedGroups.length})
+                    </Text>
+                  </View>
+                  {filteredJoinedGroups.map((group) => {
+                    const groupTaskCount = getGroupTasks(group.id).length;
+                    const completedTasks = getGroupTasks(group.id).filter(
+                      (t) => t.status === "completed"
+                    ).length;
+
+                    return (
+                      <Pressable
+                        key={group.id}
+                        onPress={() => setSelectedGroupId(selectedGroupId === group.id ? null : group.id)}
+                        className="rounded-2xl p-4 mb-3"
+                        style={{ backgroundColor: theme.cardBackground }}
+                      >
+                        {/* Group Header */}
+                        <View className="flex-row items-center justify-between mb-2">
+                          <View className="flex-row items-center flex-1">
+                            <View
+                              className="w-12 h-12 rounded-full items-center justify-center mr-3"
+                              style={{ backgroundColor: theme.secondary + "20" }}
+                            >
+                              <Ionicons name="people" size={24} color={theme.secondary} />
+                            </View>
+                            <View className="flex-1">
+                              <Text style={{ fontSize: 18, fontFamily: 'Poppins_700Bold', color: theme.textPrimary }}>
+                                {group.name}
+                              </Text>
+                              <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 2 }}>
+                                {group.studentIds.length} {group.studentIds.length === 1 ? "member" : "members"}
+                              </Text>
+                            </View>
+                          </View>
+                          <Ionicons
+                            name={selectedGroupId === group.id ? "chevron-up" : "chevron-down"}
+                            size={24}
+                            color={theme.textSecondary}
+                          />
+                        </View>
+
+                        {/* Group Description */}
+                        {group.description && (
+                          <Text style={{ fontSize: 14, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginBottom: 12 }}>
+                            {group.description}
+                          </Text>
+                        )}
+
+                        {/* Group Metadata */}
+                        {(group.school || group.className || group.teacherEmail) && (
+                          <View style={{ marginBottom: 12 }}>
+                            {group.school && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                <Ionicons name="school-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.school}
+                                </Text>
+                              </View>
+                            )}
+                            {group.className && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+                                <Ionicons name="book-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.className}
+                                </Text>
+                              </View>
+                            )}
+                            {group.teacherEmail && (
+                              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Ionicons name="mail-outline" size={14} color={theme.textSecondary} />
+                                <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginLeft: 6 }}>
+                                  {group.teacherEmail}
+                                </Text>
+                              </View>
+                            )}
+                          </View>
+                        )}
+
+                        {/* Group Stats */}
+                        <View className="flex-row gap-4 mb-3">
+                          <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.primary + "15" }}>
+                            <Text style={{ fontSize: 24, fontFamily: 'Poppins_700Bold', color: theme.primary }}>
+                              {groupTaskCount}
+                            </Text>
+                            <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary }}>
+                              Total Tasks
+                            </Text>
+                          </View>
+                          <View className="flex-1 rounded-xl p-3" style={{ backgroundColor: theme.secondary + "15" }}>
+                            <Text style={{ fontSize: 24, fontFamily: 'Poppins_700Bold', color: theme.secondary }}>
+                              {completedTasks}
+                            </Text>
+                            <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary }}>
+                              Completed
+                            </Text>
+                          </View>
+                        </View>
+
+                        {/* Action Buttons */}
+                        <View className="flex-row gap-2">
+                          <Pressable
+                            onPress={() => handleLeaveGroup(group.id)}
+                            className="flex-1 py-2 rounded-xl items-center"
+                            style={{ backgroundColor: "#EF444420" }}
+                          >
+                            <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: "#EF4444" }}>
+                              Leave Group
+                            </Text>
+                          </Pressable>
+                        </View>
+
+                        {/* Expanded Content - Group Tasks */}
+                        {selectedGroupId === group.id && (
+                          <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
+                            <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: theme.textPrimary, marginBottom: 12 }}>
+                              Group Tasks
+                            </Text>
+                            {groupTasks.length === 0 ? (
+                              <Text style={{ fontSize: 14, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, textAlign: 'center', paddingVertical: 16 }}>
+                                No tasks assigned yet
+                              </Text>
+                            ) : (
+                              groupTasks.map((task) => (
+                                <View
+                                  key={task.id}
+                                  className="rounded-xl p-3 mb-2"
+                                  style={{ backgroundColor: theme.backgroundGradient[0] }}
+                                >
+                                  <View className="flex-row items-start">
+                                    <Ionicons
+                                      name={task.status === "completed" ? "checkmark-circle" : "ellipse-outline"}
+                                      size={20}
+                                      color={task.status === "completed" ? theme.secondary : theme.textSecondary}
+                                      style={{ marginRight: 8, marginTop: 2 }}
+                                    />
+                                    <View className="flex-1">
+                                      <Text
+                                        className={cn("text-sm font-semibold", task.status === "completed" && "line-through")}
+                                        style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}
+                                      >
+                                        {task.title}
+                                      </Text>
+                                      {task.description && (
+                                        <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
+                                          {task.description}
+                                        </Text>
+                                      )}
+                                      <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
+                                        Due: {new Date(task.dueDate).toLocaleDateString()}
+                                      </Text>
+                                    </View>
+                                  </View>
+                                </View>
+                              ))
+                            )}
+                          </View>
+                        )}
+                      </Pressable>
+                    );
+                  })}
+                </View>
+              )}
             </View>
           )}
         </ScrollView>
