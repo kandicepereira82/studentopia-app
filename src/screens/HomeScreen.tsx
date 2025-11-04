@@ -9,6 +9,7 @@ import StudyPal from "../components/StudyPal";
 import useUserStore from "../state/userStore";
 import useTaskStore from "../state/taskStore";
 import useStatsStore from "../state/statsStore";
+import useTimerStore from "../state/timerStore";
 import { useTranslation } from "../utils/translations";
 import { getRandomQuote, getRandomTip } from "../utils/content";
 import { getTheme } from "../utils/themes";
@@ -25,14 +26,24 @@ const HomeScreen = () => {
   const stats = useStatsStore((s) => s.stats);
   const addStudyMinutes = useStatsStore((s) => s.addStudyMinutes);
 
+  // Timer store
+  const timerMinutes = useTimerStore((s) => s.minutes);
+  const timerSeconds = useTimerStore((s) => s.seconds);
+  const isTimerRunning = useTimerStore((s) => s.isRunning);
+  const timerMode = useTimerStore((s) => s.mode);
+  const studyDuration = useTimerStore((s) => s.studyDuration);
+  const startTimer = useTimerStore((s) => s.startTimer);
+  const pauseTimer = useTimerStore((s) => s.pauseTimer);
+  const stopTimer = useTimerStore((s) => s.stopTimer);
+  const decrementTime = useTimerStore((s) => s.decrementTime);
+  const setMode = useTimerStore((s) => s.setMode);
+  const setMinutes = useTimerStore((s) => s.setMinutes);
+  const setSeconds = useTimerStore((s) => s.setSeconds);
+
   const [quote, setQuote] = useState<MotivationalQuote | null>(null);
   const [tip, setTip] = useState<StudyTip | null>(null);
   const [selectedWeekDate, setSelectedWeekDate] = useState(new Date());
 
-  // Timer state
-  const [timerMinutes, setTimerMinutes] = useState(25);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [isTimerRunning, setIsTimerRunning] = useState(false);
   const timerIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const { t } = useTranslation(user?.language || "en");
@@ -50,19 +61,12 @@ const HomeScreen = () => {
   useEffect(() => {
     if (isTimerRunning) {
       timerIntervalRef.current = setInterval(() => {
-        setTimerSeconds((prev) => {
-          if (prev === 0) {
-            setTimerMinutes((prevMin) => {
-              if (prevMin === 0) {
-                handleTimerComplete();
-                return 0;
-              }
-              return prevMin - 1;
-            });
-            return 59;
-          }
-          return prev - 1;
-        });
+        decrementTime();
+        // Check if timer is complete
+        const state = useTimerStore.getState();
+        if (state.minutes === 0 && state.seconds === 0) {
+          handleTimerComplete();
+        }
       }, 1000);
     } else {
       if (timerIntervalRef.current) {
@@ -78,24 +82,14 @@ const HomeScreen = () => {
   }, [isTimerRunning]);
 
   const handleTimerComplete = () => {
-    setIsTimerRunning(false);
-    addStudyMinutes(25);
-    setTimerMinutes(25);
-    setTimerSeconds(0);
-  };
-
-  const handleTimerStart = () => {
-    setIsTimerRunning(true);
-  };
-
-  const handleTimerPause = () => {
-    setIsTimerRunning(false);
-  };
-
-  const handleTimerStop = () => {
-    setIsTimerRunning(false);
-    setTimerMinutes(25);
-    setTimerSeconds(0);
+    pauseTimer();
+    if (timerMode === "study") {
+      addStudyMinutes(studyDuration);
+    }
+    // Reset to study mode
+    setMode("study");
+    setMinutes(studyDuration);
+    setSeconds(0);
   };
 
   const getTasksForDate = (date: Date) => {
@@ -771,7 +765,7 @@ const HomeScreen = () => {
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 12 }}>
               {!isTimerRunning ? (
                 <Pressable
-                  onPress={handleTimerStart}
+                  onPress={startTimer}
                   style={{
                     backgroundColor: theme.primary,
                     width: 56,
@@ -791,7 +785,7 @@ const HomeScreen = () => {
               ) : (
                 <>
                   <Pressable
-                    onPress={handleTimerPause}
+                    onPress={pauseTimer}
                     style={{
                       backgroundColor: '#F97316',
                       width: 56,
@@ -809,7 +803,7 @@ const HomeScreen = () => {
                     <Ionicons name="pause" size={24} color="white" />
                   </Pressable>
                   <Pressable
-                    onPress={handleTimerStop}
+                    onPress={stopTimer}
                     style={{
                       backgroundColor: '#EF4444',
                       width: 48,

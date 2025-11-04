@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { Audio } from "expo-av";
 import useUserStore from "../state/userStore";
 import useStatsStore from "../state/statsStore";
+import useTimerStore from "../state/timerStore";
 import { useTranslation } from "../utils/translations";
 import { getTheme } from "../utils/themes";
 import { TimerMode } from "../types";
@@ -15,12 +16,24 @@ const TimerScreen = () => {
   const user = useUserStore((s) => s.user);
   const addStudyMinutes = useStatsStore((s) => s.addStudyMinutes);
 
-  const [mode, setMode] = useState<TimerMode>("study");
-  const [minutes, setMinutes] = useState(25);
-  const [seconds, setSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [studyDuration, setStudyDuration] = useState(25);
-  const [breakDuration, setBreakDuration] = useState(5);
+  // Timer store
+  const mode = useTimerStore((s) => s.mode);
+  const minutes = useTimerStore((s) => s.minutes);
+  const seconds = useTimerStore((s) => s.seconds);
+  const isRunning = useTimerStore((s) => s.isRunning);
+  const studyDuration = useTimerStore((s) => s.studyDuration);
+  const breakDuration = useTimerStore((s) => s.breakDuration);
+  const setMode = useTimerStore((s) => s.setMode);
+  const setMinutes = useTimerStore((s) => s.setMinutes);
+  const setSeconds = useTimerStore((s) => s.setSeconds);
+  const setIsRunning = useTimerStore((s) => s.setIsRunning);
+  const setStudyDuration = useTimerStore((s) => s.setStudyDuration);
+  const setBreakDuration = useTimerStore((s) => s.setBreakDuration);
+  const startTimer = useTimerStore((s) => s.startTimer);
+  const pauseTimer = useTimerStore((s) => s.pauseTimer);
+  const stopTimer = useTimerStore((s) => s.stopTimer);
+  const decrementTime = useTimerStore((s) => s.decrementTime);
+
   const [musicEnabled, setMusicEnabled] = useState(false);
 
   const { t } = useTranslation(user?.language || "en");
@@ -31,19 +44,12 @@ const TimerScreen = () => {
   useEffect(() => {
     if (isRunning) {
       intervalRef.current = setInterval(() => {
-        setSeconds((prev) => {
-          if (prev === 0) {
-            setMinutes((prevMin) => {
-              if (prevMin === 0) {
-                handleTimerComplete();
-                return 0;
-              }
-              return prevMin - 1;
-            });
-            return 59;
-          }
-          return prev - 1;
-        });
+        decrementTime();
+        // Check if timer is complete
+        const state = useTimerStore.getState();
+        if (state.minutes === 0 && state.seconds === 0) {
+          handleTimerComplete();
+        }
       }, 1000);
     } else {
       if (intervalRef.current) {
@@ -59,7 +65,7 @@ const TimerScreen = () => {
   }, [isRunning]);
 
   const handleTimerComplete = () => {
-    setIsRunning(false);
+    pauseTimer();
     if (mode === "study") {
       addStudyMinutes(studyDuration);
       setMode("break");
@@ -72,23 +78,9 @@ const TimerScreen = () => {
     }
   };
 
-  const handleStart = () => {
-    setIsRunning(true);
-  };
-
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
-  const handleStop = () => {
-    setIsRunning(false);
-    setMinutes(mode === "study" ? studyDuration : breakDuration);
-    setSeconds(0);
-  };
-
   const handleModeSwitch = (newMode: TimerMode) => {
     setMode(newMode);
-    setIsRunning(false);
+    pauseTimer();
     setMinutes(newMode === "study" ? studyDuration : breakDuration);
     setSeconds(0);
   };
@@ -266,7 +258,7 @@ const TimerScreen = () => {
         <View className="px-6 py-4 flex-row items-center justify-center gap-4">
           {!isRunning ? (
             <Pressable
-              onPress={handleStart}
+              onPress={startTimer}
               className="w-20 h-20 rounded-full items-center justify-center shadow-lg"
             >
               <LinearGradient
@@ -279,7 +271,7 @@ const TimerScreen = () => {
           ) : (
             <>
               <Pressable
-                onPress={handlePause}
+                onPress={pauseTimer}
                 className="w-20 h-20 rounded-full items-center justify-center shadow-lg"
               >
                 <LinearGradient
@@ -290,7 +282,7 @@ const TimerScreen = () => {
                 </LinearGradient>
               </Pressable>
               <Pressable
-                onPress={handleStop}
+                onPress={stopTimer}
                 className="w-16 h-16 rounded-full items-center justify-center shadow-lg"
                 style={{ backgroundColor: theme.textSecondary }}
               >
