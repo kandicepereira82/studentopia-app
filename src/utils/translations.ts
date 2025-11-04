@@ -1363,7 +1363,7 @@ export const translations: Record<Language, Record<string, string>> = {
 
 // Language display names in their native script
 export const languageNames: Record<Language, string> = {
-  en: "English",
+  en: "English (UK)",
   es: "Español",
   fr: "Français",
   de: "Deutsch",

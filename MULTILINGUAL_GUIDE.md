@@ -10,7 +10,7 @@ StudyPal now supports **14 languages** with full localization across all feature
 
 | Language | Code | Native Name | Flag |
 |----------|------|-------------|------|
-| English | `en` | English | 🇺🇸 |
+| English (UK) | `en` | English (UK) | 🇬🇧 |
 | Spanish | `es` | Español | 🇪🇸 |
 | French | `fr` | Français | 🇫🇷 |
 | German | `de` | Deutsch | 🇩🇪 |
@@ -174,7 +174,7 @@ export const useTranslation = (language: Language) => {
 
 ```typescript
 export const languageNames: Record<Language, string> = {
-  en: "English",
+  en: "English (UK)",
   es: "Español",
   fr: "Français",
   de: "Deutsch",

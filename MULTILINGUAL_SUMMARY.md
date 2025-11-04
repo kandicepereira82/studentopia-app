@@ -18,7 +18,7 @@ Added support for:
 
 ### 2. **Existing Languages Enhanced**
 Maintained full support for:
-- 🇺🇸 English (en)
+- 🇬🇧 English (UK) (en)
 - 🇪🇸 Spanish (es)
 - 🇫🇷 French (fr)
 - 🇩🇪 German (de)

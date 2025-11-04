@@ -28,7 +28,7 @@ const ProfileScreen = () => {
   const { t } = useTranslation(user?.language || "en");
 
   const languages: { code: Language; name: string; flag: string }[] = [
-    { code: "en", name: "English", flag: "🇺🇸" },
+    { code: "en", name: "English (UK)", flag: "🇬🇧" },
     { code: "es", name: "Español", flag: "🇪🇸" },
     { code: "fr", name: "Français", flag: "🇫🇷" },
     { code: "de", name: "Deutsch", flag: "🇩🇪" },
