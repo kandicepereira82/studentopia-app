@@ -97,9 +97,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
     { color: "ocean", colors: ["#0288D1", "#01579B"], emoji: "🌊", name: "Ocean" },
     { color: "galaxy", colors: ["#5E35B1", "#311B92"], emoji: "🌌", name: "Galaxy" },
     { color: "rainbow", colors: ["#FBC02D", "#F57F17"], emoji: "🌈", name: "Rainbow" },
-    { color: "golden", colors: ["#F57C00", "#E65100"], emoji: "✨", name: "Golden" },
+    { color: "sunset", colors: ["#F57C00", "#E65100"], emoji: "🌅", name: "Sunset" },
     { color: "arctic", colors: ["#00796B", "#004D40"], emoji: "❄️", name: "Arctic" },
-    { color: "autumn", colors: ["#E64A19", "#BF360C"], emoji: "🍂", name: "Autumn" },
+    { color: "golden", colors: ["#E64A19", "#BF360C"], emoji: "✨", name: "Golden" },
     { color: "cherry", colors: ["#C2185B", "#880E4F"], emoji: "🌸", name: "Cherry Blossom" },
   ];
 

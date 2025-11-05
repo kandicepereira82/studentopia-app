@@ -52,9 +52,9 @@ export type ThemeColor =
   | "ocean"
   | "galaxy"
   | "rainbow"
-  | "golden"
+  | "sunset"
   | "arctic"
-  | "autumn"
+  | "golden"
   | "cherry";
 
 export interface Task {

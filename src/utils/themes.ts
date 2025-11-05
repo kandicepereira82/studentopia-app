@@ -111,9 +111,9 @@ export const THEMES: Record<ThemeColor, ThemeConfig> = {
     accentColor: "#9B7FD9",
     emoji: "🌈",
   },
-  golden: {
-    id: "golden",
-    name: "Golden",
+  sunset: {
+    id: "sunset",
+    name: "Sunset",
     description: "Warm golden tones and rich amber hues",
     backgroundGradient: ["#FFCCBC", "#FFAB91", "#FF8A65"],
     cardBackground: "#FFFFFF",
@@ -129,7 +129,7 @@ export const THEMES: Record<ThemeColor, ThemeConfig> = {
     tabBarInactive: "#FF7043",
     progressGradient: ["#FF7043", "#FF5722"],
     accentColor: "#E64A19",
-    emoji: "✨",
+    emoji: "🌅",
   },
   arctic: {
     id: "arctic",
@@ -151,9 +151,9 @@ export const THEMES: Record<ThemeColor, ThemeConfig> = {
     accentColor: "#0288D1",
     emoji: "❄️",
   },
-  autumn: {
-    id: "autumn",
-    name: "Autumn",
+  golden: {
+    id: "golden",
+    name: "Golden",
     description: "Warm golds, rusts, and browns of autumn foliage",
     backgroundGradient: ["#FFE0B2", "#FFCC80", "#FFAB40"],
     cardBackground: "#FFFFFF",

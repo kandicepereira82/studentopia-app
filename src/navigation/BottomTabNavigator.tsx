@@ -39,11 +39,11 @@ const BottomTabNavigator = () => {
         return "#5E35B1";
       case "rainbow":
         return "#FBC02D";
-      case "golden":
+      case "sunset":
         return "#F57C00";
       case "arctic":
         return "#00796B";
-      case "autumn":
+      case "golden":
         return "#E64A19";
       case "cherry":
         return "#C2185B";
