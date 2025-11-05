@@ -294,9 +294,19 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                     fontSize: 15,
                     fontFamily: 'Poppins_500Medium',
                     color: '#1E40AF',
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    lineHeight: 22
                   }}>
-                    {"Hi " + username + "! I'm your Studentopia Companion. Let's make every day fun and focused!"}
+                    {"Hi " + username + "! I'm your Studentopia Companion."}
+                  </Text>
+                  <Text style={{
+                    fontSize: 15,
+                    fontFamily: 'Poppins_500Medium',
+                    color: '#1E40AF',
+                    textAlign: 'center',
+                    lineHeight: 22
+                  }}>
+                    {"Let's make every day fun and focused!"}
                   </Text>
                 </View>
               )}
