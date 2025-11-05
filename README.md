@@ -4,9 +4,13 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ## ✨ Latest Updates
 
+- ✅ **Enhanced Timer Features** - Custom time input, alarm sound selection, and color-coded backgrounds (green for study, blue for breaks)
+- ✅ **Custom Duration Input** - Directly type any study/break duration (1-120 minutes) with dedicated modal
+- ✅ **Alarm Sound Options** - Choose from 4 different alarm sounds (Bell, Chime, Beep, Gentle) to play when timer completes
+- ✅ **Color-Coded Backgrounds** - Study sessions show green background, break sessions show blue background for clear visual distinction
+- ✅ **Modern Timer Controls** - Rectangular buttons with rounded edges, consistent sizing, and theme colors
 - ✅ **Simplified Profile Screen** - Removed stats section for cleaner, more focused profile management
 - ✅ **Music Player Integration** - Music player moved from separate tab to Timer screen for seamless study sessions
-- ✅ **Streamlined Navigation** - Removed Music tab; music controls now integrated into study/break flow
 - ✅ **Code Quality Improvements** - Fixed all functional errors including Alert usage, console.log statements, type safety, and React hooks
 - ✅ **Custom Alert Modal** - Replaced native Alert.alert() with beautiful custom modal component following Apple HIG
 - ✅ **Type Safety Enhanced** - Fixed unsafe type casts and added proper TypeScript return types
@@ -63,14 +67,19 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ### ⏱️ Study Timer (Pomodoro)
 - **Customizable Sessions**: Adjustable study (1-120 min) and break (1-60 min) durations
+- **Custom Time Input**: Type any duration directly with dedicated modal input
 - **Visual Timer**: Large, optimized countdown display that fits on one line
+- **Color-Coded Backgrounds**: Green background for study mode, blue background for break mode
 - **Session Modes**: Toggle between study (green) and break (blue) modes
+- **Alarm Sounds**: Choose from 4 different alarm sounds (Bell, Chime, Beep, Gentle)
+- **Completion Alert**: Plays selected alarm sound when timer completes
 - **Study Tracking**: Automatically logs study minutes to your stats
 - **Synchronized State**: Timer state shared across Home and Timer screens
 - **Quick Timer**: Start study sessions directly from home screen
 - **Background Music**: Toggle calming music during study/break sessions
 - **Music Controls**: Integrated music player with play/pause, stop, volume control, and track selection
 - **Music Library**: Choose from curated classical music tracks filtered by mood
+- **Modern UI**: Rectangular control buttons with rounded edges and theme colors
 
 ### 👥 Groups & Collaboration
 - **Create Groups**: Both teachers and students can create groups with name, description, school, class, and teacher email

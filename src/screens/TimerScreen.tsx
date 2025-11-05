@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Pressable, ScrollView } from "react-native";
+import { View, Text, Pressable, ScrollView, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,6 +13,15 @@ import { getTheme } from "../utils/themes";
 import { TimerMode } from "../types";
 import { cn } from "../utils/cn";
 import { musicService, musicLibrary, MusicTrack } from "../services/musicService";
+
+type AlarmSound = "bell" | "chime" | "beep" | "gentle";
+
+const alarmSounds = [
+  { id: "bell" as AlarmSound, name: "Bell", icon: "notifications" },
+  { id: "chime" as AlarmSound, name: "Chime", icon: "musical-note" },
+  { id: "beep" as AlarmSound, name: "Beep", icon: "radio" },
+  { id: "gentle" as AlarmSound, name: "Gentle", icon: "moon" },
+];
 
 const TimerScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -41,6 +50,12 @@ const TimerScreen = () => {
   const [duration, setDuration] = useState(0);
   const [volume, setVolume] = useState(0.7);
   const [showMusicSelector, setShowMusicSelector] = useState(false);
+  const [showCustomTimeModal, setShowCustomTimeModal] = useState(false);
+  const [showAlarmModal, setShowAlarmModal] = useState(false);
+  const [customTimeType, setCustomTimeType] = useState<"study" | "break">("study");
+  const [customTimeInput, setCustomTimeInput] = useState("");
+  const [selectedAlarm, setSelectedAlarm] = useState<AlarmSound>("bell");
+  const [alarmSound, setAlarmSound] = useState<Audio.Sound | null>(null);
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
@@ -70,7 +85,9 @@ const TimerScreen = () => {
   // Watch for timer completion and handle mode switching
   useEffect(() => {
     if (minutes === 0 && seconds === 0 && !isRunning) {
-      // Timer just completed
+      // Timer just completed - play alarm
+      playAlarmSound();
+
       if (mode === "study") {
         addStudyMinutes(studyDuration);
         setMode("break");
@@ -83,6 +100,52 @@ const TimerScreen = () => {
       }
     }
   }, [minutes, seconds, isRunning]);
+
+  const playAlarmSound = async () => {
+    try {
+      const { sound } = await Audio.Sound.createAsync(
+        // Using a simple beep sound - in production, load actual sound files
+        { uri: "https://www.soundjay.com/button/sounds/beep-07a.mp3" },
+        { shouldPlay: true, volume: 0.5 }
+      );
+      setAlarmSound(sound);
+
+      // Unload after 3 seconds
+      setTimeout(async () => {
+        await sound.unloadAsync();
+      }, 3000);
+    } catch (error) {
+      // Silently fail if sound doesn't load
+    }
+  };
+
+  const handleCustomTimeSubmit = () => {
+    const time = parseInt(customTimeInput);
+    if (isNaN(time) || time < 1 || time > 120) {
+      return; // Invalid input
+    }
+
+    if (customTimeType === "study") {
+      setStudyDuration(time);
+      if (mode === "study" && !isRunning) {
+        setMinutes(time);
+      }
+    } else {
+      setBreakDuration(time);
+      if (mode === "break" && !isRunning) {
+        setMinutes(time);
+      }
+    }
+
+    setCustomTimeInput("");
+    setShowCustomTimeModal(false);
+  };
+
+  const openCustomTimeModal = (type: "study" | "break") => {
+    setCustomTimeType(type);
+    setCustomTimeInput(type === "study" ? studyDuration.toString() : breakDuration.toString());
+    setShowCustomTimeModal(true);
+  };
 
   const handleModeSwitch = (newMode: TimerMode) => {
     setMode(newMode);
@@ -156,8 +219,11 @@ const TimerScreen = () => {
     ? [theme.primary, theme.primaryDark]
     : [theme.secondary, theme.primaryDark];
 
+  // Color-coded background for study (green) and break (blue)
+  const backgroundColor = mode === "study" ? "#E8F5E9" : "#E3F2FD";
+
   return (
-    <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
+    <View style={{ flex: 1, backgroundColor }}>
       <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Header with Poppins */}
@@ -417,9 +483,24 @@ const TimerScreen = () => {
 
             {/* Study Duration */}
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontFamily: 'Poppins_500Medium', marginBottom: 8, color: theme.textSecondary }}>
-                {t("studySession")} ({t("minutes")})
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Text style={{ fontSize: 14, fontFamily: 'Poppins_500Medium', color: theme.textSecondary }}>
+                  {t("studySession")} ({t("minutes")})
+                </Text>
+                <Pressable
+                  onPress={() => openCustomTimeModal("study")}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    backgroundColor: theme.primary + "10"
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontFamily: 'Poppins_500Medium', color: theme.primary }}>
+                    Custom
+                  </Text>
+                </Pressable>
+              </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Pressable
                   onPress={() => adjustDuration("study", -5)}
@@ -455,9 +536,24 @@ const TimerScreen = () => {
 
             {/* Break Duration */}
             <View style={{ marginBottom: 16 }}>
-              <Text style={{ fontSize: 14, fontFamily: 'Poppins_500Medium', marginBottom: 8, color: theme.textSecondary }}>
-                {t("breakTime")} ({t("minutes")})
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <Text style={{ fontSize: 14, fontFamily: 'Poppins_500Medium', color: theme.textSecondary }}>
+                  {t("breakTime")} ({t("minutes")})
+                </Text>
+                <Pressable
+                  onPress={() => openCustomTimeModal("break")}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    backgroundColor: theme.secondary + "10"
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontFamily: 'Poppins_500Medium', color: theme.secondary }}>
+                    Custom
+                  </Text>
+                </Pressable>
+              </View>
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <Pressable
                   onPress={() => adjustDuration("break", -1)}
@@ -487,6 +583,35 @@ const TimerScreen = () => {
                   }}
                 >
                   <Ionicons name="add" size={24} color={theme.secondary} />
+                </Pressable>
+              </View>
+            </View>
+
+            {/* Alarm Sound Selection */}
+            <View style={{ marginBottom: 16, paddingTop: 16, borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Ionicons name="notifications" size={20} color={theme.textSecondary} />
+                  <Text style={{ marginLeft: 8, fontSize: 14, fontFamily: 'Poppins_500Medium', color: theme.textPrimary }}>
+                    Alarm Sound
+                  </Text>
+                </View>
+                <Pressable
+                  onPress={() => setShowAlarmModal(true)}
+                  style={{
+                    paddingHorizontal: 12,
+                    paddingVertical: 6,
+                    borderRadius: 8,
+                    backgroundColor: theme.accentColor + "10",
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    gap: 6
+                  }}
+                >
+                  <Text style={{ fontSize: 12, fontFamily: 'Poppins_500Medium', color: theme.accentColor }}>
+                    {alarmSounds.find(a => a.id === selectedAlarm)?.name}
+                  </Text>
+                  <Ionicons name="chevron-down" size={14} color={theme.accentColor} />
                 </Pressable>
               </View>
             </View>
@@ -703,6 +828,176 @@ const TimerScreen = () => {
             </View>
           </View>
         )}
+
+        {/* Custom Time Input Modal */}
+        <Modal
+          visible={showCustomTimeModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setShowCustomTimeModal(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24
+            }}
+            onPress={() => setShowCustomTimeModal(false)}
+          >
+            <Pressable
+              style={{
+                backgroundColor: "white",
+                borderRadius: 24,
+                padding: 24,
+                width: "90%",
+                maxWidth: 400
+              }}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary, marginBottom: 8 }}>
+                  Set Custom Time
+                </Text>
+                <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary }}>
+                  Enter {customTimeType === "study" ? "study" : "break"} duration in minutes (1-120)
+                </Text>
+              </View>
+
+              <TextInput
+                style={{
+                  backgroundColor: theme.textSecondary + "10",
+                  borderRadius: 16,
+                  padding: 16,
+                  fontSize: 24,
+                  fontFamily: "Poppins_600SemiBold",
+                  color: theme.textPrimary,
+                  textAlign: "center",
+                  marginBottom: 20
+                }}
+                value={customTimeInput}
+                onChangeText={setCustomTimeInput}
+                keyboardType="number-pad"
+                placeholder="25"
+                placeholderTextColor={theme.textSecondary + "60"}
+                autoFocus
+              />
+
+              <View style={{ flexDirection: "row", gap: 12 }}>
+                <Pressable
+                  onPress={() => setShowCustomTimeModal(false)}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 14,
+                    borderRadius: 12,
+                    backgroundColor: theme.textSecondary + "20",
+                    alignItems: "center"
+                  }}
+                >
+                  <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                    Cancel
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={handleCustomTimeSubmit}
+                  style={{
+                    flex: 1,
+                    paddingVertical: 14,
+                    borderRadius: 12,
+                    backgroundColor: customTimeType === "study" ? theme.primary : theme.secondary,
+                    alignItems: "center"
+                  }}
+                >
+                  <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: "white" }}>
+                    Set Time
+                  </Text>
+                </Pressable>
+              </View>
+            </Pressable>
+          </Pressable>
+        </Modal>
+
+        {/* Alarm Sound Selection Modal */}
+        <Modal
+          visible={showAlarmModal}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setShowAlarmModal(false)}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24
+            }}
+            onPress={() => setShowAlarmModal(false)}
+          >
+            <Pressable
+              style={{
+                backgroundColor: "white",
+                borderRadius: 24,
+                padding: 24,
+                width: "90%",
+                maxWidth: 400
+              }}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={{ marginBottom: 20 }}>
+                <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary, marginBottom: 8 }}>
+                  Choose Alarm Sound
+                </Text>
+                <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary }}>
+                  Select the sound to play when timer completes
+                </Text>
+              </View>
+
+              {alarmSounds.map((sound) => (
+                <Pressable
+                  key={sound.id}
+                  onPress={() => {
+                    setSelectedAlarm(sound.id);
+                    setShowAlarmModal(false);
+                  }}
+                  style={{
+                    padding: 16,
+                    borderRadius: 16,
+                    backgroundColor: selectedAlarm === sound.id ? theme.accentColor + "20" : theme.textSecondary + "10",
+                    marginBottom: 12,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 12
+                  }}
+                >
+                  <View
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: selectedAlarm === sound.id ? theme.accentColor : theme.textSecondary + "30",
+                      alignItems: "center",
+                      justifyContent: "center"
+                    }}
+                  >
+                    <Ionicons
+                      name={sound.icon as any}
+                      size={20}
+                      color={selectedAlarm === sound.id ? "white" : theme.textSecondary}
+                    />
+                  </View>
+                  <Text style={{ flex: 1, fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                    {sound.name}
+                  </Text>
+                  {selectedAlarm === sound.id && (
+                    <Ionicons name="checkmark-circle" size={24} color={theme.accentColor} />
+                  )}
+                </Pressable>
+              ))}
+            </Pressable>
+          </Pressable>
+        </Modal>
       </ScrollView>
       </SafeAreaView>
     </View>
