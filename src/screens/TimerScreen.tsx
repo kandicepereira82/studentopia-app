@@ -58,9 +58,79 @@ const TimerScreen = () => {
   const [alarmSound, setAlarmSound] = useState<Audio.Sound | null>(null);
   const [previewSound, setPreviewSound] = useState<Audio.Sound | null>(null);
   const [alarmVolume, setAlarmVolume] = useState(0.7);
+  const [preloadedSounds, setPreloadedSounds] = useState<Record<AlarmSound, Audio.Sound | null>>({
+    bell: null,
+    chime: null,
+    beep: null,
+    gentle: null
+  });
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
+
+  // Preload alarm sounds for instant playback
+  useEffect(() => {
+    const loadSounds = async () => {
+      const soundUrls = {
+        bell: "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
+        chime: "https://www.soundjay.com/misc/sounds/wind-chime-1.mp3",
+        beep: "https://www.soundjay.com/button/sounds/beep-07a.mp3",
+        gentle: "https://www.soundjay.com/human/sounds/meditation-bell-001.mp3"
+      };
+
+      const loadedSounds: Record<AlarmSound, Audio.Sound | null> = {
+        bell: null,
+        chime: null,
+        beep: null,
+        gentle: null
+      };
+
+      // Load all sounds in parallel
+      await Promise.all(
+        Object.entries(soundUrls).map(async ([key, url]) => {
+          try {
+            const { sound } = await Audio.Sound.createAsync(
+              { uri: url },
+              { shouldPlay: false, volume: alarmVolume }
+            );
+            loadedSounds[key as AlarmSound] = sound;
+          } catch (error) {
+            // Silently fail if sound doesn't load
+          }
+        })
+      );
+
+      setPreloadedSounds(loadedSounds);
+    };
+
+    loadSounds();
+
+    // Cleanup: unload all preloaded sounds
+    return () => {
+      Object.values(preloadedSounds).forEach(async (sound) => {
+        if (sound) {
+          try {
+            await sound.unloadAsync();
+          } catch (error) {
+            // Ignore errors during cleanup
+          }
+        }
+      });
+    };
+  }, []);
+
+  // Update volume on preloaded sounds when alarm volume changes
+  useEffect(() => {
+    Object.values(preloadedSounds).forEach(async (sound) => {
+      if (sound) {
+        try {
+          await sound.setVolumeAsync(alarmVolume);
+        } catch (error) {
+          // Ignore errors
+        }
+      }
+    });
+  }, [alarmVolume]);
 
   // Initialize music service
   useEffect(() => {
@@ -81,10 +151,9 @@ const TimerScreen = () => {
     return () => {
       clearInterval(interval);
       musicService.unload();
-      // Clean up any preview sounds
+      // Stop any playing preview sound
       if (previewSound) {
         previewSound.stopAsync().catch(() => {});
-        previewSound.unloadAsync().catch(() => {});
       }
     };
   }, [musicEnabled, previewSound]);
@@ -110,19 +179,24 @@ const TimerScreen = () => {
 
   const playAlarmSound = async () => {
     try {
-      const { sound } = await Audio.Sound.createAsync(
-        // Using a simple beep sound - in production, load actual sound files
-        { uri: "https://www.soundjay.com/button/sounds/beep-07a.mp3" },
-        { shouldPlay: true, volume: alarmVolume }
-      );
-      setAlarmSound(sound);
+      const sound = preloadedSounds[selectedAlarm];
+      if (sound) {
+        // Rewind to start and play
+        await sound.setPositionAsync(0);
+        await sound.setVolumeAsync(alarmVolume);
+        await sound.playAsync();
 
-      // Unload after 3 seconds
-      setTimeout(async () => {
-        await sound.unloadAsync();
-      }, 3000);
+        // Stop after 3 seconds
+        setTimeout(async () => {
+          try {
+            await sound.stopAsync();
+          } catch (error) {
+            // Ignore errors
+          }
+        }, 3000);
+      }
     } catch (error) {
-      // Silently fail if sound doesn't load
+      // Silently fail if sound doesn't play
     }
   };
 
@@ -131,31 +205,29 @@ const TimerScreen = () => {
       // Stop any currently playing preview
       if (previewSound) {
         await previewSound.stopAsync();
-        await previewSound.unloadAsync();
+        setPreviewSound(null);
       }
 
-      // Map alarm types to different sound URLs
-      const soundUrls = {
-        bell: "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
-        chime: "https://www.soundjay.com/misc/sounds/wind-chime-1.mp3",
-        beep: "https://www.soundjay.com/button/sounds/beep-07a.mp3",
-        gentle: "https://www.soundjay.com/human/sounds/meditation-bell-001.mp3"
-      };
+      const sound = preloadedSounds[soundType];
+      if (sound) {
+        // Rewind to start and play
+        await sound.setPositionAsync(0);
+        await sound.setVolumeAsync(alarmVolume);
+        await sound.playAsync();
+        setPreviewSound(sound);
 
-      const { sound } = await Audio.Sound.createAsync(
-        { uri: soundUrls[soundType] },
-        { shouldPlay: true, volume: alarmVolume }
-      );
-      setPreviewSound(sound);
-
-      // Unload after sound finishes (3 seconds max)
-      setTimeout(async () => {
-        await sound.stopAsync();
-        await sound.unloadAsync();
-        setPreviewSound(null);
-      }, 3000);
+        // Stop after 3 seconds
+        setTimeout(async () => {
+          try {
+            await sound.stopAsync();
+            setPreviewSound(null);
+          } catch (error) {
+            // Ignore errors
+          }
+        }, 3000);
+      }
     } catch (error) {
-      // Silently fail if sound doesn't load
+      // Silently fail if sound doesn't play
     }
   };
 
