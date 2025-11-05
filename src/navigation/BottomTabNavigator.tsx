@@ -41,8 +41,6 @@ const BottomTabNavigator = () => {
         return "#5E35B1";
       case "rainbow":
         return "#FBC02D";
-      case "forest":
-        return "#2E7D32";
       case "desert":
         return "#F57C00";
       case "arctic":

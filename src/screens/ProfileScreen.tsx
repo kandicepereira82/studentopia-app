@@ -48,7 +48,6 @@ const ProfileScreen = () => {
     { color: "sunset", name: "Sunset", colors: ["#FF6F00", "#E65100"], emoji: "🌅" },
     { color: "galaxy", name: "Galaxy", colors: ["#5E35B1", "#311B92"], emoji: "🌌" },
     { color: "rainbow", name: "Rainbow", colors: ["#FBC02D", "#F57F17"], emoji: "🌈" },
-    { color: "forest", name: "Forest", colors: ["#2E7D32", "#1B5E20"], emoji: "🌲" },
     { color: "desert", name: "Desert", colors: ["#F57C00", "#E65100"], emoji: "🏜️" },
     { color: "arctic", name: "Arctic", colors: ["#00796B", "#004D40"], emoji: "❄️" },
     { color: "autumn", name: "Autumn", colors: ["#E64A19", "#BF360C"], emoji: "🍂" },
