@@ -518,7 +518,7 @@ const TimerScreen = () => {
             <Pressable
               onPress={startTimer}
               style={{
-                width: 120,
+                width: 140,
                 height: 56,
                 borderRadius: 16,
                 overflow: 'hidden',
@@ -552,7 +552,7 @@ const TimerScreen = () => {
               <Pressable
                 onPress={pauseTimer}
                 style={{
-                  width: 120,
+                  width: 140,
                   height: 56,
                   borderRadius: 16,
                   overflow: 'hidden',
@@ -584,7 +584,7 @@ const TimerScreen = () => {
               <Pressable
                 onPress={stopTimer}
                 style={{
-                  width: 120,
+                  width: 140,
                   height: 56,
                   borderRadius: 16,
                   overflow: 'hidden',

@@ -108,22 +108,32 @@ const HomeScreen = () => {
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header with Poppins */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 20 }}>
-          <Text style={{
-            fontSize: 32,
-            fontFamily: 'Poppins_700Bold',
-            color: theme.textPrimary,
-            marginBottom: 4
-          }}>
-            StudyPal
-          </Text>
-          <Text style={{
-            fontSize: 16,
-            fontFamily: 'Poppins_400Regular',
-            color: theme.textSecondary
-          }}>
-            {t("welcomeBack")}, {user.username}! 👋
-          </Text>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+          <View style={{ flex: 1 }}>
+            <Text style={{
+              fontSize: 32,
+              fontFamily: 'Poppins_700Bold',
+              color: theme.textPrimary,
+              marginBottom: 4
+            }}>
+              StudyPal
+            </Text>
+            <Text style={{
+              fontSize: 16,
+              fontFamily: 'Poppins_400Regular',
+              color: theme.textSecondary
+            }}>
+              {t("welcomeBack")}, {user.username}! 👋
+            </Text>
+          </View>
+          <View style={{ marginLeft: 12 }}>
+            <StudyPal
+              animal={user.studyPalConfig.animal}
+              name={user.studyPalConfig.name}
+              animationsEnabled={user.studyPalConfig.animationsEnabled}
+              size={50}
+            />
+          </View>
         </View>
 
         <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} showsVerticalScrollIndicator={false}>
@@ -737,7 +747,7 @@ const HomeScreen = () => {
                 <Pressable
                   onPress={startTimer}
                   style={{
-                    width: 120,
+                    width: 140,
                     height: 56,
                     borderRadius: 16,
                     overflow: 'hidden',
@@ -773,7 +783,7 @@ const HomeScreen = () => {
                   <Pressable
                     onPress={pauseTimer}
                     style={{
-                      width: 120,
+                      width: 140,
                       height: 56,
                       borderRadius: 16,
                       overflow: 'hidden',
@@ -807,7 +817,7 @@ const HomeScreen = () => {
                   <Pressable
                     onPress={stopTimer}
                     style={{
-                      width: 120,
+                      width: 140,
                       height: 56,
                       borderRadius: 16,
                       overflow: 'hidden',
