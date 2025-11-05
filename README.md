@@ -4,6 +4,8 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Fixed Animal Grid Layout** - Step 3 now displays all 25 animals in a perfect 5×5 grid with seamless scrolling
+- ✅ **Corrected Animal Images** - All 25 animal companions now display with the correct matching images
 - ✅ **Enhanced Onboarding Experience** - New 4-step guided setup with Studentopia Companion welcome and role selection
 - ✅ **Real-Time Theme Preview** - See your Studentopia Companion in your chosen theme before completing setup
 - ✅ **Student/Teacher Role Selection** - Personalized experience based on your role

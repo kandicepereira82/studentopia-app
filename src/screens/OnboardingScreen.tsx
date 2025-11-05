@@ -35,31 +35,31 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
   const getAnimalImage = (animal: StudyPalAnimal) => {
     const imageMap: Record<StudyPalAnimal, any> = {
-      cat: require("../../assets/image-1762363451.png"),
-      redpanda: require("../../assets/image-1762363436.png"),
-      owl: require("../../assets/image-1762363424.png"),
-      penguin: require("../../assets/image-1762363422.png"),
-      horse: require("../../assets/image-1762363432.png"),
-      dog: require("../../assets/image-1762363445.png"),
-      chick: require("../../assets/image-1762363449.png"),
-      bear: require("../../assets/image-1762363455.png"),
-      hedgehog: require("../../assets/image-1762363434.png"),
-      tiger: require("../../assets/image-1762375639.png"),
-      turtle: require("../../assets/image-1762375633.png"),
-      bunny: require("../../assets/image-1762363453.png"),
-      giraffe: require("../../assets/image-1762363438.png"),
-      lamb: require("../../assets/image-1762363456.png"),
-      alpaca: require("../../assets/image-1762363444.png"),
-      lion: require("../../assets/image-1762363428.png"),
-      frog: require("../../assets/image-1762363440.png"),
-      koala: require("../../assets/image-1762363431.png"),
+      tiger: require("../../assets/image-1762363413.png"),
+      turtle: require("../../assets/image-1762363411.png"),
       sloth: require("../../assets/image-1762363415.png"),
+      chipmunk: require("../../assets/image-1762363418.png"),
+      reindeer: require("../../assets/image-1762363417.png"),
+      hedgehog: require("../../assets/image-1762363420.png"),
+      penguin: require("../../assets/image-1762363422.png"),
       monkey: require("../../assets/image-1762363426.png"),
+      owl: require("../../assets/image-1762363424.png"),
+      chick: require("../../assets/image-1762363449.png"),
+      lion: require("../../assets/image-1762363428.png"),
+      horse: require("../../assets/image-1762363432.png"),
+      koala: require("../../assets/image-1762363431.png"),
       hamster: require("../../assets/image-1762363417.png"),
-      reindeer: require("../../assets/image-1762363447.png"),
-      chipmunk: require("../../assets/image-1762363442.png"),
-      elephant: require("../../assets/image-1762363418.png"),
-      goldfish: require("../../assets/image-1762363420.png"),
+      giraffe: require("../../assets/image-1762363438.png"),
+      frog: require("../../assets/image-1762363440.png"),
+      alpaca: require("../../assets/image-1762363444.png"),
+      goldfish: require("../../assets/image-1762363442.png"),
+      dog: require("../../assets/image-1762363445.png"),
+      bunny: require("../../assets/image-1762363447.png"),
+      cat: require("../../assets/image-1762363451.png"),
+      bear: require("../../assets/image-1762363455.png"),
+      lamb: require("../../assets/image-1762363456.png"),
+      redpanda: require("../../assets/image-1762363436.png"),
+      elephant: require("../../assets/image-1762363434.png"),
     };
     return imageMap[animal] || imageMap.cat;
   };
@@ -408,28 +408,37 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 </Text>
               </View>
 
-              {/* Scrollable Animal Grid */}
-              <View className="flex-row flex-wrap gap-3 mb-4">
+              {/* Scrollable Animal Grid - 5x5 */}
+              <View style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between', gap: 12, marginBottom: 16 }}>
                 {animals.map((a) => {
                   return (
                     <Pressable
                       key={a}
                       onPress={() => setAnimal(a)}
-                      className={cn(
-                        "w-[20%] aspect-square bg-white dark:bg-gray-800 rounded-2xl items-center justify-center mb-3",
-                        animal === a && "border-4 border-blue-500"
-                      )}
+                      style={{
+                        width: '18.5%',
+                        aspectRatio: 1,
+                        backgroundColor: animal === a ? '#DBEAFE' : 'white',
+                        borderRadius: 16,
+                        borderWidth: animal === a ? 4 : 0,
+                        borderColor: animal === a ? '#3B82F6' : 'transparent',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        marginBottom: 12,
+                        paddingVertical: 8,
+                        paddingHorizontal: 4,
+                      }}
                     >
                       <Image
                         source={getAnimalImage(a)}
-                        style={{ width: 60, height: 60 }}
+                        style={{ width: 50, height: 50, marginBottom: 4 }}
                         resizeMode="contain"
                       />
                       <Text style={{
-                        fontSize: 11,
+                        fontSize: 9,
                         fontFamily: 'Poppins_500Medium',
                         color: '#374151',
-                        marginTop: 4,
+                        textAlign: 'center',
                         textTransform: 'capitalize'
                       }}>
                         {getAnimalDisplayName(a)}
