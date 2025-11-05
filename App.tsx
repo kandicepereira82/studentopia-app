@@ -61,21 +61,11 @@ export default function App() {
       // Check if user is properly initialized (has required fields)
       const isValidUser = user && user.id && user.username && user.language;
 
-      console.log("[App] Initialization check:", {
-        hasUser: !!user,
-        hasId: !!user?.id,
-        hasUsername: !!user?.username,
-        hasLanguage: !!user?.language,
-        isValidUser,
-      });
-
       if (!isValidUser) {
         // Clear corrupted/partial user data
-        console.log("[App] Invalid/missing user data - showing onboarding");
         logout();
         setShowOnboarding(true);
       } else {
-        console.log("[App] Valid user found - showing main app");
         setShowOnboarding(false);
       }
 
@@ -89,11 +79,6 @@ export default function App() {
   useEffect(() => {
     if (isReady) {
       const isValidUser = user && user.id && user.username && user.language;
-      console.log("[App] User state changed:", {
-        hasUser: !!user,
-        isValidUser,
-        showingOnboarding: !isValidUser,
-      });
       setShowOnboarding(!isValidUser);
     }
   }, [user, isReady]);

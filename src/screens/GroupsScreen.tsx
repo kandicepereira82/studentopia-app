@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Modal, Alert } from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput, Modal } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -11,6 +11,14 @@ import useTaskStore from "../state/taskStore";
 import { getTheme } from "../utils/themes";
 import { useTranslation } from "../utils/translations";
 import { cn } from "../utils/cn";
+import CustomAlert from "../components/CustomAlert";
+
+interface AlertState {
+  visible: boolean;
+  title: string;
+  message: string;
+  buttons?: Array<{ text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }>;
+}
 
 const GroupsScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -43,17 +51,36 @@ const GroupsScreen = () => {
   const [joinCode, setJoinCode] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [alertState, setAlertState] = useState<AlertState>({
+    visible: false,
+    title: "",
+    message: "",
+    buttons: [],
+  });
 
   const isTeacher = user?.role === "teacher";
 
+  const showAlert = (title: string, message: string, buttons?: AlertState["buttons"]) => {
+    setAlertState({
+      visible: true,
+      title,
+      message,
+      buttons: buttons || [{ text: "OK", style: "default" }],
+    });
+  };
+
+  const hideAlert = () => {
+    setAlertState({ visible: false, title: "", message: "", buttons: [] });
+  };
+
   const handleCreateGroup = () => {
     if (!groupName.trim()) {
-      Alert.alert("Error", "Please enter a group name");
+      showAlert("Error", "Please enter a group name");
       return;
     }
 
     if (!acceptedRules) {
-      Alert.alert("Error", "Please accept the group rules to continue");
+      showAlert("Error", "Please accept the group rules to continue");
       return;
     }
 
@@ -76,12 +103,12 @@ const GroupsScreen = () => {
     setTeacherEmail("");
     setAcceptedRules(false);
     setShowCreateModal(false);
-    Alert.alert("Success", "Group created successfully!");
+    showAlert("Success", "Group created successfully!");
   };
 
   const handleJoinGroup = () => {
     if (!joinCode.trim()) {
-      Alert.alert("Error", "Please enter a group code");
+      showAlert("Error", "Please enter a group code");
       return;
     }
 
@@ -93,16 +120,16 @@ const GroupsScreen = () => {
       const group = groups.find((g) => g.shareCode === joinCode.toUpperCase());
       setJoinCode("");
       setShowJoinModal(false);
-      Alert.alert("Success", `Joined "${group?.name}"!`);
+      showAlert("Success", `Joined "${group?.name}"!`);
     } else {
-      Alert.alert("Error", "Invalid group code or you are already a member");
+      showAlert("Error", "Invalid group code or you are already a member");
     }
   };
 
   const handleLeaveGroup = (groupId: string) => {
     if (!user) return;
 
-    Alert.alert(
+    showAlert(
       "Leave Group",
       "Are you sure you want to leave this group?",
       [
@@ -112,7 +139,7 @@ const GroupsScreen = () => {
           style: "destructive",
           onPress: () => {
             leaveGroup(groupId, user.id);
-            Alert.alert("Success", "Left the group");
+            showAlert("Success", "Left the group");
           },
         },
       ]
@@ -125,7 +152,7 @@ const GroupsScreen = () => {
 
     // Check if user is the creator
     if (group.teacherId !== user?.id) {
-      Alert.alert("Permission Denied", "Only the group creator can edit this group");
+      showAlert("Permission Denied", "Only the group creator can edit this group");
       return;
     }
 
@@ -141,7 +168,7 @@ const GroupsScreen = () => {
 
   const handleSaveEdit = () => {
     if (!groupName.trim()) {
-      Alert.alert("Error", "Please enter a group name");
+      showAlert("Error", "Please enter a group name");
       return;
     }
 
@@ -163,19 +190,19 @@ const GroupsScreen = () => {
       setClassName("");
       setTeacherEmail("");
       setShowEditModal(false);
-      Alert.alert("Success", "Group updated successfully!");
+      showAlert("Success", "Group updated successfully!");
     } else {
-      Alert.alert("Error", "Failed to update group");
+      showAlert("Error", "Failed to update group");
     }
   };
 
   const handleCopyCode = (shareCode: string) => {
     Clipboard.setString(shareCode);
-    Alert.alert("Copied!", `Code "${shareCode}" copied to clipboard`);
+    showAlert("Copied!", `Code "${shareCode}" copied to clipboard`);
   };
 
   const handleRegenerateCode = (groupId: string, groupName: string) => {
-    Alert.alert(
+    showAlert(
       "Regenerate Code",
       `This will create a new share code for "${groupName}". The old code will no longer work. Continue?`,
       [
@@ -185,7 +212,7 @@ const GroupsScreen = () => {
           style: "default",
           onPress: () => {
             const newCode = regenerateShareCode(groupId);
-            Alert.alert("Success", `New code: ${newCode}`);
+            showAlert("Success", `New code: ${newCode}`);
           },
         },
       ]
@@ -1596,6 +1623,16 @@ const GroupsScreen = () => {
           </SafeAreaView>
         </Modal>
       </SafeAreaView>
+
+      {/* Custom Alert Modal */}
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        buttons={alertState.buttons}
+        onClose={hideAlert}
+        theme={theme}
+      />
     </View>
   );
 };

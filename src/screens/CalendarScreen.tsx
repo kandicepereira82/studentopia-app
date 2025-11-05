@@ -127,8 +127,6 @@ const CalendarScreen = () => {
 
   const selectedDateTasks = getTasksForDate(selectedDate);
 
-  console.log("[CalendarScreen] Rendering. User:", user ? "exists" : "null");
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
       <SafeAreaView style={{ flex: 1 }}>

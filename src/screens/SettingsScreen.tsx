@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, Alert, Switch } from "react-native";
+import { View, Text, ScrollView, Pressable, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -17,6 +17,14 @@ import {
   hasCalendarPermissions,
   getDeviceCalendars,
 } from "../services/calendarService";
+import CustomAlert from "../components/CustomAlert";
+
+interface AlertState {
+  visible: boolean;
+  title: string;
+  message: string;
+  buttons?: Array<{ text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }>;
+}
 
 const SettingsScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -28,6 +36,25 @@ const SettingsScreen = () => {
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
   const [scheduledNotificationsCount, setScheduledNotificationsCount] = useState(0);
   const [availableCalendars, setAvailableCalendars] = useState<number>(0);
+  const [alertState, setAlertState] = useState<AlertState>({
+    visible: false,
+    title: "",
+    message: "",
+    buttons: [],
+  });
+
+  const showAlert = (title: string, message: string, buttons?: AlertState["buttons"]) => {
+    setAlertState({
+      visible: true,
+      title,
+      message,
+      buttons: buttons || [{ text: "OK", style: "default" }],
+    });
+  };
+
+  const hideAlert = () => {
+    setAlertState({ visible: false, title: "", message: "", buttons: [] });
+  };
 
   useEffect(() => {
     checkPermissions();
@@ -48,12 +75,12 @@ const SettingsScreen = () => {
     const granted = await requestNotificationPermissions();
     if (granted) {
       setNotificationsEnabled(true);
-      Alert.alert(
+      showAlert(
         "Notifications Enabled",
         "You will now receive reminders for your tasks and study sessions."
       );
     } else {
-      Alert.alert(
+      showAlert(
         "Permission Denied",
         "Please enable notifications in your device settings to receive reminders."
       );
@@ -66,12 +93,12 @@ const SettingsScreen = () => {
       setCalendarSyncEnabled(true);
       const calendars = await getDeviceCalendars();
       setAvailableCalendars(calendars.length);
-      Alert.alert(
+      showAlert(
         "Calendar Sync Enabled",
         `StudyPal can now sync with your device calendar. Found ${calendars.length} calendars on your device.`
       );
     } else {
-      Alert.alert(
+      showAlert(
         "Permission Denied",
         "Please enable calendar access in your device settings to sync events."
       );
@@ -88,7 +115,7 @@ const SettingsScreen = () => {
       if (notificationId) {
         setDailyReminderEnabled(true);
         loadScheduledNotifications();
-        Alert.alert(
+        showAlert(
           "Daily Reminder Set",
           "You will receive a reminder at 9:00 AM every day."
         );
@@ -107,12 +134,12 @@ const SettingsScreen = () => {
       "This is a test notification from StudyPal! 🎉"
     );
     if (notificationId) {
-      Alert.alert("Success", "Test notification sent!");
+      showAlert("Success", "Test notification sent!");
     }
   };
 
   const handleClearAllNotifications = async () => {
-    Alert.alert(
+    showAlert(
       "Clear All Notifications",
       "Are you sure you want to cancel all scheduled notifications?",
       [
@@ -123,7 +150,7 @@ const SettingsScreen = () => {
           onPress: async () => {
             await cancelAllNotifications();
             loadScheduledNotifications();
-            Alert.alert("Success", "All scheduled notifications cleared.");
+            showAlert("Success", "All scheduled notifications cleared.");
           },
         },
       ]
@@ -389,6 +416,16 @@ const SettingsScreen = () => {
           <View className="h-6" />
         </ScrollView>
       </SafeAreaView>
+
+      {/* Custom Alert Modal */}
+      <CustomAlert
+        visible={alertState.visible}
+        title={alertState.title}
+        message={alertState.message}
+        buttons={alertState.buttons}
+        onClose={hideAlert}
+        theme={theme}
+      />
     </View>
   );
 };

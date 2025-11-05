@@ -51,7 +51,6 @@ const HomeScreen = () => {
       setQuote(getRandomQuote(user.language));
       setTip(getRandomTip(user.language));
     }
-    console.log("[HomeScreen] Rendered. User:", user ? "exists" : "null");
   }, [user]);
 
   // Watch for timer completion
@@ -64,7 +63,7 @@ const HomeScreen = () => {
       setMinutes(studyDuration);
       setSeconds(0);
     }
-  }, [timerMinutes, timerSeconds, isTimerRunning]);
+  }, [timerMinutes, timerSeconds, isTimerRunning, timerMode, studyDuration, addStudyMinutes, setMode, setMinutes, setSeconds]);
 
   const getTasksForDate = (date: Date) => {
     return tasks.filter((task) => {
@@ -78,7 +77,6 @@ const HomeScreen = () => {
   const weekDays = Array.from({ length: 7 }, (_, i) => addDays(weekStart, i));
 
   if (!user) {
-    console.log("[HomeScreen] No user - showing fallback");
     return (
       <SafeAreaView className="flex-1" style={{ backgroundColor: theme.backgroundGradient[0] }}>
         <View className="flex-1 items-center justify-center p-6">
@@ -92,8 +90,6 @@ const HomeScreen = () => {
       </SafeAreaView>
     );
   }
-
-  console.log("[HomeScreen] User valid - rendering main content");
 
   const todayTasks = getTodayTasks();
   const weekTasks = getWeekTasks();

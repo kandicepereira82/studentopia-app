@@ -103,7 +103,7 @@ const TasksScreen = () => {
     }
   };
 
-  const getCategoryIcon = (cat: TaskCategory) => {
+  const getCategoryIcon = (cat: TaskCategory): keyof typeof Ionicons.glyphMap => {
     switch (cat) {
       case "homework":
         return "book";
@@ -143,8 +143,6 @@ const TasksScreen = () => {
     }
     return new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime();
   });
-
-  console.log("[TasksScreen] Rendering. User:", user ? "exists" : "null", "Tasks count:", tasks.length);
 
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
@@ -319,7 +317,7 @@ const TasksScreen = () => {
                         }}
                       >
                         <Ionicons
-                          name={getCategoryIcon(task.category) as any}
+                          name={getCategoryIcon(task.category)}
                           size={14}
                           color={getCategoryColor(task.category)}
                         />
