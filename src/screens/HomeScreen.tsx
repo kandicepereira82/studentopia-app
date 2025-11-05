@@ -15,6 +15,14 @@ import { getRandomQuote, getRandomTip } from "../utils/content";
 import { getTheme } from "../utils/themes";
 import { MotivationalQuote, StudyTip, Task } from "../types";
 import { cn } from "../utils/cn";
+import {
+  getTimeBasedGreeting,
+  getGreetingSubMessage,
+  getTaskReminderMessage,
+  getWeeklyTaskPrompt,
+  getEncouragementMessage,
+  getTimeOfDay,
+} from "../utils/engagementMessages";
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -107,7 +115,7 @@ const HomeScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Header with Poppins */}
+        {/* Header with Time-Based Greeting */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
           <View style={{ flex: 1 }}>
             <Text style={{
@@ -116,14 +124,14 @@ const HomeScreen = () => {
               color: theme.textPrimary,
               marginBottom: 4
             }}>
-              StudyPal
+              {getTimeBasedGreeting(user.username)}
             </Text>
             <Text style={{
               fontSize: 16,
               fontFamily: 'Poppins_400Regular',
               color: theme.textSecondary
             }}>
-              {t("welcomeBack")}, {user.username}! 👋
+              {getGreetingSubMessage()}
             </Text>
           </View>
           <View style={{ marginLeft: 12 }}>
@@ -139,6 +147,95 @@ const HomeScreen = () => {
         </View>
 
         <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} showsVerticalScrollIndicator={false}>
+          {/* Study Pal Welcome Message Card */}
+          <View style={{
+            backgroundColor: 'white',
+            borderRadius: 24,
+            padding: 24,
+            marginBottom: 20,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.08,
+            shadowRadius: 12,
+            elevation: 3
+          }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+              <View style={{ marginRight: 16, marginTop: 4 }}>
+                <StudyPal
+                  animal={user.studyPalConfig.animal}
+                  name={user.studyPalConfig.name}
+                  animationsEnabled={false}
+                  size={55}
+                  showName={false}
+                  showMessage={false}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={{
+                  fontSize: 15,
+                  fontFamily: 'Poppins_600SemiBold',
+                  color: theme.primary,
+                  marginBottom: 8
+                }}>
+                  {user.studyPalConfig.name} says:
+                </Text>
+                {(() => {
+                  const taskReminder = getTaskReminderMessage(todayTasks.length, todayCompleted, user.studyPalConfig.name);
+                  const weeklyPrompt = getWeeklyTaskPrompt(weekTasks.length, user.studyPalConfig.name);
+                  const encouragement = getEncouragementMessage(todayProgress, user.studyPalConfig.name);
+
+                  return (
+                    <>
+                      {taskReminder && (
+                        <Text style={{
+                          fontSize: 15,
+                          fontFamily: 'Poppins_500Medium',
+                          color: theme.textPrimary,
+                          lineHeight: 22,
+                          marginBottom: 8
+                        }}>
+                          {taskReminder}
+                        </Text>
+                      )}
+                      {!taskReminder && weeklyPrompt && (
+                        <Text style={{
+                          fontSize: 15,
+                          fontFamily: 'Poppins_500Medium',
+                          color: theme.textPrimary,
+                          lineHeight: 22,
+                          marginBottom: 8
+                        }}>
+                          {weeklyPrompt}
+                        </Text>
+                      )}
+                      {encouragement && todayTasks.length > 0 && (
+                        <Text style={{
+                          fontSize: 14,
+                          fontFamily: 'Poppins_400Regular',
+                          color: theme.textSecondary,
+                          fontStyle: 'italic'
+                        }}>
+                          {encouragement}
+                        </Text>
+                      )}
+                      {todayTasks.length === 0 && weekTasks.length === 0 && (
+                        <Text style={{
+                          fontSize: 15,
+                          fontFamily: 'Poppins_500Medium',
+                          color: theme.textPrimary,
+                          lineHeight: 22,
+                          marginBottom: 4
+                        }}>
+                          {"Ready to get started? Let's add some tasks and make today productive!"}
+                        </Text>
+                      )}
+                    </>
+                  );
+                })()}
+              </View>
+            </View>
+          </View>
+
           {/* Today's Inspiration with soft shadow */}
           {quote && (
             <View style={{
@@ -255,15 +352,34 @@ const HomeScreen = () => {
                 </View>
 
                 {todayTasks.length === 0 ? (
-                  <Text style={{
-                    fontSize: 14,
-                    fontFamily: 'Poppins_400Regular',
-                    color: theme.textSecondary,
-                    textAlign: 'center',
-                    paddingVertical: 16
-                  }}>
-                    No tasks due today
-                  </Text>
+                  <View style={{ alignItems: 'center', paddingVertical: 20 }}>
+                    <Text style={{
+                      fontSize: 14,
+                      fontFamily: 'Poppins_500Medium',
+                      color: theme.textSecondary,
+                      textAlign: 'center',
+                      marginBottom: 12
+                    }}>
+                      No tasks due today
+                    </Text>
+                    <Pressable
+                      onPress={() => navigation.navigate("Tasks" as never)}
+                      style={{
+                        backgroundColor: theme.primary,
+                        paddingHorizontal: 20,
+                        paddingVertical: 10,
+                        borderRadius: 12
+                      }}
+                    >
+                      <Text style={{
+                        fontSize: 13,
+                        fontFamily: 'Poppins_600SemiBold',
+                        color: 'white'
+                      }}>
+                        + Add Task
+                      </Text>
+                    </Pressable>
+                  </View>
                 ) : (
                   todayTasks.slice(0, 3).map((task) => (
                     <Pressable

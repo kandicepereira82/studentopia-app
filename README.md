@@ -4,6 +4,11 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 
 ## ✨ Latest Updates
 
+- ✅ **Time-Based Personalized Greetings** - Welcome messages change based on time of day (morning, afternoon, evening, night)
+- ✅ **Study Pal Engagement Messages** - Your Study Pal provides friendly task reminders and motivational messages on home page
+- ✅ **Smart Task Reminders** - Gentle prompts when no tasks are added, with encouraging messages for daily and weekly goals
+- ✅ **Dynamic Encouragement** - Real-time motivational messages based on task completion progress
+- ✅ **Quick Task Creation** - Add tasks directly from empty state with convenient button
 - ✅ **Study Pal Integration** - Study Pal companion now appears throughout the app for consistent guidance and engagement
 - ✅ **Static Study Pal Images** - Removed distracting animations, replaced with friendly static images for cleaner UI
 - ✅ **Study Pal in Quotes & Tips** - Your companion now appears alongside motivational quotes and study tips
@@ -61,6 +66,25 @@ StudyPal is a comprehensive mobile productivity app designed for students to sta
 - ✅ **Improved Timer Display** - Fixed font size for better readability
 
 ## Features
+
+### 🎯 User Engagement & Personalization
+- **Time-Based Greetings**: Personalized welcome messages that change throughout the day
+  - Morning (5 AM - 12 PM): "Good morning, [username]!"
+  - Afternoon (12 PM - 5 PM): "Good afternoon, [username]!"
+  - Evening (5 PM - 9 PM): "Good evening, [username]!"
+  - Night (9 PM - 5 AM): "Great work today, [username]!"
+- **Motivational Sub-Messages**: Random encouraging phrases to start your session
+- **Smart Task Reminders**: Study Pal provides friendly reminders based on your task status
+  - "You have 3 tasks due today — let's do this!"
+  - "No tasks for today yet. Let's add your goals!"
+  - "Amazing! You've completed all tasks today! 🎉"
+- **Weekly Goal Prompts**: Gentle encouragement to plan ahead when no tasks are scheduled
+- **Progress-Based Encouragement**: Real-time motivational messages based on completion rates
+  - 100%: "Perfect! You're on fire today! 🔥"
+  - 75%+: "Great progress! Keep it up!"
+  - 50%+: "You're halfway there! Keep going!"
+- **Empty State Guidance**: Helpful prompts with quick actions when no tasks exist
+- **Study Pal Welcome Card**: Dedicated card on home screen with personalized messages from your companion
 
 ### 📝 Core Task Management
 - **Task CRUD Operations**: Add, edit, delete, and complete tasks
@@ -211,6 +235,7 @@ src/
     ├── cn.ts                  # Tailwind class merger
     ├── translations.ts        # Multi-language translations
     ├── themes.ts              # Theme configurations
+    ├── engagementMessages.ts  # Time-based greetings and task reminders
     └── content.ts             # Motivational quotes & tips
 ```
 
