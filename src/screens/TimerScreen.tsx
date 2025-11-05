@@ -14,12 +14,12 @@ import { TimerMode } from "../types";
 import { cn } from "../utils/cn";
 import { musicService, musicLibrary, MusicTrack } from "../services/musicService";
 
-type AlarmSound = "bell" | "chime" | "beep" | "gentle";
+type AlarmSound = "bell" | "chime" | "gong" | "gentle";
 
 const alarmSounds = [
   { id: "bell" as AlarmSound, name: "Bell", icon: "notifications" },
   { id: "chime" as AlarmSound, name: "Chime", icon: "musical-note" },
-  { id: "beep" as AlarmSound, name: "Beep", icon: "radio" },
+  { id: "gong" as AlarmSound, name: "Gong", icon: "radio" },
   { id: "gentle" as AlarmSound, name: "Gentle", icon: "moon" },
 ];
 
@@ -61,7 +61,7 @@ const TimerScreen = () => {
   const [preloadedSounds, setPreloadedSounds] = useState<Record<AlarmSound, Audio.Sound | null>>({
     bell: null,
     chime: null,
-    beep: null,
+    gong: null,
     gentle: null
   });
   const [showAlarmSnooze, setShowAlarmSnooze] = useState(false);
@@ -76,14 +76,14 @@ const TimerScreen = () => {
       const soundUrls = {
         bell: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3", // Bell chimes
         chime: "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", // Original chime
-        beep: "https://assets.mixkit.co/active_storage/sfx/1006/1006-preview.mp3", // Gentle alarm beep
+        gong: "https://assets.mixkit.co/active_storage/sfx/2866/2866-preview.mp3", // Gong sound
         gentle: "https://assets.mixkit.co/active_storage/sfx/2393/2393-preview.mp3" // Ocean waves
       };
 
       const loadedSounds: Record<AlarmSound, Audio.Sound | null> = {
         bell: null,
         chime: null,
-        beep: null,
+        gong: null,
         gentle: null
       };
 
