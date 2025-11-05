@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Pressable, TextInput, Modal } from "react-native";
+import { View, Text, ScrollView, Pressable, TextInput, Modal, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import useUserStore from "../state/userStore";
@@ -62,6 +62,37 @@ const ProfileScreen = () => {
     "lion", "frog", "koala", "sloth", "monkey",
     "hamster", "reindeer", "chipmunk", "elephant", "goldfish"
   ];
+
+  const getAnimalImage = (animal: StudyPalAnimal) => {
+    const imageMap: Record<StudyPalAnimal, any> = {
+      cat: require("../../assets/image-1762363422.png"),
+      redpanda: require("../../assets/image-1762363424.png"),
+      owl: require("../../assets/image-1762363426.png"),
+      penguin: require("../../assets/image-1762363428.png"),
+      horse: require("../../assets/image-1762363431.png"),
+      dog: require("../../assets/image-1762363432.png"),
+      chick: require("../../assets/image-1762363434.png"),
+      bear: require("../../assets/image-1762363436.png"),
+      hedgehog: require("../../assets/image-1762363438.png"),
+      tiger: require("../../assets/image-1762363413.png"),
+      turtle: require("../../assets/image-1762363411.png"),
+      bunny: require("../../assets/image-1762363440.png"),
+      giraffe: require("../../assets/image-1762363442.png"),
+      lamb: require("../../assets/image-1762363444.png"),
+      alpaca: require("../../assets/image-1762363456.png"),
+      lion: require("../../assets/image-1762363445.png"),
+      frog: require("../../assets/image-1762363447.png"),
+      koala: require("../../assets/image-1762363449.png"),
+      sloth: require("../../assets/image-1762363415.png"),
+      monkey: require("../../assets/image-1762363451.png"),
+      hamster: require("../../assets/image-1762363453.png"),
+      reindeer: require("../../assets/image-1762363417.png"),
+      chipmunk: require("../../assets/image-1762363418.png"),
+      elephant: require("../../assets/image-1762363455.png"),
+      goldfish: require("../../assets/image-1762363420.png"),
+    };
+    return imageMap[animal] || imageMap.cat;
+  };
 
   const handleSavePalName = () => {
     if (user && studyPalName.trim()) {
@@ -188,33 +219,11 @@ const ProfileScreen = () => {
                 {t("studyPalAnimal")}
               </Text>
               <View className="flex-row items-center">
-                <Text className="text-lg mr-2">
-                  {user.studyPalConfig.animal === "cat" && "🐱"}
-                  {user.studyPalConfig.animal === "redpanda" && "🦊"}
-                  {user.studyPalConfig.animal === "owl" && "🦉"}
-                  {user.studyPalConfig.animal === "penguin" && "🐧"}
-                  {user.studyPalConfig.animal === "horse" && "🐴"}
-                  {user.studyPalConfig.animal === "dog" && "🐶"}
-                  {user.studyPalConfig.animal === "chick" && "🐥"}
-                  {user.studyPalConfig.animal === "bear" && "🐻"}
-                  {user.studyPalConfig.animal === "hedgehog" && "🦔"}
-                  {user.studyPalConfig.animal === "tiger" && "🐯"}
-                  {user.studyPalConfig.animal === "turtle" && "🐢"}
-                  {user.studyPalConfig.animal === "bunny" && "🐰"}
-                  {user.studyPalConfig.animal === "giraffe" && "🦒"}
-                  {user.studyPalConfig.animal === "lamb" && "🐑"}
-                  {user.studyPalConfig.animal === "alpaca" && "🦙"}
-                  {user.studyPalConfig.animal === "lion" && "🦁"}
-                  {user.studyPalConfig.animal === "frog" && "🐸"}
-                  {user.studyPalConfig.animal === "koala" && "🐨"}
-                  {user.studyPalConfig.animal === "sloth" && "🦥"}
-                  {user.studyPalConfig.animal === "monkey" && "🐵"}
-                  {user.studyPalConfig.animal === "hamster" && "🐹"}
-                  {user.studyPalConfig.animal === "reindeer" && "🦌"}
-                  {user.studyPalConfig.animal === "chipmunk" && "🐿️"}
-                  {user.studyPalConfig.animal === "elephant" && "🐘"}
-                  {user.studyPalConfig.animal === "goldfish" && "🐠"}
-                </Text>
+                <Image
+                  source={getAnimalImage(user.studyPalConfig.animal)}
+                  style={{ width: 32, height: 32, marginRight: 8 }}
+                  resizeMode="contain"
+                />
                 <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
               </View>
             </Pressable>
@@ -444,35 +453,13 @@ const ProfileScreen = () => {
                 )}
               >
                 <View className="flex-row items-center">
-                  <Text className="text-3xl mr-3">
-                    {animal === "cat" && "🐱"}
-                    {animal === "redpanda" && "🦊"}
-                    {animal === "owl" && "🦉"}
-                    {animal === "penguin" && "🐧"}
-                    {animal === "horse" && "🐴"}
-                    {animal === "dog" && "🐶"}
-                    {animal === "chick" && "🐥"}
-                    {animal === "bear" && "🐻"}
-                    {animal === "hedgehog" && "🦔"}
-                    {animal === "tiger" && "🐯"}
-                    {animal === "turtle" && "🐢"}
-                    {animal === "bunny" && "🐰"}
-                    {animal === "giraffe" && "🦒"}
-                    {animal === "lamb" && "🐑"}
-                    {animal === "alpaca" && "🦙"}
-                    {animal === "lion" && "🦁"}
-                    {animal === "frog" && "🐸"}
-                    {animal === "koala" && "🐨"}
-                    {animal === "sloth" && "🦥"}
-                    {animal === "monkey" && "🐵"}
-                    {animal === "hamster" && "🐹"}
-                    {animal === "reindeer" && "🦌"}
-                    {animal === "chipmunk" && "🐿️"}
-                    {animal === "elephant" && "🐘"}
-                    {animal === "goldfish" && "🐠"}
-                  </Text>
+                  <Image
+                    source={getAnimalImage(animal)}
+                    style={{ width: 40, height: 40, marginRight: 12 }}
+                    resizeMode="contain"
+                  />
                   <Text className="text-base font-medium text-gray-800 dark:text-gray-100 capitalize">
-                    {animal}
+                    {animal === "redpanda" ? "red panda" : animal}
                   </Text>
                 </View>
                 {user.studyPalConfig.animal === animal && (

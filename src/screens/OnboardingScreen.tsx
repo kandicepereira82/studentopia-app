@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Pressable, ScrollView } from "react-native";
+import { View, Text, TextInput, Pressable, ScrollView, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -29,6 +29,37 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
     "lion", "frog", "koala", "sloth", "monkey",
     "hamster", "reindeer", "chipmunk", "elephant", "goldfish"
   ];
+
+  const getAnimalImage = (animal: StudyPalAnimal) => {
+    const imageMap: Record<StudyPalAnimal, any> = {
+      cat: require("../../assets/image-1762363422.png"),
+      redpanda: require("../../assets/image-1762363424.png"),
+      owl: require("../../assets/image-1762363426.png"),
+      penguin: require("../../assets/image-1762363428.png"),
+      horse: require("../../assets/image-1762363431.png"),
+      dog: require("../../assets/image-1762363432.png"),
+      chick: require("../../assets/image-1762363434.png"),
+      bear: require("../../assets/image-1762363436.png"),
+      hedgehog: require("../../assets/image-1762363438.png"),
+      tiger: require("../../assets/image-1762363413.png"),
+      turtle: require("../../assets/image-1762363411.png"),
+      bunny: require("../../assets/image-1762363440.png"),
+      giraffe: require("../../assets/image-1762363442.png"),
+      lamb: require("../../assets/image-1762363444.png"),
+      alpaca: require("../../assets/image-1762363456.png"),
+      lion: require("../../assets/image-1762363445.png"),
+      frog: require("../../assets/image-1762363447.png"),
+      koala: require("../../assets/image-1762363449.png"),
+      sloth: require("../../assets/image-1762363415.png"),
+      monkey: require("../../assets/image-1762363451.png"),
+      hamster: require("../../assets/image-1762363453.png"),
+      reindeer: require("../../assets/image-1762363417.png"),
+      chipmunk: require("../../assets/image-1762363418.png"),
+      elephant: require("../../assets/image-1762363455.png"),
+      goldfish: require("../../assets/image-1762363420.png"),
+    };
+    return imageMap[animal] || imageMap.cat;
+  };
 
   const themes: { color: ThemeColor; colors: [string, string]; emoji: string; name: string }[] = [
     { color: "nature", colors: ["#4CAF50", "#2E7D32"], emoji: "🌿", name: "Nature" },
@@ -147,13 +178,6 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                   <View className="flex-row flex-wrap gap-3">
                     {animals.map((a) => {
-                      const emojiMap: Record<StudyPalAnimal, string> = {
-                        cat: "🐱", redpanda: "🦊", owl: "🦉", penguin: "🐧", horse: "🐴",
-                        dog: "🐶", chick: "🐥", bear: "🐻", hedgehog: "🦔", tiger: "🐯",
-                        turtle: "🐢", bunny: "🐰", giraffe: "🦒", lamb: "🐑", alpaca: "🦙",
-                        lion: "🦁", frog: "🐸", koala: "🐨", sloth: "🦥", monkey: "🐵",
-                        hamster: "🐹", reindeer: "🦌", chipmunk: "🐿️", elephant: "🐘", goldfish: "🐠"
-                      };
                       return (
                         <Pressable
                           key={a}
@@ -163,9 +187,13 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                             animal === a && "border-4 border-blue-500"
                           )}
                         >
-                          <Text className="text-4xl">{emojiMap[a]}</Text>
+                          <Image
+                            source={getAnimalImage(a)}
+                            style={{ width: 60, height: 60 }}
+                            resizeMode="contain"
+                          />
                           <Text className="text-xs font-medium text-gray-700 dark:text-gray-300 mt-1 capitalize">
-                            {a}
+                            {a === "redpanda" ? "red panda" : a}
                           </Text>
                         </Pressable>
                       );

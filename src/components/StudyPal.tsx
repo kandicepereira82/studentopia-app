@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Image } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -342,6 +342,37 @@ const StudyPal: React.FC<StudyPalProps> = ({
     ],
   }));
 
+  const getAnimalImage = (animal: StudyPalAnimal) => {
+    const imageMap: Record<StudyPalAnimal, any> = {
+      cat: require("../../assets/image-1762363422.png"),
+      redpanda: require("../../assets/image-1762363424.png"),
+      owl: require("../../assets/image-1762363426.png"),
+      penguin: require("../../assets/image-1762363428.png"),
+      horse: require("../../assets/image-1762363431.png"),
+      dog: require("../../assets/image-1762363432.png"),
+      chick: require("../../assets/image-1762363434.png"),
+      bear: require("../../assets/image-1762363436.png"),
+      hedgehog: require("../../assets/image-1762363438.png"),
+      tiger: require("../../assets/image-1762363413.png"),
+      turtle: require("../../assets/image-1762363411.png"),
+      bunny: require("../../assets/image-1762363440.png"),
+      giraffe: require("../../assets/image-1762363442.png"),
+      lamb: require("../../assets/image-1762363444.png"),
+      alpaca: require("../../assets/image-1762363456.png"),
+      lion: require("../../assets/image-1762363445.png"),
+      frog: require("../../assets/image-1762363447.png"),
+      koala: require("../../assets/image-1762363449.png"),
+      sloth: require("../../assets/image-1762363415.png"),
+      monkey: require("../../assets/image-1762363451.png"),
+      hamster: require("../../assets/image-1762363453.png"),
+      reindeer: require("../../assets/image-1762363417.png"),
+      chipmunk: require("../../assets/image-1762363418.png"),
+      elephant: require("../../assets/image-1762363455.png"),
+      goldfish: require("../../assets/image-1762363420.png"),
+    };
+    return imageMap[animal] || imageMap.cat;
+  };
+
   const getAnimalEmoji = (animal: StudyPalAnimal): string => {
     const emojiMap: Record<StudyPalAnimal, string> = {
       cat: "🐱",
@@ -443,7 +474,11 @@ const StudyPal: React.FC<StudyPalProps> = ({
           }
         ]}
       >
-        <Text style={{ fontSize: size * 0.75 }}>{getAnimalEmoji(animal)}</Text>
+        <Image
+          source={getAnimalImage(animal)}
+          style={{ width: size, height: size }}
+          resizeMode="contain"
+        />
       </Animated.View>
 
       {/* Name label below animal */}
