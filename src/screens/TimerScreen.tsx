@@ -74,10 +74,10 @@ const TimerScreen = () => {
   useEffect(() => {
     const loadSounds = async () => {
       const soundUrls = {
-        bell: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
-        chime: "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3",
-        beep: "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3",
-        gentle: "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
+        bell: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3", // Bell chimes
+        chime: "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3", // Original chime
+        beep: "https://assets.mixkit.co/active_storage/sfx/1006/1006-preview.mp3", // Gentle alarm beep
+        gentle: "https://assets.mixkit.co/active_storage/sfx/2393/2393-preview.mp3" // Ocean waves
       };
 
       const loadedSounds: Record<AlarmSound, Audio.Sound | null> = {
