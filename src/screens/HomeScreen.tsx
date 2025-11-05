@@ -662,7 +662,7 @@ const HomeScreen = () => {
                   textAlign: 'center',
                   marginTop: 4
                 }}>
-                  tasks completed (includes today)
+                  tasks completed
                 </Text>
                 <View style={{
                   marginTop: 12,
