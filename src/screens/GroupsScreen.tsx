@@ -489,7 +489,10 @@ const GroupsScreen = () => {
                           {/* Code Action Buttons */}
                           <View style={{ flexDirection: 'row', gap: 8 }}>
                             <Pressable
-                              onPress={() => handleCopyCode(group.shareCode)}
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                handleCopyCode(group.shareCode);
+                              }}
                               style={{
                                 flex: 1,
                                 flexDirection: 'row',
@@ -507,7 +510,10 @@ const GroupsScreen = () => {
                             </Pressable>
 
                             <Pressable
-                              onPress={() => handleShowQR(group.shareCode)}
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                handleShowQR(group.shareCode);
+                              }}
                               style={{
                                 flex: 1,
                                 flexDirection: 'row',
@@ -525,7 +531,10 @@ const GroupsScreen = () => {
                             </Pressable>
 
                             <Pressable
-                              onPress={() => handleRegenerateCode(group.id, group.name)}
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                handleRegenerateCode(group.id, group.name);
+                              }}
                               style={{
                                 flex: 1,
                                 flexDirection: 'row',
@@ -546,7 +555,10 @@ const GroupsScreen = () => {
 
                         {/* Edit Group Button (for creators only) */}
                         <Pressable
-                          onPress={() => handleEditGroup(group.id)}
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            handleEditGroup(group.id);
+                          }}
                           style={{
                             flexDirection: 'row',
                             alignItems: 'center',
@@ -727,7 +739,10 @@ const GroupsScreen = () => {
                         {/* Action Buttons */}
                         <View className="flex-row gap-2">
                           <Pressable
-                            onPress={() => handleLeaveGroup(group.id)}
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              handleLeaveGroup(group.id);
+                            }}
                             className="flex-1 py-2 rounded-xl items-center"
                             style={{ backgroundColor: "#EF444420" }}
                           >
