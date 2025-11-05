@@ -130,8 +130,10 @@ const HomeScreen = () => {
             <StudyPal
               animal={user.studyPalConfig.animal}
               name={user.studyPalConfig.name}
-              animationsEnabled={user.studyPalConfig.animationsEnabled}
+              animationsEnabled={false}
               size={50}
+              showName={false}
+              showMessage={false}
             />
           </View>
         </View>
@@ -170,23 +172,37 @@ const HomeScreen = () => {
                   {"Today's Inspiration"}
                 </Text>
               </View>
-              <Text style={{
-                fontSize: 16,
-                fontFamily: 'Poppins_400Regular',
-                fontStyle: 'italic',
-                color: theme.textPrimary,
-                lineHeight: 24,
-                marginBottom: 12
-              }}>
-                &ldquo;{quote.text}&rdquo;
-              </Text>
-              <Text style={{
-                fontSize: 14,
-                fontFamily: 'Poppins_500Medium',
-                color: theme.textSecondary
-              }}>
-                — {quote.author}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 }}>
+                <View style={{ marginRight: 16 }}>
+                  <StudyPal
+                    animal={user.studyPalConfig.animal}
+                    name={user.studyPalConfig.name}
+                    animationsEnabled={false}
+                    size={40}
+                    showName={false}
+                    showMessage={false}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    fontSize: 16,
+                    fontFamily: 'Poppins_400Regular',
+                    fontStyle: 'italic',
+                    color: theme.textPrimary,
+                    lineHeight: 24,
+                    marginBottom: 12
+                  }}>
+                    &ldquo;{quote.text}&rdquo;
+                  </Text>
+                  <Text style={{
+                    fontSize: 14,
+                    fontFamily: 'Poppins_500Medium',
+                    color: theme.textSecondary
+                  }}>
+                    — {quote.author}
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
 
@@ -499,18 +515,12 @@ const HomeScreen = () => {
                   <StudyPal
                     animal={user.studyPalConfig.animal}
                     name={user.studyPalConfig.name}
-                    animationsEnabled={user.studyPalConfig.animationsEnabled}
+                    animationsEnabled={false}
                     size={50}
+                    showName={true}
+                    showMessage={false}
                   />
                 </View>
-                <Text style={{
-                  fontSize: 15,
-                  fontFamily: 'Poppins_600SemiBold',
-                  color: theme.textPrimary,
-                  textAlign: 'center'
-                }}>
-                  {user.studyPalConfig.name}
-                </Text>
                 <Text style={{
                   fontSize: 12,
                   fontFamily: 'Poppins_400Regular',
@@ -644,7 +654,7 @@ const HomeScreen = () => {
                   textAlign: 'center',
                   marginTop: 4
                 }}>
-                  tasks completed
+                  tasks completed (includes today)
                 </Text>
                 <View style={{
                   marginTop: 12,
@@ -708,8 +718,18 @@ const HomeScreen = () => {
               </Text>
             </View>
 
-            {/* Timer Display */}
+            {/* Timer Display with Study Pal */}
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
+              <View style={{ marginBottom: 12 }}>
+                <StudyPal
+                  animal={user.studyPalConfig.animal}
+                  name={user.studyPalConfig.name}
+                  animationsEnabled={false}
+                  size={50}
+                  showName={false}
+                  showMessage={false}
+                />
+              </View>
               <View style={{
                 backgroundColor: theme.primary + '10',
                 borderRadius: 20,
@@ -904,22 +924,36 @@ const HomeScreen = () => {
                   Study Tip
                 </Text>
               </View>
-              <Text style={{
-                fontSize: 17,
-                fontFamily: 'Poppins_600SemiBold',
-                color: theme.textPrimary,
-                marginBottom: 8
-              }}>
-                {tip.title}
-              </Text>
-              <Text style={{
-                fontSize: 15,
-                fontFamily: 'Poppins_400Regular',
-                color: theme.textSecondary,
-                lineHeight: 22
-              }}>
-                {tip.description}
-              </Text>
+              <View style={{ flexDirection: 'row', alignItems: 'flex-start' }}>
+                <View style={{ marginRight: 16 }}>
+                  <StudyPal
+                    animal={user.studyPalConfig.animal}
+                    name={user.studyPalConfig.name}
+                    animationsEnabled={false}
+                    size={40}
+                    showName={false}
+                    showMessage={false}
+                  />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={{
+                    fontSize: 17,
+                    fontFamily: 'Poppins_600SemiBold',
+                    color: theme.textPrimary,
+                    marginBottom: 8
+                  }}>
+                    {tip.title}
+                  </Text>
+                  <Text style={{
+                    fontSize: 15,
+                    fontFamily: 'Poppins_400Regular',
+                    color: theme.textSecondary,
+                    lineHeight: 22
+                  }}>
+                    {tip.description}
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
         </ScrollView>

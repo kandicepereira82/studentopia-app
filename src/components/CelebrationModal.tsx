@@ -85,9 +85,11 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({
             <StudyPal
               animal={user.studyPalConfig.animal}
               name={user.studyPalConfig.name}
-              animationsEnabled={user.studyPalConfig.animationsEnabled}
+              animationsEnabled={false}
               size={100}
               mood="celebrating"
+              showName={true}
+              showMessage={false}
             />
           </View>
 

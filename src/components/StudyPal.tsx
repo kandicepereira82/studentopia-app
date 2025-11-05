@@ -17,6 +17,8 @@ interface StudyPalProps {
   size?: number;
   message?: string;
   mood?: StudyPalMood;
+  showName?: boolean;
+  showMessage?: boolean;
 }
 
 const StudyPal: React.FC<StudyPalProps> = ({
@@ -26,6 +28,8 @@ const StudyPal: React.FC<StudyPalProps> = ({
   size = 80,
   message,
   mood = "neutral",
+  showName = true,
+  showMessage = true,
 }) => {
   const scale = useSharedValue(1);
   const rotation = useSharedValue(0);
@@ -456,10 +460,34 @@ const StudyPal: React.FC<StudyPalProps> = ({
   return (
     <View className="items-center">
       {/* Kawaii style animal with circular background */}
-      <Animated.View
-        style={[
-          animatedStyle,
-          {
+      {animationsEnabled ? (
+        <Animated.View
+          style={[
+            animatedStyle,
+            {
+              backgroundColor: getAnimalBackgroundColor(animal),
+              width: size * 1.4,
+              height: size * 1.4,
+              borderRadius: size * 0.7,
+              justifyContent: "center",
+              alignItems: "center",
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 4,
+              elevation: 4,
+            }
+          ]}
+        >
+          <Image
+            source={getAnimalImage(animal)}
+            style={{ width: size, height: size }}
+            resizeMode="contain"
+          />
+        </Animated.View>
+      ) : (
+        <View
+          style={{
             backgroundColor: getAnimalBackgroundColor(animal),
             width: size * 1.4,
             height: size * 1.4,
@@ -471,28 +499,30 @@ const StudyPal: React.FC<StudyPalProps> = ({
             shadowOpacity: 0.15,
             shadowRadius: 4,
             elevation: 4,
-          }
-        ]}
-      >
-        <Image
-          source={getAnimalImage(animal)}
-          style={{ width: size, height: size }}
-          resizeMode="contain"
-        />
-      </Animated.View>
+          }}
+        >
+          <Image
+            source={getAnimalImage(animal)}
+            style={{ width: size, height: size }}
+            resizeMode="contain"
+          />
+        </View>
+      )}
 
       {/* Name label below animal */}
-      <Text
-        className="text-xs font-semibold mt-2"
-        style={{
-          color: "#4A4A4A",
-          textAlign: "center",
-        }}
-      >
-        {name}
-      </Text>
+      {showName && (
+        <Text
+          className="text-xs font-semibold mt-2"
+          style={{
+            color: "#4A4A4A",
+            textAlign: "center",
+          }}
+        >
+          {name}
+        </Text>
+      )}
 
-      {displayMessage && (
+      {showMessage && displayMessage && (
         <View className="mt-2 rounded-2xl px-4 py-2 max-w-xs" style={{ backgroundColor: "rgba(255, 255, 255, 0.9)" }}>
           <Text className="text-xs font-semibold" style={{ color: "#666" }}>
             {name} says:

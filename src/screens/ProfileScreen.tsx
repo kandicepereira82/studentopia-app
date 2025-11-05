@@ -211,8 +211,10 @@ const ProfileScreen = () => {
             <StudyPal
               animal={user.studyPalConfig.animal}
               name={user.studyPalConfig.name}
-              animationsEnabled={user.studyPalConfig.animationsEnabled}
+              animationsEnabled={false}
               size={80}
+              showName={false}
+              showMessage={false}
             />
           </View>
 
