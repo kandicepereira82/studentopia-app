@@ -57,6 +57,7 @@ const TimerScreen = () => {
   const [selectedAlarm, setSelectedAlarm] = useState<AlarmSound>("bell");
   const [alarmSound, setAlarmSound] = useState<Audio.Sound | null>(null);
   const [previewSound, setPreviewSound] = useState<Audio.Sound | null>(null);
+  const [alarmVolume, setAlarmVolume] = useState(0.7);
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
@@ -112,7 +113,7 @@ const TimerScreen = () => {
       const { sound } = await Audio.Sound.createAsync(
         // Using a simple beep sound - in production, load actual sound files
         { uri: "https://www.soundjay.com/button/sounds/beep-07a.mp3" },
-        { shouldPlay: true, volume: 0.5 }
+        { shouldPlay: true, volume: alarmVolume }
       );
       setAlarmSound(sound);
 
@@ -143,7 +144,7 @@ const TimerScreen = () => {
 
       const { sound } = await Audio.Sound.createAsync(
         { uri: soundUrls[soundType] },
-        { shouldPlay: true, volume: 0.5 }
+        { shouldPlay: true, volume: alarmVolume }
       );
       setPreviewSound(sound);
 
@@ -991,6 +992,31 @@ const TimerScreen = () => {
                 <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary }}>
                   Select the sound to play when timer completes
                 </Text>
+              </View>
+
+              {/* Volume Control */}
+              <View style={{ marginBottom: 20, paddingBottom: 20, borderBottomWidth: 1, borderBottomColor: theme.textSecondary + "20" }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Ionicons name="volume-medium" size={20} color={theme.textSecondary} />
+                    <Text style={{ marginLeft: 8, fontSize: 14, fontFamily: 'Poppins_500Medium', color: theme.textPrimary }}>
+                      Alarm Volume
+                    </Text>
+                  </View>
+                  <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: theme.primary }}>
+                    {Math.round(alarmVolume * 100)}%
+                  </Text>
+                </View>
+                <Slider
+                  style={{ width: "100%", height: 40 }}
+                  minimumValue={0}
+                  maximumValue={1}
+                  value={alarmVolume}
+                  onValueChange={setAlarmVolume}
+                  minimumTrackTintColor={theme.primary}
+                  maximumTrackTintColor={theme.textSecondary + "30"}
+                  thumbTintColor={theme.primary}
+                />
               </View>
 
               {alarmSounds.map((sound) => (
