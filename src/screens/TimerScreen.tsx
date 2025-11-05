@@ -302,38 +302,98 @@ const TimerScreen = () => {
         </View>
 
         {/* Controls */}
-        <View className="px-6 py-4 flex-row items-center justify-center gap-4">
+        <View className="px-6 py-4 flex-row items-center justify-center gap-3">
           {!isRunning ? (
             <Pressable
               onPress={startTimer}
-              className="w-20 h-20 rounded-full items-center justify-center shadow-lg"
+              style={{
+                width: 120,
+                height: 56,
+                borderRadius: 16,
+                alignItems: 'center',
+                justifyContent: 'center',
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+                elevation: 3
+              }}
             >
               <LinearGradient
                 colors={modeColors}
-                className="w-full h-full rounded-full items-center justify-center"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  borderRadius: 16,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8
+                }}
               >
-                <Ionicons name="play" size={36} color="white" />
+                <Ionicons name="play" size={24} color="white" />
+                <Text style={{ color: 'white', fontSize: 16, fontFamily: 'Poppins_600SemiBold' }}>
+                  Start
+                </Text>
               </LinearGradient>
             </Pressable>
           ) : (
             <>
               <Pressable
                 onPress={pauseTimer}
-                className="w-20 h-20 rounded-full items-center justify-center shadow-lg"
+                style={{
+                  width: 120,
+                  height: 56,
+                  borderRadius: 16,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 3
+                }}
               >
                 <LinearGradient
                   colors={[theme.accentColor, theme.primaryDark]}
-                  className="w-full h-full rounded-full items-center justify-center"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: 16,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    gap: 8
+                  }}
                 >
-                  <Ionicons name="pause" size={36} color="white" />
+                  <Ionicons name="pause" size={24} color="white" />
+                  <Text style={{ color: 'white', fontSize: 16, fontFamily: 'Poppins_600SemiBold' }}>
+                    Pause
+                  </Text>
                 </LinearGradient>
               </Pressable>
               <Pressable
                 onPress={stopTimer}
-                className="w-16 h-16 rounded-full items-center justify-center shadow-lg"
-                style={{ backgroundColor: theme.textSecondary }}
+                style={{
+                  width: 120,
+                  height: 56,
+                  borderRadius: 16,
+                  backgroundColor: theme.textSecondary,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: 8,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 8,
+                  elevation: 3
+                }}
               >
-                <Ionicons name="stop" size={28} color="white" />
+                <Ionicons name="stop" size={24} color="white" />
+                <Text style={{ color: 'white', fontSize: 16, fontFamily: 'Poppins_600SemiBold' }}>
+                  Stop
+                </Text>
               </Pressable>
             </>
           )}
