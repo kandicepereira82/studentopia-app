@@ -45,7 +45,6 @@ const ProfileScreen = () => {
   const themes: { color: ThemeColor; name: string; colors: [string, string]; emoji: string }[] = [
     { color: "nature", name: "Nature", colors: ["#4CAF50", "#2E7D32"], emoji: "🌿" },
     { color: "ocean", name: "Ocean", colors: ["#0288D1", "#01579B"], emoji: "🌊" },
-    { color: "sunset", name: "Sunset", colors: ["#FF6F00", "#E65100"], emoji: "🌅" },
     { color: "galaxy", name: "Galaxy", colors: ["#5E35B1", "#311B92"], emoji: "🌌" },
     { color: "rainbow", name: "Rainbow", colors: ["#FBC02D", "#F57F17"], emoji: "🌈" },
     { color: "golden", name: "Golden", colors: ["#F57C00", "#E65100"], emoji: "✨" },

@@ -50,7 +50,6 @@ export type AIChatMode = "chat" | "grammar";
 export type ThemeColor =
   | "nature"
   | "ocean"
-  | "sunset"
   | "galaxy"
   | "rainbow"
   | "golden"
