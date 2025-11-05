@@ -64,6 +64,8 @@ const TimerScreen = () => {
     beep: null,
     gentle: null
   });
+  const [showAlarmSnooze, setShowAlarmSnooze] = useState(false);
+  const [alarmInterval, setAlarmInterval] = useState<NodeJS.Timeout | null>(null);
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
@@ -72,10 +74,10 @@ const TimerScreen = () => {
   useEffect(() => {
     const loadSounds = async () => {
       const soundUrls = {
-        bell: "https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3",
-        chime: "https://www.soundjay.com/misc/sounds/wind-chime-1.mp3",
-        beep: "https://www.soundjay.com/button/sounds/beep-07a.mp3",
-        gentle: "https://www.soundjay.com/human/sounds/meditation-bell-001.mp3"
+        bell: "https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3",
+        chime: "https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3",
+        beep: "https://assets.mixkit.co/active_storage/sfx/2354/2354-preview.mp3",
+        gentle: "https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"
       };
 
       const loadedSounds: Record<AlarmSound, Audio.Sound | null> = {
@@ -91,7 +93,7 @@ const TimerScreen = () => {
           try {
             const { sound } = await Audio.Sound.createAsync(
               { uri: url },
-              { shouldPlay: false, volume: alarmVolume }
+              { shouldPlay: false, volume: alarmVolume, isLooping: false }
             );
             loadedSounds[key as AlarmSound] = sound;
           } catch (error) {
@@ -181,23 +183,54 @@ const TimerScreen = () => {
     try {
       const sound = preloadedSounds[selectedAlarm];
       if (sound) {
-        // Rewind to start and play
-        await sound.setPositionAsync(0);
-        await sound.setVolumeAsync(alarmVolume);
-        await sound.playAsync();
+        // Show snooze modal
+        setShowAlarmSnooze(true);
 
-        // Stop after 3 seconds
-        setTimeout(async () => {
+        // Play alarm repeatedly until snoozed
+        const playSound = async () => {
           try {
-            await sound.stopAsync();
+            await sound.setPositionAsync(0);
+            await sound.setVolumeAsync(alarmVolume);
+            await sound.playAsync();
           } catch (error) {
             // Ignore errors
           }
+        };
+
+        // Play immediately
+        await playSound();
+
+        // Set interval to repeat every 3 seconds
+        const interval = setInterval(async () => {
+          await playSound();
         }, 3000);
+
+        setAlarmInterval(interval);
       }
     } catch (error) {
       // Silently fail if sound doesn't play
     }
+  };
+
+  const snoozeAlarm = async () => {
+    // Stop the alarm
+    if (alarmInterval) {
+      clearInterval(alarmInterval);
+      setAlarmInterval(null);
+    }
+
+    // Stop any playing sound
+    const sound = preloadedSounds[selectedAlarm];
+    if (sound) {
+      try {
+        await sound.stopAsync();
+      } catch (error) {
+        // Ignore errors
+      }
+    }
+
+    // Hide snooze modal
+    setShowAlarmSnooze(false);
   };
 
   const playPreviewSound = async (soundType: AlarmSound) => {
@@ -356,7 +389,7 @@ const TimerScreen = () => {
             className="flex-1"
           >
             <LinearGradient
-              colors={mode === "study" ? ["#10B981", "#059669"] : ["#E5E7EB", "#D1D5DB"]}
+              colors={mode === "study" ? [theme.primary, theme.primaryDark] : ["#E5E7EB", "#D1D5DB"]}
               style={{
                 paddingVertical: 16,
                 borderRadius: 24,
@@ -391,7 +424,7 @@ const TimerScreen = () => {
             className="flex-1"
           >
             <LinearGradient
-              colors={mode === "break" ? ["#3B82F6", "#1D4ED8"] : ["#E5E7EB", "#D1D5DB"]}
+              colors={mode === "break" ? [theme.secondary, theme.secondaryDark] : ["#E5E7EB", "#D1D5DB"]}
               style={{
                 paddingVertical: 16,
                 borderRadius: 24,
@@ -1156,6 +1189,86 @@ const TimerScreen = () => {
                   )}
                 </Pressable>
               ))}
+            </Pressable>
+          </Pressable>
+        </Modal>
+
+        {/* Alarm Snooze Modal */}
+        <Modal
+          visible={showAlarmSnooze}
+          transparent={true}
+          animationType="fade"
+          onRequestClose={snoozeAlarm}
+        >
+          <Pressable
+            style={{
+              flex: 1,
+              backgroundColor: "rgba(0,0,0,0.6)",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24
+            }}
+            onPress={snoozeAlarm}
+          >
+            <Pressable
+              style={{
+                backgroundColor: "white",
+                borderRadius: 24,
+                padding: 32,
+                width: "90%",
+                maxWidth: 400,
+                alignItems: "center"
+              }}
+              onPress={(e) => e.stopPropagation()}
+            >
+              <View style={{ marginBottom: 24, alignItems: "center" }}>
+                <View
+                  style={{
+                    width: 80,
+                    height: 80,
+                    borderRadius: 40,
+                    backgroundColor: theme.primary + "20",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    marginBottom: 16
+                  }}
+                >
+                  <Ionicons name="alarm" size={40} color={theme.primary} />
+                </View>
+                <Text style={{ fontSize: 24, fontFamily: "Poppins_700Bold", color: theme.textPrimary, marginBottom: 8 }}>
+                  {mode === "study" ? "Study Time Complete!" : "Break Time Over!"}
+                </Text>
+                <Text style={{ fontSize: 16, fontFamily: "Poppins_400Regular", color: theme.textSecondary, textAlign: "center" }}>
+                  {mode === "study"
+                    ? "Great work! Time for a well-deserved break."
+                    : "Break's over! Ready to get back to studying?"}
+                </Text>
+              </View>
+
+              <Pressable
+                onPress={snoozeAlarm}
+                style={{
+                  width: "100%",
+                  paddingVertical: 16,
+                  borderRadius: 16,
+                  overflow: "hidden"
+                }}
+              >
+                <LinearGradient
+                  colors={[theme.primary, theme.primaryDark]}
+                  style={{
+                    width: "100%",
+                    paddingVertical: 16,
+                    borderRadius: 16,
+                    alignItems: "center",
+                    justifyContent: "center"
+                  }}
+                >
+                  <Text style={{ fontSize: 18, fontFamily: "Poppins_600SemiBold", color: "white" }}>
+                    Dismiss Alarm
+                  </Text>
+                </LinearGradient>
+              </Pressable>
             </Pressable>
           </Pressable>
         </Modal>
