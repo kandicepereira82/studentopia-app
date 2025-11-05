@@ -159,30 +159,14 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   justifyContent: 'center'
                 }}
               >
-                <Image
-                  source={getAnimalImage("redpanda")}
-                  style={{ width: 90, height: 90 }}
-                  resizeMode="contain"
-                />
+                {/* Icon content - can be replaced with actual icon image later */}
               </LinearGradient>
             </View>
-            <Text
-              style={{
-                fontSize: 36,
-                fontWeight: 'bold',
-                color: '#FFFFFF',
-                backgroundColor: '#FF6B35',
-                paddingHorizontal: 24,
-                paddingVertical: 8,
-                borderRadius: 12,
-                overflow: 'hidden',
-                marginBottom: 8
-              }}
-            >
-              Studentopia
+            <Text className="text-xl font-semibold text-gray-800 dark:text-gray-100 text-center mb-1">
+              Welcome to Studentopia
             </Text>
-            <Text className="text-lg text-gray-600 dark:text-gray-400 mt-2 text-center">
-              Your personal study companion
+            <Text className="text-base text-gray-600 dark:text-gray-400 text-center">
+              Learn, Focus, Grow together
             </Text>
           </View>
 
