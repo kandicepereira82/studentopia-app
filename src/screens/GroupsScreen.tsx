@@ -12,6 +12,7 @@ import { getTheme } from "../utils/themes";
 import { useTranslation } from "../utils/translations";
 import { cn } from "../utils/cn";
 import CustomAlert from "../components/CustomAlert";
+import StudyPal from "../components/StudyPal";
 
 interface AlertState {
   visible: boolean;
@@ -259,22 +260,38 @@ const GroupsScreen = () => {
       <SafeAreaView className="flex-1">
         {/* Header with Poppins */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <View style={{ flex: 1 }}>
-            <Text style={{
-              fontSize: 32,
-              fontFamily: 'Poppins_700Bold',
-              color: theme.textPrimary
-            }}>
-              Groups
-            </Text>
-            <Text style={{
-              fontSize: 14,
-              fontFamily: 'Poppins_400Regular',
-              color: theme.textSecondary,
-              marginTop: 4
-            }}>
-              Create, join, and manage study groups
-            </Text>
+          <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: 1 }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Text style={{
+                  fontSize: 32,
+                  fontFamily: 'Poppins_700Bold',
+                  color: theme.textPrimary
+                }}>
+                  Groups
+                </Text>
+                {user && (
+                  <View style={{ marginLeft: 16 }}>
+                    <StudyPal
+                      animal={user.studyPalConfig.animal}
+                      name={user.studyPalConfig.name}
+                      animationsEnabled={false}
+                      size={35}
+                      showName={false}
+                      showMessage={false}
+                    />
+                  </View>
+                )}
+              </View>
+              <Text style={{
+                fontSize: 14,
+                fontFamily: 'Poppins_400Regular',
+                color: theme.textSecondary,
+                marginTop: 4
+              }}>
+                Create, join, and manage study groups
+              </Text>
+            </View>
           </View>
 
           <View style={{ flexDirection: 'row', gap: 8 }}>

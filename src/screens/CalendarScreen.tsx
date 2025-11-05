@@ -11,6 +11,7 @@ import { useTranslation } from "../utils/translations";
 import { getTheme } from "../utils/themes";
 import { TaskCategory } from "../types";
 import { cn } from "../utils/cn";
+import StudyPal from "../components/StudyPal";
 
 const CalendarScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -132,13 +133,27 @@ const CalendarScreen = () => {
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header with Poppins */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Text style={{
-            fontSize: 32,
-            fontFamily: 'Poppins_700Bold',
-            color: theme.textPrimary
-          }}>
-            {t("calendar")}
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Text style={{
+              fontSize: 32,
+              fontFamily: 'Poppins_700Bold',
+              color: theme.textPrimary
+            }}>
+              {t("calendar")}
+            </Text>
+            {user && (
+              <View style={{ marginLeft: 16 }}>
+                <StudyPal
+                  animal={user.studyPalConfig.animal}
+                  name={user.studyPalConfig.name}
+                  animationsEnabled={false}
+                  size={35}
+                  showName={false}
+                  showMessage={false}
+                />
+              </View>
+            )}
+          </View>
           <Pressable
             onPress={() => setShowExplanation(true)}
             style={{

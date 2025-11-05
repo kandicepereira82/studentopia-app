@@ -18,6 +18,7 @@ import { getTheme } from "../utils/themes";
 import { getOpenAITextResponse } from "../api/chat-service";
 import { AIChatMessage, AIChatMode } from "../types";
 import { cn } from "../utils/cn";
+import StudyPal from "../components/StudyPal";
 
 const AIHelperScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -104,13 +105,27 @@ const AIHelperScreen = () => {
           borderBottomColor: theme.textSecondary + "20"
         }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <Text style={{
-              fontSize: 32,
-              fontFamily: 'Poppins_700Bold',
-              color: theme.textPrimary
-            }}>
-              {t("aiHelper")}
-            </Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+              <Text style={{
+                fontSize: 32,
+                fontFamily: 'Poppins_700Bold',
+                color: theme.textPrimary
+              }}>
+                {t("aiHelper")}
+              </Text>
+              {user && (
+                <View style={{ marginLeft: 16 }}>
+                  <StudyPal
+                    animal={user.studyPalConfig.animal}
+                    name={user.studyPalConfig.name}
+                    animationsEnabled={false}
+                    size={35}
+                    showName={false}
+                    showMessage={false}
+                  />
+                </View>
+              )}
+            </View>
             {messages.length > 0 && (
               <Pressable onPress={clearChat} style={{ padding: 8 }}>
                 <Ionicons name="trash-outline" size={24} color="#EF4444" />

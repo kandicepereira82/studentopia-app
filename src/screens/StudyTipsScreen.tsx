@@ -6,6 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import useUserStore from "../state/userStore";
 import { getTheme } from "../utils/themes";
 import { useTranslation } from "../utils/translations";
+import StudyPal from "../components/StudyPal";
 
 interface StudyTip {
   id: string;
@@ -202,13 +203,27 @@ const StudyTipsScreen = () => {
       <SafeAreaView className="flex-1">
         {/* Header with Poppins */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8 }}>
-          <Text style={{
-            fontSize: 32,
-            fontFamily: 'Poppins_700Bold',
-            color: theme.textPrimary
-          }}>
-            Study Tips
-          </Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
+            <Text style={{
+              fontSize: 32,
+              fontFamily: 'Poppins_700Bold',
+              color: theme.textPrimary
+            }}>
+              Study Tips
+            </Text>
+            {user && (
+              <View style={{ marginLeft: 16 }}>
+                <StudyPal
+                  animal={user.studyPalConfig.animal}
+                  name={user.studyPalConfig.name}
+                  animationsEnabled={false}
+                  size={35}
+                  showName={false}
+                  showMessage={false}
+                />
+              </View>
+            )}
+          </View>
           <Text style={{
             fontSize: 14,
             fontFamily: 'Poppins_400Regular',

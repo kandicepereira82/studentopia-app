@@ -13,6 +13,7 @@ import { getTheme } from "../utils/themes";
 import { TimerMode } from "../types";
 import { cn } from "../utils/cn";
 import { musicService, musicLibrary, MusicTrack } from "../services/musicService";
+import StudyPal from "../components/StudyPal";
 
 type AlarmSound = "bell" | "chime" | "gong" | "gentle";
 
@@ -372,14 +373,28 @@ const TimerScreen = () => {
       <SafeAreaView style={{ flex: 1 }}>
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
         {/* Header with Poppins */}
-        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8 }}>
-          <Text style={{
-            fontSize: 32,
-            fontFamily: 'Poppins_700Bold',
-            color: theme.textPrimary
-          }}>
-            {t("timer")}
-          </Text>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+            <Text style={{
+              fontSize: 32,
+              fontFamily: 'Poppins_700Bold',
+              color: theme.textPrimary
+            }}>
+              {t("timer")}
+            </Text>
+            {user && (
+              <View style={{ marginLeft: 16 }}>
+                <StudyPal
+                  animal={user.studyPalConfig.animal}
+                  name={user.studyPalConfig.name}
+                  animationsEnabled={false}
+                  size={35}
+                  showName={false}
+                  showMessage={false}
+                />
+              </View>
+            )}
+          </View>
         </View>
 
         {/* Mode Toggle */}
