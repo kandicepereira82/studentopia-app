@@ -196,14 +196,14 @@ const TasksScreen = () => {
         horizontal
         showsHorizontalScrollIndicator={false}
         style={{ paddingHorizontal: 24, paddingVertical: 12 }}
+        contentContainerStyle={{ gap: 12 }}
       >
         <Pressable
           onPress={() => setFilterCategory("all")}
           style={{
             paddingHorizontal: 16,
-            paddingVertical: 10,
-            borderRadius: 20,
-            marginRight: 8,
+            paddingVertical: 8,
+            borderRadius: 12,
             backgroundColor: filterCategory === "all" ? theme.primary : 'white',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -228,9 +228,8 @@ const TasksScreen = () => {
             onPress={() => setFilterCategory(cat)}
             style={{
               paddingHorizontal: 16,
-              paddingVertical: 10,
-              borderRadius: 20,
-              marginRight: 8,
+              paddingVertical: 8,
+              borderRadius: 12,
               backgroundColor: filterCategory === cat ? theme.primary : 'white',
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 1 },
