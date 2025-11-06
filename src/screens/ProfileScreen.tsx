@@ -11,6 +11,7 @@ import { ALL_THEMES } from "../utils/themeUtils";
 import StudyPal from "../components/StudyPal";
 import SettingsScreen from "./SettingsScreen";
 import { useGlobalToast } from "../context/ToastContext";
+import { validateName } from "../utils/contentModeration";
 
 const ProfileScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -48,8 +49,16 @@ const ProfileScreen = () => {
 
   const handleSavePalName = () => {
     if (user && studyPalName.trim()) {
+      // Validate companion name before saving
+      const validation = validateName(studyPalName, "companion");
+      if (!validation.isValid) {
+        toast.error(validation.error || "Invalid companion name");
+        return;
+      }
       updateStudyPal(studyPalName, user.studyPalConfig.animal);
       toast.success("Companion name updated!");
+    } else {
+      toast.error("Please enter a name for your companion");
     }
   };
 
@@ -158,6 +167,7 @@ const ProfileScreen = () => {
                   placeholder="Enter name"
                   placeholderTextColor="#9CA3AF"
                   className="flex-1 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-100 rounded-xl px-4 py-3"
+                  maxLength={20}
                 />
                 <Pressable
                   onPress={handleSavePalName}

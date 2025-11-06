@@ -10,6 +10,7 @@ import { cn } from "../utils/cn";
 import { getAnimalImage, getAnimalDisplayName, ALL_ANIMALS } from "../utils/animalUtils";
 import { ALL_THEMES } from "../utils/themeUtils";
 import StudyPal from "../components/StudyPal";
+import { validateName, validateNameRealtime } from "../utils/contentModeration";
 
 interface OnboardingScreenProps {
   onComplete: () => void;
@@ -27,6 +28,8 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [themeColor, setThemeColor] = useState<ThemeColor>("nature");
   const [showCelebration, setShowCelebration] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
+  const [nameSuggestions, setNameSuggestions] = useState<string[]>([]);
+  const [companionSuggestions, setCompanionSuggestions] = useState<string[]>([]);
 
   const validateEmail = (emailValue: string): boolean => {
     if (!emailValue.trim()) return true; // Email is optional
@@ -38,11 +41,32 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
     const errors: { [key: string]: string } = {};
 
     if (stepNumber === 1) {
-      if (!username.trim()) {
-        errors.username = "Please enter your name";
+      // Validate username with content moderation
+      const usernameResult = validateName(username, "username");
+      if (!usernameResult.isValid) {
+        errors.username = usernameResult.error || "Invalid username";
+        if (usernameResult.suggestions) {
+          setNameSuggestions(usernameResult.suggestions);
+        }
+      } else {
+        setNameSuggestions([]);
       }
+
       if (email.trim() && !validateEmail(email)) {
         errors.email = "Please enter a valid email address";
+      }
+    }
+
+    if (stepNumber === 2) {
+      // Validate companion name with content moderation
+      const companionResult = validateName(studyPalName, "companion");
+      if (!companionResult.isValid) {
+        errors.studyPalName = companionResult.error || "Invalid companion name";
+        if (companionResult.suggestions) {
+          setCompanionSuggestions(companionResult.suggestions);
+        }
+      } else {
+        setCompanionSuggestions([]);
       }
     }
 
@@ -150,7 +174,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
               </Text>
               <TextInput
                 value={username}
-                onChangeText={setUsername}
+                onChangeText={(text) => {
+                  setUsername(text);
+                  // Real-time validation
+                  const error = validateNameRealtime(text, "username");
+                  if (error) {
+                    setValidationErrors({ ...validationErrors, username: error });
+                  } else {
+                    const { username: _, ...rest } = validationErrors;
+                    setValidationErrors(rest);
+                    setNameSuggestions([]);
+                  }
+                }}
                 placeholder="Enter your name"
                 placeholderTextColor="#9CA3AF"
                 style={{
@@ -166,16 +201,59 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   borderColor: validationErrors.username ? '#EF4444' : '#E5E7EB'
                 }}
                 autoFocus
+                maxLength={20}
               />
               {validationErrors.username && (
-                <Text style={{
-                  fontSize: 13,
-                  fontFamily: 'Poppins_500Medium',
-                  color: '#EF4444',
-                  marginBottom: 16
-                }}>
-                  {validationErrors.username}
-                </Text>
+                <>
+                  <Text style={{
+                    fontSize: 13,
+                    fontFamily: 'Poppins_500Medium',
+                    color: '#EF4444',
+                    marginBottom: 8
+                  }}>
+                    {validationErrors.username}
+                  </Text>
+                  {nameSuggestions.length > 0 && (
+                    <View style={{ marginBottom: 16 }}>
+                      <Text style={{
+                        fontSize: 12,
+                        fontFamily: 'Poppins_500Medium',
+                        color: '#6B7280',
+                        marginBottom: 8
+                      }}>
+                        Try these instead:
+                      </Text>
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                        {nameSuggestions.map((suggestion, index) => (
+                          <Pressable
+                            key={index}
+                            onPress={() => {
+                              setUsername(suggestion);
+                              setValidationErrors({});
+                              setNameSuggestions([]);
+                            }}
+                            style={{
+                              backgroundColor: '#F3F4F6',
+                              borderRadius: 12,
+                              paddingHorizontal: 12,
+                              paddingVertical: 6,
+                              borderWidth: 1,
+                              borderColor: '#E5E7EB'
+                            }}
+                          >
+                            <Text style={{
+                              fontSize: 13,
+                              fontFamily: 'Poppins_500Medium',
+                              color: '#4B5563'
+                            }}>
+                              {suggestion}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </>
               )}
 
               <Text style={{
@@ -333,7 +411,18 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
               <TextInput
                 value={studyPalName}
-                onChangeText={setStudyPalName}
+                onChangeText={(text) => {
+                  setStudyPalName(text);
+                  // Real-time validation
+                  const error = validateNameRealtime(text, "companion");
+                  if (error) {
+                    setValidationErrors({ ...validationErrors, studyPalName: error });
+                  } else {
+                    const { studyPalName: _, ...rest } = validationErrors;
+                    setValidationErrors(rest);
+                    setCompanionSuggestions([]);
+                  }
+                }}
                 placeholder="Enter a name"
                 placeholderTextColor="#9CA3AF"
                 style={{
@@ -344,11 +433,65 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   paddingVertical: 16,
                   fontSize: 16,
                   fontFamily: 'Poppins_400Regular',
-                  marginBottom: 16,
-                  borderWidth: 1,
-                  borderColor: '#E5E7EB'
+                  marginBottom: validationErrors.studyPalName ? 8 : 16,
+                  borderWidth: validationErrors.studyPalName ? 2 : 1,
+                  borderColor: validationErrors.studyPalName ? '#EF4444' : '#E5E7EB'
                 }}
+                maxLength={20}
               />
+
+              {validationErrors.studyPalName && (
+                <>
+                  <Text style={{
+                    fontSize: 13,
+                    fontFamily: 'Poppins_500Medium',
+                    color: '#EF4444',
+                    marginBottom: 8
+                  }}>
+                    {validationErrors.studyPalName}
+                  </Text>
+                  {companionSuggestions.length > 0 && (
+                    <View style={{ marginBottom: 16 }}>
+                      <Text style={{
+                        fontSize: 12,
+                        fontFamily: 'Poppins_500Medium',
+                        color: '#6B7280',
+                        marginBottom: 8
+                      }}>
+                        Try these instead:
+                      </Text>
+                      <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+                        {companionSuggestions.map((suggestion, index) => (
+                          <Pressable
+                            key={index}
+                            onPress={() => {
+                              setStudyPalName(suggestion);
+                              setValidationErrors({});
+                              setCompanionSuggestions([]);
+                            }}
+                            style={{
+                              backgroundColor: '#F3F4F6',
+                              borderRadius: 12,
+                              paddingHorizontal: 12,
+                              paddingVertical: 6,
+                              borderWidth: 1,
+                              borderColor: '#E5E7EB'
+                            }}
+                          >
+                            <Text style={{
+                              fontSize: 13,
+                              fontFamily: 'Poppins_500Medium',
+                              color: '#4B5563'
+                            }}>
+                              {suggestion}
+                            </Text>
+                          </Pressable>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </>
+              )}
 
               <View className="bg-purple-50 dark:bg-purple-900 rounded-2xl p-4">
                 <Text style={{
