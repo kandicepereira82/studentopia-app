@@ -495,13 +495,16 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
     if (!customAvatar?.outfit || customAvatar.outfit === "none") return null;
 
     const outfitMap: Record<string, string> = {
-      casual: "👕",
-      formal: "👔",
-      sporty: "🏃",
-      cozy: "🧶",
-      hoodie: "🧥",
-      sweater: "🧵",
-      uniform: "🎓",
+      study_hoodie: "🧥",
+      cozy_sweater: "🧶",
+      academic_robe: "🎓",
+      sporty_tracksuit: "🏃",
+      exam_power: "💼",
+      sleepy_pyjamas: "🌙",
+      raincoat: "☔",
+      focus_tee: "👕",
+      adventure: "🎒",
+      meditation_robe: "🧘",
     };
 
     return outfitMap[customAvatar.outfit] || null;
@@ -515,9 +518,10 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       backpack: "🎒",
       book: "📚",
       pencil: "✏️",
-      scarf: "🧣",
-      hat: "🎩",
-      bowtie: "🎀",
+      notebook: "📓",
+      coffee: "☕",
+      water: "💧",
+      plant: "🪴",
     };
 
     return accessoryMap[customAvatar.accessory] || null;
@@ -537,6 +541,358 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
     };
 
     return hairMap[customAvatar.hairStyle] || null;
+  };
+
+  // Animal-specific positioning for customizations
+  const getAnimalPositioning = () => {
+    // Different animals have different proportions
+    const positionMap: Record<StudyPalAnimal, {
+      hairTop: number;
+      hairSize: number;
+      glassesTop: number;
+      glassesSize: number;
+      headphonesTop: number;
+      headphonesSize: number;
+      outfitBottom: number;
+      outfitSize: number;
+      accessoryBottom: number;
+      accessoryRight: number;
+      accessorySize: number;
+    }> = {
+      // Tall animals - giraffe, horse, reindeer
+      giraffe: {
+        hairTop: -0.25,
+        hairSize: 0.35,
+        glassesTop: 0.15,
+        glassesSize: 0.4,
+        headphonesTop: -0.05,
+        headphonesSize: 0.5,
+        outfitBottom: 0.15,
+        outfitSize: 0.45,
+        accessoryBottom: 0.2,
+        accessoryRight: -0.15,
+        accessorySize: 0.3,
+      },
+      horse: {
+        hairTop: -0.2,
+        hairSize: 0.4,
+        glassesTop: 0.25,
+        glassesSize: 0.45,
+        headphonesTop: 0.0,
+        headphonesSize: 0.55,
+        outfitBottom: 0.12,
+        outfitSize: 0.4,
+        accessoryBottom: 0.18,
+        accessoryRight: -0.12,
+        accessorySize: 0.32,
+      },
+      reindeer: {
+        hairTop: -0.22,
+        hairSize: 0.38,
+        glassesTop: 0.2,
+        glassesSize: 0.42,
+        headphonesTop: -0.02,
+        headphonesSize: 0.52,
+        outfitBottom: 0.13,
+        outfitSize: 0.42,
+        accessoryBottom: 0.19,
+        accessoryRight: -0.13,
+        accessorySize: 0.31,
+      },
+      // Large animals - bear, elephant, lion, tiger
+      bear: {
+        hairTop: -0.15,
+        hairSize: 0.42,
+        glassesTop: 0.3,
+        glassesSize: 0.48,
+        headphonesTop: 0.05,
+        headphonesSize: 0.58,
+        outfitBottom: 0.08,
+        outfitSize: 0.45,
+        accessoryBottom: 0.12,
+        accessoryRight: -0.08,
+        accessorySize: 0.35,
+      },
+      elephant: {
+        hairTop: -0.18,
+        hairSize: 0.4,
+        glassesTop: 0.28,
+        glassesSize: 0.5,
+        headphonesTop: 0.03,
+        headphonesSize: 0.6,
+        outfitBottom: 0.1,
+        outfitSize: 0.48,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.36,
+      },
+      lion: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.33,
+      },
+      tiger: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.33,
+      },
+      // Medium animals - cat, dog, bunny, redpanda, koala, monkey, alpaca, pig
+      cat: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      dog: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      bunny: {
+        hairTop: -0.2,
+        hairSize: 0.38,
+        glassesTop: 0.28,
+        glassesSize: 0.43,
+        headphonesTop: 0.0,
+        headphonesSize: 0.53,
+        outfitBottom: 0.12,
+        outfitSize: 0.38,
+        accessoryBottom: 0.17,
+        accessoryRight: -0.12,
+        accessorySize: 0.33,
+      },
+      redpanda: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      koala: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      monkey: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      alpaca: {
+        hairTop: -0.18,
+        hairSize: 0.38,
+        glassesTop: 0.25,
+        glassesSize: 0.43,
+        headphonesTop: 0.02,
+        headphonesSize: 0.53,
+        outfitBottom: 0.12,
+        outfitSize: 0.42,
+        accessoryBottom: 0.17,
+        accessoryRight: -0.12,
+        accessorySize: 0.33,
+      },
+      pig: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      // Small animals - hamster, hedgehog, chipmunk, chick, frog, turtle, sloth
+      hamster: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      hedgehog: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      chipmunk: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      chick: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      frog: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      turtle: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      sloth: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      // Bird animals - owl, penguin
+      owl: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      penguin: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      // Fish
+      goldfish: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+    };
+
+    return positionMap[animal] || positionMap.cat; // Default to cat proportions
   };
 
   return (
@@ -593,44 +949,73 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
         )}
 
         {/* Avatar Customization Overlays */}
-        {customAvatar && (
-          <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
-            {/* Hair on top */}
-            {getHairEmoji() && (
-              <Text style={{ position: "absolute", top: size * -0.15, fontSize: size * 0.4, zIndex: 10 }}>
-                {getHairEmoji()}
-              </Text>
-            )}
+        {customAvatar && (() => {
+          const positioning = getAnimalPositioning();
+          return (
+            <View style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, alignItems: "center", justifyContent: "center" }}>
+              {/* Hair on top */}
+              {getHairEmoji() && (
+                <Text style={{
+                  position: "absolute",
+                  top: size * positioning.hairTop,
+                  fontSize: size * positioning.hairSize,
+                  zIndex: 10
+                }}>
+                  {getHairEmoji()}
+                </Text>
+              )}
 
-            {/* Glasses in middle */}
-            {customAvatar.glasses && (
-              <Text style={{ position: "absolute", top: size * 0.3, fontSize: size * 0.45, zIndex: 5 }}>
-                👓
-              </Text>
-            )}
+              {/* Glasses in middle */}
+              {customAvatar.glasses && (
+                <Text style={{
+                  position: "absolute",
+                  top: size * positioning.glassesTop,
+                  fontSize: size * positioning.glassesSize,
+                  zIndex: 6
+                }}>
+                  👓
+                </Text>
+              )}
 
-            {/* Headphones on top */}
-            {customAvatar.headphones && (
-              <Text style={{ position: "absolute", top: size * 0.05, fontSize: size * 0.55, zIndex: 8 }}>
-                🎧
-              </Text>
-            )}
+              {/* Headphones over head */}
+              {customAvatar.headphones && (
+                <Text style={{
+                  position: "absolute",
+                  top: size * positioning.headphonesTop,
+                  fontSize: size * positioning.headphonesSize,
+                  zIndex: 8
+                }}>
+                  🎧
+                </Text>
+              )}
 
-            {/* Outfit at bottom center */}
-            {getOutfitEmoji() && (
-              <Text style={{ position: "absolute", bottom: size * 0.1, fontSize: size * 0.4, zIndex: 3 }}>
-                {getOutfitEmoji()}
-              </Text>
-            )}
+              {/* Outfit at bottom center */}
+              {getOutfitEmoji() && (
+                <Text style={{
+                  position: "absolute",
+                  bottom: size * positioning.outfitBottom,
+                  fontSize: size * positioning.outfitSize,
+                  zIndex: 3
+                }}>
+                  {getOutfitEmoji()}
+                </Text>
+              )}
 
-            {/* Accessory on the side */}
-            {getAccessoryEmoji() && (
-              <Text style={{ position: "absolute", bottom: size * 0.15, right: size * -0.1, fontSize: size * 0.35, zIndex: 4 }}>
-                {getAccessoryEmoji()}
-              </Text>
-            )}
-          </View>
-        )}
+              {/* Accessory on the side */}
+              {getAccessoryEmoji() && (
+                <Text style={{
+                  position: "absolute",
+                  bottom: size * positioning.accessoryBottom,
+                  right: size * positioning.accessoryRight,
+                  fontSize: size * positioning.accessorySize,
+                  zIndex: 4
+                }}>
+                  {getAccessoryEmoji()}
+                </Text>
+              )}
+            </View>
+          );
+        })()}
       </View>
 
       {/* Name label below animal */}

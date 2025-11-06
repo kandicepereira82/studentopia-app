@@ -58,13 +58,16 @@ const FUR_COLORS = [
 
 const OUTFITS = [
   { id: "none", name: "None", emoji: "🚫" },
-  { id: "casual", name: "Casual", emoji: "👕" },
-  { id: "formal", name: "Formal", emoji: "👔" },
-  { id: "sporty", name: "Sporty", emoji: "🏃" },
-  { id: "cozy", name: "Cozy", emoji: "🧶" },
-  { id: "hoodie", name: "Hoodie", emoji: "🧥" },
-  { id: "sweater", name: "Sweater", emoji: "🧵" },
-  { id: "uniform", name: "Uniform", emoji: "🎓" },
+  { id: "study_hoodie", name: "Study Hoodie", emoji: "🧥" },
+  { id: "cozy_sweater", name: "Cosy Sweater", emoji: "🧶" },
+  { id: "academic_robe", name: "Academic Robe", emoji: "🎓" },
+  { id: "sporty_tracksuit", name: "Sporty Tracksuit", emoji: "🏃" },
+  { id: "exam_power", name: "Exam Power Outfit", emoji: "💼" },
+  { id: "sleepy_pyjamas", name: "Sleepy Pyjamas", emoji: "🌙" },
+  { id: "raincoat", name: "Raincoat", emoji: "☔" },
+  { id: "focus_tee", name: "Focus Mode Tee", emoji: "👕" },
+  { id: "adventure", name: "Adventure Outfit", emoji: "🎒" },
+  { id: "meditation_robe", name: "Mindful Meditation Robe", emoji: "🧘" },
 ];
 
 const ACCESSORIES = [
@@ -72,9 +75,10 @@ const ACCESSORIES = [
   { id: "backpack", name: "Backpack", emoji: "🎒" },
   { id: "book", name: "Book", emoji: "📚" },
   { id: "pencil", name: "Pencil", emoji: "✏️" },
-  { id: "scarf", name: "Scarf", emoji: "🧣" },
-  { id: "hat", name: "Hat", emoji: "🎩" },
-  { id: "bowtie", name: "Bow Tie", emoji: "🎀" },
+  { id: "notebook", name: "Notebook", emoji: "📓" },
+  { id: "coffee", name: "Coffee Cup", emoji: "☕" },
+  { id: "water", name: "Water Bottle", emoji: "💧" },
+  { id: "plant", name: "Study Plant", emoji: "🪴" },
 ];
 
 const AvatarCreator: React.FC<AvatarCreatorProps> = ({
