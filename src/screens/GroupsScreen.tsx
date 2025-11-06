@@ -14,6 +14,7 @@ import { cn } from "../utils/cn";
 import CustomAlert from "../components/CustomAlert";
 import StudyPal from "../components/StudyPal";
 import { useGlobalToast } from "../context/ToastContext";
+import GroupAnalyticsScreen from "./GroupAnalyticsScreen";
 
 interface AlertState {
   visible: boolean;
@@ -43,6 +44,8 @@ const GroupsScreen = () => {
   const [showQRModal, setShowQRModal] = useState(false);
   const [showHowToModal, setShowHowToModal] = useState(false);
   const [showRulesModal, setShowRulesModal] = useState(false);
+  const [showAnalyticsModal, setShowAnalyticsModal] = useState(false);
+  const [analyticsGroupId, setAnalyticsGroupId] = useState<string | null>(null);
   const [qrGroupCode, setQRGroupCode] = useState("");
   const [editingGroupId, setEditingGroupId] = useState<string | null>(null);
   const [groupName, setGroupName] = useState("");
@@ -620,12 +623,35 @@ const GroupsScreen = () => {
                             paddingVertical: 12,
                             borderRadius: 12,
                             backgroundColor: theme.primary,
-                            marginBottom: 12
+                            marginBottom: 8
                           }}
                         >
                           <Ionicons name="create-outline" size={18} color="white" />
                           <Text style={{ color: 'white', marginLeft: 8, fontSize: 14, fontFamily: 'Poppins_600SemiBold' }}>
                             Edit Group Details
+                          </Text>
+                        </Pressable>
+
+                        {/* View Analytics Button (for creators only) */}
+                        <Pressable
+                          onPress={(e) => {
+                            e.stopPropagation();
+                            setAnalyticsGroupId(group.id);
+                            setShowAnalyticsModal(true);
+                          }}
+                          style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            paddingVertical: 12,
+                            borderRadius: 12,
+                            backgroundColor: theme.secondary,
+                            marginBottom: 12
+                          }}
+                        >
+                          <Ionicons name="stats-chart-outline" size={18} color="white" />
+                          <Text style={{ color: 'white', marginLeft: 8, fontSize: 14, fontFamily: 'Poppins_600SemiBold' }}>
+                            View Analytics
                           </Text>
                         </Pressable>
 
@@ -1799,6 +1825,19 @@ const GroupsScreen = () => {
           </SafeAreaView>
         </Modal>
       </SafeAreaView>
+
+      {/* Analytics Modal */}
+      <Modal visible={showAnalyticsModal} animationType="slide" presentationStyle="fullScreen">
+        {analyticsGroupId && (
+          <GroupAnalyticsScreen
+            groupId={analyticsGroupId}
+            onClose={() => {
+              setShowAnalyticsModal(false);
+              setAnalyticsGroupId(null);
+            }}
+          />
+        )}
+      </Modal>
 
       {/* Custom Alert Modal */}
       <CustomAlert
