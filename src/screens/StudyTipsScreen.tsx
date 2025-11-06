@@ -26,6 +26,20 @@ const StudyTipsScreen = () => {
 
   const studyTips: StudyTip[] = [
     {
+      id: "brain-warmup",
+      category: "Getting Started",
+      title: "Brain Warm-Up",
+      description: "Get your brain ready to learn with these quick 5-minute exercises before studying",
+      icon: "flash",
+      tips: [
+        "Quick Re-read & Recall: Skim your textbook or notes for 3-5 minutes, then close the book and try to recall 3 key points. This activates your memory and prepares your brain to absorb new information.",
+        "Math Number Warm-Up: Solve 2-3 quick mental math problems to get your brain thinking logically. Try simple calculations like 15 × 8 or 144 ÷ 12. This wakes up your analytical thinking.",
+        "Word Recall: Pick 5 words from your last topic, memorize them for 30 seconds, then try to list them from memory. This strengthens your recall ability and focuses your attention.",
+        "Spot Patterns: Look at a diagram, chart, or infographic for 10 seconds, then note anything new or interesting you noticed. This trains your observation skills and visual memory.",
+        "Focus Breathing: Take 3 deep breaths and think about your first task of the session. Inhale for 4 counts, hold for 4, exhale for 4. This calms your mind and sets your intention for focused learning."
+      ]
+    },
+    {
       id: "focused-diffuse",
       category: "Learning Modes",
       title: "Focused & Diffuse Thinking",
