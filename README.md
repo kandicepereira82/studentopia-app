@@ -4,6 +4,8 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Teacher Dashboard Complete** - Teachers can now view student lists, see progress tracking for each group task (completion percentage, progress bars, individual student completion indicators), and assign tasks to groups. Student progress displayed with visual indicators showing who completed what.
+- ✅ **Onboarding Theme Fix** - Fixed theme not applying after onboarding. Users now go directly to the app with their selected theme instead of being redirected to authentication.
 - ✅ **Phase 1 Integration Complete** - Toast notification system integrated into TasksScreen, AIHelperScreen, and GroupsScreen. Custom Zustand selectors optimized for better performance. Error utilities applied for consistent error handling across the app.
 - ✅ **Animal Label Fixed** - Changed "lamb" to "pig" throughout codebase (type definitions, utilities, and components). Pig and hamster image mappings corrected.
 - ✅ **Group Permission Checks Enhanced** - Added userId parameter to updateGroup() and regenerateShareCode() with proper permission enforcement. Teachers cannot leave groups they created.

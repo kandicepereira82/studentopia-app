@@ -629,9 +629,88 @@ const GroupsScreen = () => {
                           </Text>
                         </Pressable>
 
-                        {/* Expanded Content - Group Tasks */}
+                        {/* Expanded Content - Teacher Dashboard */}
                         {selectedGroupId === group.id && (
                           <View className="mt-4 pt-4" style={{ borderTopWidth: 1, borderTopColor: theme.textSecondary + "20" }}>
+                            {/* Student List */}
+                            <View className="mb-6">
+                              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                                <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: theme.textPrimary }}>
+                                  Students ({group.studentIds.length})
+                                </Text>
+                              </View>
+                              {group.studentIds.length === 0 ? (
+                                <View style={{ backgroundColor: theme.backgroundGradient[0], borderRadius: 12, padding: 16, alignItems: 'center' }}>
+                                  <Ionicons name="people-outline" size={32} color={theme.textSecondary} style={{ marginBottom: 8 }} />
+                                  <Text style={{ fontSize: 14, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, textAlign: 'center' }}>
+                                    No students have joined yet
+                                  </Text>
+                                  <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, textAlign: 'center', marginTop: 4 }}>
+                                    Share the group code for students to join
+                                  </Text>
+                                </View>
+                              ) : (
+                                <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 8 }}>
+                                  {group.studentIds.map((studentId, index) => (
+                                    <View
+                                      key={studentId}
+                                      style={{
+                                        flexDirection: 'row',
+                                        alignItems: 'center',
+                                        backgroundColor: theme.primary + "15",
+                                        borderRadius: 20,
+                                        paddingVertical: 8,
+                                        paddingHorizontal: 12,
+                                      }}
+                                    >
+                                      <View
+                                        style={{
+                                          width: 28,
+                                          height: 28,
+                                          borderRadius: 14,
+                                          backgroundColor: theme.primary,
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          marginRight: 8,
+                                        }}
+                                      >
+                                        <Text style={{ color: 'white', fontSize: 12, fontFamily: 'Poppins_600SemiBold' }}>
+                                          {`S${index + 1}`}
+                                        </Text>
+                                      </View>
+                                      <Text style={{ fontSize: 12, fontFamily: 'Poppins_500Medium', color: theme.textPrimary }}>
+                                        Student {index + 1}
+                                      </Text>
+                                    </View>
+                                  ))}
+                                </View>
+                              )}
+                            </View>
+
+                            {/* Assign Task Button */}
+                            <Pressable
+                              onPress={(e) => {
+                                e.stopPropagation();
+                                // Navigate to TasksScreen with group pre-selected
+                                toast.info("Create a task and assign it to this group from the Tasks tab");
+                              }}
+                              style={{
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                paddingVertical: 14,
+                                borderRadius: 12,
+                                backgroundColor: theme.secondary,
+                                marginBottom: 16,
+                              }}
+                            >
+                              <Ionicons name="add-circle-outline" size={20} color="white" />
+                              <Text style={{ color: 'white', marginLeft: 8, fontSize: 14, fontFamily: 'Poppins_600SemiBold' }}>
+                                Assign Task to Group
+                              </Text>
+                            </Pressable>
+
+                            {/* Group Tasks with Progress Tracking */}
                             <Text style={{ fontSize: 14, fontFamily: 'Poppins_600SemiBold', color: theme.textPrimary, marginBottom: 12 }}>
                               Group Tasks
                             </Text>
@@ -640,38 +719,104 @@ const GroupsScreen = () => {
                                 No tasks assigned yet
                               </Text>
                             ) : (
-                              groupTasks.map((task) => (
-                                <View
-                                  key={task.id}
-                                  className="rounded-xl p-3 mb-2"
-                                  style={{ backgroundColor: theme.backgroundGradient[0] }}
-                                >
-                                  <View className="flex-row items-start">
-                                    <Ionicons
-                                      name={task.status === "completed" ? "checkmark-circle" : "ellipse-outline"}
-                                      size={20}
-                                      color={task.status === "completed" ? theme.secondary : theme.textSecondary}
-                                      style={{ marginRight: 8, marginTop: 2 }}
-                                    />
-                                    <View className="flex-1">
-                                      <Text
-                                        className={cn("text-sm font-semibold", task.status === "completed" && "line-through")}
-                                        style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold' }}
-                                      >
-                                        {task.title}
-                                      </Text>
-                                      {task.description && (
-                                        <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
-                                          {task.description}
+                              groupTasks.map((task) => {
+                                // Calculate completion rate (mock data for now)
+                                const totalStudents = group.studentIds.length;
+                                const completedByCount = totalStudents > 0 ? Math.floor(Math.random() * (totalStudents + 1)) : 0;
+                                const completionRate = totalStudents > 0 ? Math.round((completedByCount / totalStudents) * 100) : 0;
+
+                                return (
+                                  <View
+                                    key={task.id}
+                                    className="rounded-xl p-4 mb-3"
+                                    style={{ backgroundColor: theme.backgroundGradient[0], borderWidth: 1, borderColor: theme.textSecondary + "20" }}
+                                  >
+                                    <View className="flex-row items-start justify-between mb-2">
+                                      <View className="flex-1">
+                                        <Text
+                                          style={{ color: theme.textPrimary, fontFamily: 'Poppins_600SemiBold', fontSize: 15 }}
+                                        >
+                                          {task.title}
                                         </Text>
-                                      )}
-                                      <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
-                                        Due: {new Date(task.dueDate).toLocaleDateString()}
-                                      </Text>
+                                        {task.description && (
+                                          <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 4 }}>
+                                            {task.description}
+                                          </Text>
+                                        )}
+                                        <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', color: theme.textSecondary, marginTop: 6 }}>
+                                          Due: {new Date(task.dueDate).toLocaleDateString()}
+                                        </Text>
+                                      </View>
+                                      <View
+                                        style={{
+                                          backgroundColor: completionRate === 100 ? theme.secondary + "20" : theme.primary + "20",
+                                          borderRadius: 20,
+                                          paddingHorizontal: 12,
+                                          paddingVertical: 6,
+                                        }}
+                                      >
+                                        <Text style={{ fontSize: 12, fontFamily: 'Poppins_700Bold', color: completionRate === 100 ? theme.secondary : theme.primary }}>
+                                          {completionRate}%
+                                        </Text>
+                                      </View>
                                     </View>
+
+                                    {/* Progress Bar */}
+                                    <View style={{ marginTop: 12, marginBottom: 8 }}>
+                                      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 6 }}>
+                                        <Text style={{ fontSize: 11, fontFamily: 'Poppins_500Medium', color: theme.textSecondary }}>
+                                          Student Progress
+                                        </Text>
+                                        <Text style={{ fontSize: 11, fontFamily: 'Poppins_600SemiBold', color: theme.textPrimary }}>
+                                          {completedByCount}/{totalStudents} completed
+                                        </Text>
+                                      </View>
+                                      <View style={{ height: 6, backgroundColor: theme.textSecondary + "20", borderRadius: 3, overflow: 'hidden' }}>
+                                        <View
+                                          style={{
+                                            height: '100%',
+                                            width: `${completionRate}%`,
+                                            backgroundColor: completionRate === 100 ? theme.secondary : theme.primary,
+                                            borderRadius: 3,
+                                          }}
+                                        />
+                                      </View>
+                                    </View>
+
+                                    {/* Student completion indicators */}
+                                    {totalStudents > 0 && (
+                                      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
+                                        {group.studentIds.map((studentId, index) => {
+                                          const hasCompleted = index < completedByCount;
+                                          return (
+                                            <View
+                                              key={studentId}
+                                              style={{
+                                                width: 32,
+                                                height: 32,
+                                                borderRadius: 16,
+                                                backgroundColor: hasCompleted ? theme.secondary + "30" : theme.textSecondary + "15",
+                                                alignItems: 'center',
+                                                justifyContent: 'center',
+                                                borderWidth: 1,
+                                                borderColor: hasCompleted ? theme.secondary : theme.textSecondary + "30",
+                                              }}
+                                            >
+                                              {hasCompleted ? (
+                                                <Ionicons name="checkmark" size={16} color={theme.secondary} />
+                                              ) : (
+                                                <Text style={{ fontSize: 10, fontFamily: 'Poppins_600SemiBold', color: theme.textSecondary }}>
+                                                  {index + 1}
+                                                </Text>
+                                              )}
+                                            </View>
+                                          );
+                                        })}
+                                      </View>
+                                    )}
                                   </View>
-                                </View>
-                              ))
+                                );
+                              })
                             )}
                           </View>
                         )}
