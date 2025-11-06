@@ -181,7 +181,7 @@ const MindfulnessScreen = () => {
         colors={[theme.backgroundGradient[0], theme.backgroundGradient[1]]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        className="flex-1"
+        style={{ flex: 1 }}
       >
         {/* Header */}
         <View className="px-6 pt-4 pb-2">
@@ -227,7 +227,11 @@ const MindfulnessScreen = () => {
         </View>
 
         {/* Content */}
-        <ScrollView className="flex-1 px-6 pb-4" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={{ flex: 1 }}
+          contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
+          showsVerticalScrollIndicator={false}
+        >
           {/* Timer Tab */}
           {activeTab === "timer" && (
             <Animated.View entering={FadeIn}>
@@ -320,8 +324,7 @@ const MindfulnessScreen = () => {
                   >
                     <LinearGradient
                       colors={[theme.primary, theme.secondary]}
-                      className="rounded-2xl py-4 items-center"
-                      style={{ opacity: isRunning ? 0.5 : 1 }}
+                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center", opacity: isRunning ? 0.5 : 1 }}
                     >
                       <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
                         Start
@@ -336,7 +339,7 @@ const MindfulnessScreen = () => {
                   >
                     <LinearGradient
                       colors={["#F59E0B", "#D97706"]}
-                      className="rounded-2xl py-4 items-center"
+                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
                     >
                       <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
                         {isRunning ? "Pause" : "Resume"}
@@ -353,7 +356,7 @@ const MindfulnessScreen = () => {
                   >
                     <LinearGradient
                       colors={["#EF4444", "#DC2626"]}
-                      className="rounded-2xl py-4 items-center"
+                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
                     >
                       <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
                         Stop
@@ -532,7 +535,7 @@ const MindfulnessScreen = () => {
                     <Pressable onPress={() => setIsBreathworkActive(!isBreathworkActive)} className="flex-1">
                       <LinearGradient
                         colors={[theme.primary, theme.secondary]}
-                        className="rounded-2xl py-4 items-center"
+                        style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
                       >
                         <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
                           {isBreathworkActive ? "Stop" : "Start"}
@@ -564,7 +567,7 @@ const MindfulnessScreen = () => {
                 <View className="bg-gradient-to-r p-6 rounded-3xl shadow-lg" style={{ elevation: 5 }}>
                   <LinearGradient
                     colors={[theme.primary + "40", theme.secondary + "40"]}
-                    className="rounded-3xl p-6"
+                    style={{ borderRadius: 24, padding: 24 }}
                   >
                     <Text
                       style={{
