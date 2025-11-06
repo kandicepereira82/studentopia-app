@@ -36,6 +36,8 @@ const MusicPlayerScreen = () => {
   const [showDownloadModal, setShowDownloadModal] = useState(false);
   const [selectedMood, setSelectedMood] = useState<string>("all");
   const [musicUri, setMusicUri] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [canRetry, setCanRetry] = useState(false);
 
   useEffect(() => {
     musicService.initializeAudio();
@@ -48,6 +50,13 @@ const MusicPlayerScreen = () => {
         setDuration(status.durationMillis || 0);
         setIsPlaying(status.isPlaying);
       }
+
+      // Check for errors
+      const error = musicService.getLastError();
+      if (error) {
+        setErrorMessage(error.message);
+        setCanRetry(error.retry || false);
+      }
     }, 500);
 
     return () => {
@@ -57,7 +66,27 @@ const MusicPlayerScreen = () => {
   }, []);
 
   const handleTrackSelect = async (track: MusicTrack) => {
-    // Show modal for URL entry since we don't have built-in audio files
+    // Try to load local file first
+    setErrorMessage(null);
+    setCanRetry(false);
+
+    if (track.localFile) {
+      const success = await musicService.loadTrack(track);
+      if (success) {
+        setSelectedTrack(track);
+        await musicService.play();
+        return;
+      }
+
+      // If local file failed, check error
+      const error = musicService.getLastError();
+      if (error) {
+        setErrorMessage(error.message);
+        setCanRetry(error.retry || false);
+      }
+    }
+
+    // If no local file or failed, show modal for URL entry
     setSelectedTrack(track);
     setShowDownloadModal(true);
   };
@@ -65,13 +94,48 @@ const MusicPlayerScreen = () => {
   const handleLoadTrack = async () => {
     if (!selectedTrack || !musicUri.trim()) return;
 
+    setErrorMessage(null);
+    setCanRetry(false);
+
     const success = await musicService.loadTrack(selectedTrack, musicUri);
     if (success) {
       setShowDownloadModal(false);
       setMusicUri("");
       // Auto-play after successful load
       await musicService.play();
+    } else {
+      // Display error
+      const error = musicService.getLastError();
+      if (error) {
+        setErrorMessage(error.message);
+        setCanRetry(error.retry || false);
+      }
     }
+  };
+
+  const handleRetry = async () => {
+    if (!selectedTrack) return;
+
+    setErrorMessage(null);
+    const success = await musicService.retryLoad(selectedTrack, musicUri || undefined);
+
+    if (success) {
+      setShowDownloadModal(false);
+      setMusicUri("");
+      await musicService.play();
+    } else {
+      const error = musicService.getLastError();
+      if (error) {
+        setErrorMessage(error.message);
+        setCanRetry(error.retry || false);
+      }
+    }
+  };
+
+  const clearError = () => {
+    setErrorMessage(null);
+    setCanRetry(false);
+    musicService.clearError();
   };
 
   const handlePlayPause = async () => {
@@ -152,6 +216,64 @@ const MusicPlayerScreen = () => {
             {t("calmingClassicalMusic")}
           </Text>
         </View>
+
+        {/* Error Banner */}
+        {errorMessage && (
+          <View style={{
+            marginHorizontal: 24,
+            marginBottom: 16,
+            backgroundColor: "#FEE2E2",
+            borderRadius: 16,
+            padding: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            borderWidth: 1,
+            borderColor: "#EF4444",
+          }}>
+            <Ionicons name="alert-circle" size={24} color="#EF4444" style={{ marginRight: 12 }} />
+            <View style={{ flex: 1 }}>
+              <Text style={{
+                fontSize: 14,
+                fontFamily: "Poppins_600SemiBold",
+                color: "#991B1B",
+                marginBottom: 4,
+              }}>
+                Audio Playback Error
+              </Text>
+              <Text style={{
+                fontSize: 13,
+                fontFamily: "Poppins_400Regular",
+                color: "#7F1D1D",
+                marginBottom: canRetry ? 8 : 0,
+              }}>
+                {errorMessage}
+              </Text>
+              {canRetry && (
+                <Pressable
+                  onPress={handleRetry}
+                  style={{
+                    backgroundColor: "#EF4444",
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 8,
+                    alignSelf: "flex-start",
+                  }}
+                >
+                  <Text style={{
+                    fontSize: 12,
+                    fontFamily: "Poppins_600SemiBold",
+                    color: "white",
+                  }}>
+                    Retry
+                  </Text>
+                </Pressable>
+              )}
+            </View>
+            <Pressable onPress={clearError}>
+              <Ionicons name="close" size={20} color="#991B1B" />
+            </Pressable>
+          </View>
+        )}
 
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Now Playing Card */}

@@ -12,6 +12,12 @@ export interface MusicTrack {
   localFile?: any; // Local asset reference after download
 }
 
+export interface AudioError {
+  message: string;
+  code?: string;
+  retry?: boolean;
+}
+
 // Curated list of calming classical music
 // Using local assets for music files
 export const musicLibrary: MusicTrack[] = [
@@ -64,8 +70,11 @@ class MusicService {
   private currentPosition: number = 0;
   private volume: number = 1.0;
   private isLooping: boolean = false;
+  private lastError: AudioError | null = null;
+  private retryCount: number = 0;
+  private maxRetries: number = 3;
 
-  async initializeAudio() {
+  async initializeAudio(): Promise<boolean> {
     try {
       await Audio.setAudioModeAsync({
         allowsRecordingIOS: false,
@@ -73,9 +82,19 @@ class MusicService {
         playsInSilentModeIOS: true,
         shouldDuckAndroid: true,
         playThroughEarpieceAndroid: false,
+        interruptionModeIOS: 1, // Mix with others
+        interruptionModeAndroid: 1, // Do not mix
       });
-    } catch (error) {
-      console.error("Error initializing audio:", error);
+      console.log("[MusicService] Audio initialized successfully");
+      return true;
+    } catch (error: any) {
+      console.error("[MusicService] Error initializing audio:", error);
+      this.lastError = {
+        message: "Failed to initialize audio system",
+        code: error?.code,
+        retry: true,
+      };
+      return false;
     }
   }
 
@@ -84,29 +103,46 @@ class MusicService {
       // Unload previous track
       if (this.sound) {
         await this.sound.unloadAsync();
+        this.sound = null;
       }
 
       // Priority: provided URI > localFile > pixabayUrl
       let audioSource: any;
+      let sourceType: string = "unknown";
 
       if (uri) {
         // Use provided URI string
         audioSource = { uri };
+        sourceType = "URI";
       } else if (track.localFile) {
         // Use local asset file (require'd module)
         audioSource = track.localFile;
+        sourceType = "local asset";
       } else if (track.pixabayUrl) {
         // Use remote URL
         audioSource = { uri: track.pixabayUrl };
+        sourceType = "remote URL";
       } else {
-        console.error("No audio source provided for track:", track.title);
+        const errorMsg = `No audio source provided for track: ${track.title}`;
+        console.error("[MusicService]", errorMsg);
+        this.lastError = {
+          message: errorMsg,
+          retry: false,
+        };
         return false;
       }
 
-      // Load new track
+      console.log(`[MusicService] Loading track "${track.title}" from ${sourceType}`);
+
+      // Load new track with error handling
       const { sound } = await Audio.Sound.createAsync(
         audioSource,
-        { shouldPlay: false, volume: this.volume, isLooping: this.isLooping },
+        {
+          shouldPlay: false,
+          volume: this.volume,
+          isLooping: this.isLooping,
+          progressUpdateIntervalMillis: 500,
+        },
         this.onPlaybackStatusUpdate
       );
 
@@ -114,31 +150,86 @@ class MusicService {
       this.currentTrack = track;
       this.isPlaying = false;
       this.currentPosition = 0;
+      this.retryCount = 0;
+      this.lastError = null;
 
+      console.log(`[MusicService] Track "${track.title}" loaded successfully`);
       return true;
     } catch (error: any) {
-      console.error("Error loading track:", error);
-      console.error("Error message:", error?.message || "Unknown error");
-      console.error("Track details:", { title: track.title, hasLocalFile: !!track.localFile, uri });
+      console.error("[MusicService] Error loading track:", error);
+      console.error("[MusicService] Error details:", {
+        message: error?.message || "Unknown error",
+        code: error?.code,
+        trackTitle: track.title,
+        hasLocalFile: !!track.localFile,
+        uri: uri || "none",
+      });
 
       // Provide more specific error messages
-      if (error.message && error.message.includes('-11850')) {
-        console.error("Server configuration error: The URL does not point to a valid audio file");
+      let errorMessage = "Failed to load audio track";
+      let canRetry = true;
+
+      if (error.message) {
+        if (error.message.includes("-11850") || error.message.includes("AVFoundation")) {
+          errorMessage = "Invalid audio file format or corrupted file";
+          canRetry = false;
+        } else if (error.message.includes("network") || error.message.includes("timeout")) {
+          errorMessage = "Network error - please check your connection";
+          canRetry = true;
+        } else if (error.message.includes("permission")) {
+          errorMessage = "Audio playback permission denied";
+          canRetry = false;
+        } else {
+          errorMessage = `Audio error: ${error.message}`;
+        }
       }
+
+      this.lastError = {
+        message: errorMessage,
+        code: error?.code,
+        retry: canRetry && this.retryCount < this.maxRetries,
+      };
 
       return false;
     }
   }
 
+  async retryLoad(track: MusicTrack, uri?: string): Promise<boolean> {
+    if (!this.lastError?.retry || this.retryCount >= this.maxRetries) {
+      return false;
+    }
+
+    this.retryCount++;
+    console.log(`[MusicService] Retrying load (attempt ${this.retryCount}/${this.maxRetries})`);
+
+    // Wait a bit before retrying
+    await new Promise(resolve => setTimeout(resolve, 1000 * this.retryCount));
+
+    return this.loadTrack(track, uri);
+  }
+
   async play(): Promise<boolean> {
     try {
-      if (!this.sound) return false;
+      if (!this.sound) {
+        this.lastError = {
+          message: "No audio track loaded",
+          retry: false,
+        };
+        return false;
+      }
 
       await this.sound.playAsync();
       this.isPlaying = true;
+      this.lastError = null;
+      console.log("[MusicService] Playback started");
       return true;
-    } catch (error) {
-      console.error("Error playing track:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error playing track:", error);
+      this.lastError = {
+        message: `Playback error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: true,
+      };
       return false;
     }
   }
@@ -149,9 +240,15 @@ class MusicService {
 
       await this.sound.pauseAsync();
       this.isPlaying = false;
+      console.log("[MusicService] Playback paused");
       return true;
-    } catch (error) {
-      console.error("Error pausing track:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error pausing track:", error);
+      this.lastError = {
+        message: `Pause error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: false,
+      };
       return false;
     }
   }
@@ -163,9 +260,15 @@ class MusicService {
       await this.sound.stopAsync();
       this.isPlaying = false;
       this.currentPosition = 0;
+      console.log("[MusicService] Playback stopped");
       return true;
-    } catch (error) {
-      console.error("Error stopping track:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error stopping track:", error);
+      this.lastError = {
+        message: `Stop error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: false,
+      };
       return false;
     }
   }
@@ -175,36 +278,57 @@ class MusicService {
       if (!this.sound) return false;
 
       await this.sound.setPositionAsync(positionMillis);
+      console.log(`[MusicService] Seeked to ${positionMillis}ms`);
       return true;
-    } catch (error) {
-      console.error("Error seeking:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error seeking:", error);
+      this.lastError = {
+        message: `Seek error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: false,
+      };
       return false;
     }
   }
 
   async setVolume(volume: number): Promise<boolean> {
     try {
-      if (!this.sound) return false;
-
       const clampedVolume = Math.max(0, Math.min(1, volume));
-      await this.sound.setVolumeAsync(clampedVolume);
+
+      if (this.sound) {
+        await this.sound.setVolumeAsync(clampedVolume);
+      }
+
       this.volume = clampedVolume;
+      console.log(`[MusicService] Volume set to ${clampedVolume}`);
       return true;
-    } catch (error) {
-      console.error("Error setting volume:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error setting volume:", error);
+      this.lastError = {
+        message: `Volume error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: false,
+      };
       return false;
     }
   }
 
   async setLooping(isLooping: boolean): Promise<boolean> {
     try {
-      if (!this.sound) return false;
+      if (this.sound) {
+        await this.sound.setIsLoopingAsync(isLooping);
+      }
 
-      await this.sound.setIsLoopingAsync(isLooping);
       this.isLooping = isLooping;
+      console.log(`[MusicService] Looping set to ${isLooping}`);
       return true;
-    } catch (error) {
-      console.error("Error setting loop:", error);
+    } catch (error: any) {
+      console.error("[MusicService] Error setting loop:", error);
+      this.lastError = {
+        message: `Loop error: ${error?.message || "Unknown error"}`,
+        code: error?.code,
+        retry: false,
+      };
       return false;
     }
   }
@@ -217,7 +341,23 @@ class MusicService {
       if (status.didJustFinish && !status.isLooping) {
         this.isPlaying = false;
         this.currentPosition = 0;
+        console.log("[MusicService] Track finished");
       }
+
+      // Check for errors in playback
+      if (status.error) {
+        console.error("[MusicService] Playback error:", status.error);
+        this.lastError = {
+          message: `Playback error: ${status.error}`,
+          retry: false,
+        };
+      }
+    } else if (status.error) {
+      console.error("[MusicService] Status error:", status.error);
+      this.lastError = {
+        message: `Status error: ${status.error}`,
+        retry: false,
+      };
     }
   };
 
@@ -226,12 +366,19 @@ class MusicService {
       if (this.sound) {
         await this.sound.unloadAsync();
         this.sound = null;
+        console.log("[MusicService] Track unloaded");
       }
       this.currentTrack = null;
       this.isPlaying = false;
       this.currentPosition = 0;
-    } catch (error) {
-      console.error("Error unloading track:", error);
+      this.retryCount = 0;
+      this.lastError = null;
+    } catch (error: any) {
+      console.error("[MusicService] Error unloading track:", error);
+      // Still clear state even if unload fails
+      this.sound = null;
+      this.currentTrack = null;
+      this.isPlaying = false;
     }
   }
 
@@ -255,9 +402,34 @@ class MusicService {
     return this.isLooping;
   }
 
+  getLastError(): AudioError | null {
+    return this.lastError;
+  }
+
+  clearError(): void {
+    this.lastError = null;
+  }
+
   async getStatus() {
     if (!this.sound) return null;
-    return await this.sound.getStatusAsync();
+    try {
+      return await this.sound.getStatusAsync();
+    } catch (error) {
+      console.error("[MusicService] Error getting status:", error);
+      return null;
+    }
+  }
+
+  // Check if audio system is properly initialized
+  async checkAudioSystem(): Promise<boolean> {
+    try {
+      // Try to get audio mode to verify system is working
+      const recording = await Audio.getPermissionsAsync();
+      return true;
+    } catch (error) {
+      console.error("[MusicService] Audio system check failed:", error);
+      return false;
+    }
   }
 }
 
