@@ -210,7 +210,7 @@ const BottomTabNavigator = () => {
         name="Groups"
         component={GroupsScreen}
         options={{
-          tabBarLabel: user?.role === "teacher" ? "Students" : "Friends",
+          tabBarLabel: "Groups",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people" size={size} color={getRainbowTabColor("Groups") || color} />
           ),
