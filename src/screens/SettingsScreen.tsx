@@ -792,13 +792,14 @@ const SettingsScreen = () => {
         animationType="slide"
         onRequestClose={() => setShowCalendarInstructions(false)}
       >
-        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+        <View style={{ flex: 1, backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
           <View
             style={{
+              flex: 1,
               backgroundColor: theme.cardBackground,
               borderTopLeftRadius: 24,
               borderTopRightRadius: 24,
-              maxHeight: "90%",
+              marginTop: 60,
             }}
           >
             {/* Header */}
