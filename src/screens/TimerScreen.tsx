@@ -15,6 +15,12 @@ import { cn } from "../utils/cn";
 import { musicService, musicLibrary, MusicTrack } from "../services/musicService";
 import StudyPal from "../components/StudyPal";
 
+// Import alarm sound files
+const beepSound = require("../../assets/beep-6-96243.mpeg");
+const chimeSound = require("../../assets/wind-chime-small-64660.mpeg");
+const gongSound = require("../../assets/gong-79191.mpeg");
+const gentleSound = require("../../assets/ocean-waves-376898.mpeg");
+
 type AlarmSound = "bell" | "chime" | "gong" | "gentle";
 
 const alarmSounds = [
@@ -74,11 +80,11 @@ const TimerScreen = () => {
   // Preload alarm sounds for instant playback
   useEffect(() => {
     const loadSounds = async () => {
-      const soundUrls = {
-        bell: require("../../assets/beep-6-96243.mpeg"), // Beep sound
-        chime: require("../../assets/wind-chime-small-64660.mpeg"), // Wind chime
-        gong: require("../../assets/gong-79191.mpeg"), // Gong sound
-        gentle: require("../../assets/ocean-waves-376898.mpeg") // Ocean waves
+      const soundAssets = {
+        bell: beepSound,
+        chime: chimeSound,
+        gong: gongSound,
+        gentle: gentleSound
       };
 
       const loadedSounds: Record<AlarmSound, Audio.Sound | null> = {
@@ -90,10 +96,10 @@ const TimerScreen = () => {
 
       // Load all sounds in parallel
       await Promise.all(
-        Object.entries(soundUrls).map(async ([key, source]) => {
+        Object.entries(soundAssets).map(async ([key, assetModule]: [string, any]) => {
           try {
             const { sound } = await Audio.Sound.createAsync(
-              source,
+              assetModule as any,
               { shouldPlay: false, volume: alarmVolume, isLooping: false }
             );
             loadedSounds[key as AlarmSound] = sound;
@@ -120,7 +126,7 @@ const TimerScreen = () => {
         }
       });
     };
-  }, []);
+  }, [preloadedSounds]);
 
   // Update volume on preloaded sounds when alarm volume changes
   useEffect(() => {
@@ -259,9 +265,11 @@ const TimerScreen = () => {
             // Ignore errors
           }
         }, 3000);
+      } else {
+        // Sound failed to load - provide user feedback
       }
-    } catch (error) {
-      // Silently fail if sound doesn't play
+    } catch (error: any) {
+      // Error playing sound - provide user feedback
     }
   };
 
