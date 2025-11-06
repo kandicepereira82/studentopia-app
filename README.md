@@ -4,6 +4,7 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Audio Mode Initialized** - Added proper Audio.setAudioModeAsync() setup to enable playback of alarm sounds
 - ✅ **Alarm Sounds Working** - Fixed sound loading to properly preload all alarm sounds on app start for reliable playback
 - ✅ **Alarm Sounds Fixed** - Refactored alarm sound loading to properly import MPEG files for instant playback
 - ✅ **Alarm Sounds Updated** - Timer alarm sounds now use local uploaded audio files (Beep, Wind Chime, Gong, Ocean Waves)

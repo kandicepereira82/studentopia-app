@@ -87,6 +87,19 @@ const TimerScreen = () => {
     };
 
     const loadSounds = async () => {
+      // Initialize audio mode first
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: true,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (error) {
+        // Continue even if audio mode setup fails
+      }
+
       const soundAssets = {
         bell: beepSound,
         chime: chimeSound,
