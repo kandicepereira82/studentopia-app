@@ -4,6 +4,8 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Companion in Mindfulness Header** - Studentopia Companion now appears to the right of "Mindfulness Break" heading
+- ✅ **Mindfulness Importance Note** - Informational message highlighting how mindfulness reduces stress and calms nerves
 - ✅ **Mindfulness Tabs Streamlined** - Removed Timer tab, now featuring Breathwork, Tips, and Acupressure
 - ✅ **Breathwork Session Timer** - Customizable total session time with +/- controls (1-60 minutes) for breathwork exercises
 - ✅ **Theme-Aware Buttons** - All Mindfulness page buttons now match the selected theme color scheme

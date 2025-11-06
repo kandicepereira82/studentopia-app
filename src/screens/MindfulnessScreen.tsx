@@ -207,13 +207,32 @@ const MindfulnessScreen = () => {
         style={{ flex: 1 }}
       >
         {/* Header */}
-        <View className="px-6 pt-4 pb-2">
-          <Text style={{ fontSize: 32, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-            Mindfulness Break
-          </Text>
-          <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 4 }}>
+        <View className="px-6 pt-4 pb-4">
+          <View className="flex-row items-center justify-between mb-3">
+            <View className="flex-1">
+              <Text style={{ fontSize: 32, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
+                Mindfulness Break
+              </Text>
+            </View>
+            <View className="ml-4">
+              <StudyPal
+                animal={user?.studyPalConfig.animal || "redpanda"}
+                name={user?.studyPalConfig.name || "Tomo"}
+                animationsEnabled={false}
+                size={50}
+                showName={false}
+                showMessage={false}
+              />
+            </View>
+          </View>
+          <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginBottom: 2 }}>
             Take a moment to breathe and find peace
           </Text>
+          <View className="bg-blue-50 dark:bg-blue-900 rounded-2xl p-3 mt-3 border border-blue-200 dark:border-blue-700">
+            <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: "#1E40AF", lineHeight: 16 }}>
+              💙 Mindfulness helps calm your nerves and reduce stress. Take time to focus on your breath and bring peace to your mind.
+            </Text>
+          </View>
         </View>
 
         {/* Tab Navigation */}
