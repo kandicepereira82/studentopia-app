@@ -19,6 +19,7 @@ import {
   getDeviceCalendars,
 } from "../services/calendarService";
 import CustomAlert from "../components/CustomAlert";
+import { useGlobalToast } from "../context/ToastContext";
 
 interface AlertState {
   visible: boolean;
@@ -33,6 +34,7 @@ const SettingsScreen = () => {
   const updateDailyReminderTime = useUserStore((s) => s.updateDailyReminderTime);
   const theme = getTheme(user?.themeColor);
   const { t } = useTranslation(user?.language || "en");
+  const toast = useGlobalToast();
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
   const [notificationSoundEnabled, setNotificationSoundEnabled] = useState(user?.notificationSound ?? true);

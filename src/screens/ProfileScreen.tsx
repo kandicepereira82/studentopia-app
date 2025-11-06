@@ -10,6 +10,7 @@ import { getAnimalImage, getAnimalDisplayName, ALL_ANIMALS } from "../utils/anim
 import { ALL_THEMES } from "../utils/themeUtils";
 import StudyPal from "../components/StudyPal";
 import SettingsScreen from "./SettingsScreen";
+import { useGlobalToast } from "../context/ToastContext";
 
 const ProfileScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -18,6 +19,7 @@ const ProfileScreen = () => {
   const updateStudyPal = useUserStore((s) => s.updateStudyPal);
   const toggleAnimations = useUserStore((s) => s.toggleAnimations);
   const toggleNotifications = useUserStore((s) => s.toggleNotifications);
+  const toast = useGlobalToast();
 
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [showThemeModal, setShowThemeModal] = useState(false);
@@ -47,6 +49,7 @@ const ProfileScreen = () => {
   const handleSavePalName = () => {
     if (user && studyPalName.trim()) {
       updateStudyPal(studyPalName, user.studyPalConfig.animal);
+      toast.success("Companion name updated!");
     }
   };
 
@@ -301,6 +304,7 @@ const ProfileScreen = () => {
                 key={lang.code}
                 onPress={() => {
                   updateLanguage(lang.code);
+                  toast.success(`Language changed to ${lang.name}`);
                   setShowLanguageModal(false);
                 }}
                 className={cn(
@@ -347,6 +351,7 @@ const ProfileScreen = () => {
                 key={theme.color}
                 onPress={() => {
                   updateThemeColor(theme.color);
+                  toast.success(`Theme changed to ${theme.name}`);
                   setShowThemeModal(false);
                 }}
                 className={cn(
@@ -398,6 +403,7 @@ const ProfileScreen = () => {
                 key={animal}
                 onPress={() => {
                   updateStudyPal(user.studyPalConfig.name, animal);
+                  toast.success(`Companion changed to ${getAnimalDisplayName(animal)}`);
                   setShowAnimalModal(false);
                 }}
                 className={cn(

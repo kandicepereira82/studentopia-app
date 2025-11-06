@@ -8,6 +8,8 @@ import useStatsStore from "../state/statsStore";
 import useOnboardingStore from "../state/onboardingStore";
 import { authService } from "../utils/authService";
 import { cn } from "../utils/cn";
+import { useGlobalToast } from "../context/ToastContext";
+import { parseError, logError } from "../utils/errorUtils";
 
 interface AuthenticationScreenProps {
   onComplete: () => void;
@@ -18,6 +20,7 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
   const initStats = useStatsStore((s) => s.initStats);
   const preferences = useOnboardingStore((s) => s.preferences);
   const clearPreferences = useOnboardingStore((s) => s.clearPreferences);
+  const toast = useGlobalToast();
 
   const [mode, setMode] = useState<"choice" | "login" | "signup">("choice");
   const [email, setEmail] = useState("");
@@ -58,36 +61,46 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
     }
 
     setLoading(true);
-    const result = await authService.login(email, password);
+    try {
+      const result = await authService.login(email, password);
 
-    if (result.success && result.userId) {
-      // Create user with onboarding preferences
-      const newUser = {
-        id: result.userId,
-        username: preferences?.username || result.username || "User",
-        email: email,
-        role: preferences?.role || ("student" as const),
-        language: "en" as const,
-        themeColor: preferences?.themeColor || ("nature" as const),
-        studyPalConfig: {
-          name: preferences?.studyPalName || "Tomo",
-          animal: preferences?.animal || ("redpanda" as const),
-          animationsEnabled: false,
-        },
-        notificationEnabled: true,
-        notificationSound: true,
-        notificationVibration: true,
-        mindfulnessBreakEnabled: true,
-        createdAt: new Date(),
-      };
-      setUser(newUser);
-      initStats(result.userId);
-      clearPreferences();
-      onComplete();
-    } else {
-      setErrors({ auth: result.error || "Login failed" });
+      if (result.success && result.userId) {
+        // Create user with onboarding preferences
+        const newUser = {
+          id: result.userId,
+          username: preferences?.username || result.username || "User",
+          email: email,
+          role: preferences?.role || ("student" as const),
+          language: "en" as const,
+          themeColor: preferences?.themeColor || ("nature" as const),
+          studyPalConfig: {
+            name: preferences?.studyPalName || "Tomo",
+            animal: preferences?.animal || ("redpanda" as const),
+            animationsEnabled: false,
+          },
+          notificationEnabled: true,
+          notificationSound: true,
+          notificationVibration: true,
+          mindfulnessBreakEnabled: true,
+          createdAt: new Date(),
+        };
+        setUser(newUser);
+        initStats(result.userId);
+        clearPreferences();
+        toast.success("Welcome back!");
+        onComplete();
+      } else {
+        setErrors({ auth: result.error || "Login failed" });
+        toast.error(result.error || "Login failed");
+      }
+    } catch (error) {
+      logError("AuthenticationScreen:handleLogin", error);
+      const errorInfo = parseError(error);
+      setErrors({ auth: errorInfo.userMessage });
+      toast.error(errorInfo.userMessage);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   const handleSignup = async () => {
@@ -109,36 +122,46 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
     }
 
     setLoading(true);
-    const result = await authService.register(email, password, username);
+    try {
+      const result = await authService.register(email, password, username);
 
-    if (result.success && result.userId) {
-      // Create user with onboarding preferences
-      const newUser = {
-        id: result.userId,
-        username: preferences?.username || username,
-        email: email,
-        role: preferences?.role || ("student" as const),
-        language: "en" as const,
-        themeColor: preferences?.themeColor || ("nature" as const),
-        studyPalConfig: {
-          name: preferences?.studyPalName || "Tomo",
-          animal: preferences?.animal || ("redpanda" as const),
-          animationsEnabled: false,
-        },
-        notificationEnabled: true,
-        notificationSound: true,
-        notificationVibration: true,
-        mindfulnessBreakEnabled: true,
-        createdAt: new Date(),
-      };
-      setUser(newUser);
-      initStats(result.userId);
-      clearPreferences();
-      onComplete();
-    } else {
-      setErrors({ auth: result.error || "Registration failed" });
+      if (result.success && result.userId) {
+        // Create user with onboarding preferences
+        const newUser = {
+          id: result.userId,
+          username: preferences?.username || username,
+          email: email,
+          role: preferences?.role || ("student" as const),
+          language: "en" as const,
+          themeColor: preferences?.themeColor || ("nature" as const),
+          studyPalConfig: {
+            name: preferences?.studyPalName || "Tomo",
+            animal: preferences?.animal || ("redpanda" as const),
+            animationsEnabled: false,
+          },
+          notificationEnabled: true,
+          notificationSound: true,
+          notificationVibration: true,
+          mindfulnessBreakEnabled: true,
+          createdAt: new Date(),
+        };
+        setUser(newUser);
+        initStats(result.userId);
+        clearPreferences();
+        toast.success("Account created successfully!");
+        onComplete();
+      } else {
+        setErrors({ auth: result.error || "Signup failed" });
+        toast.error(result.error || "Signup failed");
+      }
+    } catch (error) {
+      logError("AuthenticationScreen:handleSignup", error);
+      const errorInfo = parseError(error);
+      setErrors({ auth: errorInfo.userMessage });
+      toast.error(errorInfo.userMessage);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

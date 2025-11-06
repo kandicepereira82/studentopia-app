@@ -12,12 +12,14 @@ import { getTheme } from "../utils/themes";
 import { TaskCategory } from "../types";
 import { cn } from "../utils/cn";
 import StudyPal from "../components/StudyPal";
+import { useGlobalToast } from "../context/ToastContext";
 
 const CalendarScreen = () => {
   const user = useUserStore((s) => s.user);
   const tasks = useTaskStore((s) => s.tasks);
   const getTasksByDate = useTaskStore((s) => s.getTasksByDate);
   const addTask = useTaskStore((s) => s.addTask);
+  const toast = useGlobalToast();
 
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -103,6 +105,7 @@ const CalendarScreen = () => {
 
   const handleSaveTask = () => {
     if (!title.trim()) {
+      toast.error("Task title is required");
       return;
     }
 
@@ -114,6 +117,7 @@ const CalendarScreen = () => {
       dueDate: taskDate,
     });
 
+    toast.success("Task added to calendar");
     setModalVisible(false);
     setTitle("");
     setDescription("");
