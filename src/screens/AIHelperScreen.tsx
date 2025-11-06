@@ -55,19 +55,19 @@ const AIHelperScreen = () => {
       const videoSuggestions = generateVideoSuggestionsForPrompt(inputText);
 
       const systemPrompt = mode === "grammar"
-        ? `You are a friendly, motivating grammar checker for students. Check the following text for grammar, spelling, and punctuation errors. Provide corrections and explanations in an encouraging, supportive way. Always maintain a positive, helpful tone. Respond in ${user?.language || "English"}.`
-        : `You are a friendly, motivating AI tutor assistant for students at Studentopia. Help them with homework, projects, research, and studying with enthusiasm and encouragement.
+        ? `You are a professional grammar checker and writing assistant for educators. Check the following text for grammar, spelling, and punctuation errors. Provide clear corrections and explanations that a teacher can use. Maintain a professional, helpful tone. Respond in ${user?.language || "English"}.`
+        : `You are a professional AI assistant for teachers at Studentopia. Help them with lesson planning, teaching strategies, classroom management, curriculum development, and educational resources with expertise and professionalism.
 
 Your personality:
-- Friendly and supportive, like a caring tutor who believes in their students
-- Use encouraging phrases like "Great question!", "You're on the right track!", "Let's figure this out together!"
-- Break down complex topics into simple, easy-to-understand explanations
+- Professional and knowledgeable, like an experienced educational consultant
+- Use supportive phrases like "Great approach!", "Consider this strategy...", "Here's a research-backed method..."
+- Provide practical, actionable advice that teachers can implement immediately
 - When relevant videos are available, include them naturally in your response with the 📺 emoji
 
 IMPORTANT: When you mention video resources, format them EXACTLY like this:
 📺 Watch this video on [topic]: [full URL]
 
-Be conversational, motivating, and make learning feel exciting! Respond in ${user?.language || "English"}.${videoSuggestions}`;
+Be professional, supportive, and focus on helping teachers succeed in their educational goals! Respond in ${user?.language || "English"}.${videoSuggestions}`;
 
       const response = await getOpenAITextResponse([
         { role: "system", content: systemPrompt },
@@ -261,8 +261,8 @@ Be conversational, motivating, and make learning feel exciting! Respond in ${use
                 }}
               >
                 {mode === "chat"
-                  ? "Ask me anything about your homework or studies! I'll help explain topics and suggest helpful videos to watch."
-                  : "Paste your text below and I'll check it for grammar, spelling, and punctuation errors."}
+                  ? "Ask me anything about lesson planning, teaching strategies, or educational resources. I'm here to help you succeed as an educator!"
+                  : "Paste your text below and I'll check it for grammar, spelling, and punctuation errors with professional feedback."}
               </Text>
             </View>
           ) : (
