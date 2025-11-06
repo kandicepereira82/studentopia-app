@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Task, TaskCategory, TaskStatus } from "../types";
+import useActivityFeedStore from "./activityFeedStore";
+import useUserStore from "./userStore";
 
 interface TaskStore {
   tasks: Task[];
@@ -39,19 +41,40 @@ const useTaskStore = create<TaskStore>()(
         set((state) => ({
           tasks: state.tasks.filter((task) => task.id !== id),
         })),
-      toggleTaskStatus: (id) =>
+      toggleTaskStatus: (id) => {
+        const task = get().tasks.find((t) => t.id === id);
+        if (!task) return;
+
+        const wasCompleted = task.status === "completed";
+        const willBeCompleted = !wasCompleted;
+
         set((state) => ({
-          tasks: state.tasks.map((task) =>
-            task.id === id
+          tasks: state.tasks.map((t) =>
+            t.id === id
               ? {
-                  ...task,
-                  status: task.status === "pending" ? "completed" : "pending",
-                  completedAt:
-                    task.status === "pending" ? new Date() : undefined,
+                  ...t,
+                  status: t.status === "pending" ? "completed" : "pending",
+                  completedAt: t.status === "pending" ? new Date() : undefined,
                 }
-              : task,
+              : t,
           ),
-        })),
+        }));
+
+        // Add to activity feed when task is completed
+        if (willBeCompleted) {
+          const user = useUserStore.getState().user;
+          if (user) {
+            useActivityFeedStore.getState().addActivity(
+              user.id,
+              user.username,
+              user.studyPalConfig.animal,
+              "task_completed",
+              `Completed task: ${task.title}`,
+              { taskTitle: task.title }
+            );
+          }
+        }
+      },
       getTasksByDate: (date: Date, userId?: string) => {
         const tasks = get().tasks;
         return tasks.filter((task) => {

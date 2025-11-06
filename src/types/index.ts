@@ -119,6 +119,87 @@ export interface StudySession {
   completed: boolean;
 }
 
+// Social & Collaboration Types
+export type FriendRequestStatus = "pending" | "accepted" | "rejected";
+export type UserPresenceStatus = "online" | "offline" | "studying" | "break";
+export type ActivityType = "task_completed" | "achievement_unlocked" | "streak_milestone" | "friend_added";
+
+export interface Friend {
+  id: string;
+  userId: string; // Current user's ID
+  friendUserId: string; // Friend's user ID
+  friendUsername: string;
+  friendEmail?: string;
+  friendAnimal: StudyPalAnimal;
+  friendTheme: ThemeColor;
+  status: FriendRequestStatus;
+  requestedBy: string; // Who sent the friend request
+  createdAt: Date;
+  acceptedAt?: Date;
+}
+
+export interface UserPresence {
+  userId: string;
+  username: string;
+  status: UserPresenceStatus;
+  lastSeen: Date;
+  currentActivity?: string; // e.g., "Studying Math" or "On break"
+  studyRoomId?: string; // If in a study room
+}
+
+export interface StudyRoom {
+  id: string;
+  name: string;
+  hostUserId: string;
+  hostUsername: string;
+  participantIds: string[]; // All user IDs in the room
+  participants: StudyRoomParticipant[];
+  isPrivate: boolean; // If true, only invited friends can join
+  invitedFriendIds: string[]; // Friend IDs who are invited
+  timerRunning: boolean;
+  timerMode: TimerMode;
+  timerMinutes: number;
+  timerSeconds: number;
+  timerStartedAt?: Date;
+  createdAt: Date;
+  maxParticipants: number; // Default 10
+}
+
+export interface StudyRoomParticipant {
+  userId: string;
+  username: string;
+  animal: StudyPalAnimal;
+  joinedAt: Date;
+  isHost: boolean;
+}
+
+export interface ChatMessage {
+  id: string;
+  studyRoomId: string;
+  userId: string;
+  username: string;
+  content: string;
+  timestamp: Date;
+  type: "text" | "system"; // system for "User joined", "Timer started", etc.
+}
+
+export interface ActivityFeedItem {
+  id: string;
+  userId: string;
+  username: string;
+  animal: StudyPalAnimal;
+  type: ActivityType;
+  description: string;
+  metadata?: {
+    taskTitle?: string;
+    achievementName?: string;
+    streakCount?: number;
+    friendUsername?: string;
+  };
+  timestamp: Date;
+  isVisible: boolean; // User can hide items
+}
+
 export interface AIChatMessage {
   id: string;
   role: "user" | "assistant";

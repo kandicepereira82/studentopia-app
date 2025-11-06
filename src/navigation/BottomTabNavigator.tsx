@@ -8,6 +8,8 @@ import TimerScreen from "../screens/TimerScreen";
 import AIHelperScreen from "../screens/AIHelperScreen";
 import StudyTipsScreen from "../screens/StudyTipsScreen";
 import GroupsScreen from "../screens/GroupsScreen";
+import FriendsScreen from "../screens/FriendsScreen";
+import StudyRoomScreen from "../screens/StudyRoomScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import MindfulnessScreen from "../screens/MindfulnessScreen";
 import useUserStore from "../state/userStore";
@@ -21,6 +23,8 @@ export type RootTabParamList = {
   AIHelper: undefined;
   StudyTips: undefined;
   Groups: undefined;
+  Friends: undefined;
+  StudyRooms: undefined;
   Mindfulness: undefined;
   Profile: undefined;
 };
@@ -73,8 +77,12 @@ const BottomTabNavigator = () => {
         return "#0000FF"; // Blue
       case "Groups":
         return "#9400D3"; // Purple
+      case "Friends":
+        return "#FF1493"; // Deep Pink
+      case "StudyRooms":
+        return "#FF69B4"; // Hot Pink
       case "Profile":
-        return "#FF1493"; // Deep Pink (8 tabs, rainbow + pink)
+        return "#8B008B"; // Dark Magenta (10 tabs)
       default:
         return undefined;
     }
@@ -216,6 +224,38 @@ const BottomTabNavigator = () => {
         }}
       />
       <Tab.Screen
+        name="Friends"
+        component={FriendsScreen}
+        options={{
+          tabBarLabel: "Friends",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people-circle" size={size} color={getRainbowTabColor("Friends") || color} />
+          ),
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "600",
+            marginTop: 4,
+            color: getRainbowTabColor("Friends") || undefined,
+          },
+        }}
+      />
+      <Tab.Screen
+        name="StudyRooms"
+        component={StudyRoomScreen}
+        options={{
+          tabBarLabel: "Rooms",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="videocam" size={size} color={getRainbowTabColor("StudyRooms") || color} />
+          ),
+          tabBarLabelStyle: {
+            fontSize: 12,
+            fontWeight: "600",
+            marginTop: 4,
+            color: getRainbowTabColor("StudyRooms") || undefined,
+          },
+        }}
+      />
+      <Tab.Screen
         name="Mindfulness"
         component={MindfulnessScreen}
         options={{
@@ -229,6 +269,7 @@ const BottomTabNavigator = () => {
             marginTop: 4,
             color: getRainbowTabColor("Mindfulness") || undefined,
           },
+          tabBarButton: () => null, // Hide from tab bar (accessible via Profile)
         }}
       />
       <Tab.Screen
