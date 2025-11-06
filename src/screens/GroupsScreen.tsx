@@ -1124,8 +1124,12 @@ const GroupsScreen = () => {
                 </Text>
 
                 <Pressable
-                  onPress={() => setShowRulesModal(true)}
-                  style={{ marginBottom: 12 }}
+                  onPress={(e) => {
+                    e.stopPropagation();
+                    setShowRulesModal(true);
+                  }}
+                  hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                  style={{ marginBottom: 12, paddingVertical: 4 }}
                 >
                   <Text style={{ color: theme.primary, fontSize: 12, fontFamily: 'Poppins_600SemiBold', textDecorationLine: 'underline' }}>
                     Read Full Rules & Guidelines
