@@ -13,62 +13,47 @@ export interface MusicTrack {
 }
 
 // Curated list of calming classical music
-// Note: URLs are placeholders - users need to provide their own hosted audio files
-// You can find royalty-free music at: Pixabay, YouTube Audio Library, or Free Music Archive
+// Using local assets for music files
 export const musicLibrary: MusicTrack[] = [
   {
-    id: "calm-piano-1",
-    title: "Peaceful Piano",
-    artist: "Classical",
-    duration: 180,
+    id: "chopin-nocturne",
+    title: "Chopin Nocturne",
+    artist: "Chopin",
+    duration: 300,
     mood: "peaceful",
-    genre: "piano",
-    pixabayUrl: "", // User must provide their own URL
+    genre: "classical",
+    pixabayUrl: "",
+    localFile: require("../../assets/chopin-nocturne-op-9-no-2-slowed-rainmp3.mpeg"),
   },
   {
-    id: "calming-classical-1",
-    title: "Calming Classical",
-    artist: "Orchestra",
+    id: "calm-soul-meditation",
+    title: "Calm Soul Meditation",
+    artist: "Meditation Music",
     duration: 240,
     mood: "calming",
-    genre: "classical",
+    genre: "ambient",
     pixabayUrl: "",
+    localFile: require("../../assets/calm-soul-meditation.mpeg"),
   },
   {
-    id: "uplifting-strings-1",
-    title: "Uplifting Strings",
-    artist: "Strings Ensemble",
+    id: "meditation-432hz",
+    title: "432 Hz Meditation",
+    artist: "Healing Frequencies",
     duration: 200,
-    mood: "uplifting",
-    genre: "classical",
-    pixabayUrl: "",
-  },
-  {
-    id: "gentle-meditation-1",
-    title: "Gentle Meditation",
-    artist: "Ambient Classical",
-    duration: 300,
     mood: "peaceful",
     genre: "ambient",
     pixabayUrl: "",
+    localFile: require("../../assets/432-hz-meditation-short.mpeg"),
   },
   {
-    id: "soft-piano-2",
-    title: "Soft Piano Dreams",
-    artist: "Piano Solo",
-    duration: 220,
-    mood: "calming",
-    genre: "piano",
-    pixabayUrl: "",
-  },
-  {
-    id: "morning-sunrise-1",
-    title: "Morning Sunrise",
-    artist: "Classical Ensemble",
-    duration: 190,
+    id: "release-negative-energy",
+    title: "Release Negative Energy",
+    artist: "Healing Frequencies",
+    duration: 300,
     mood: "uplifting",
-    genre: "classical",
+    genre: "ambient",
     pixabayUrl: "",
+    localFile: require("../../assets/432-528-hz-release-negative-energy-.mpeg"),
   },
 ];
 
@@ -101,23 +86,26 @@ class MusicService {
         await this.sound.unloadAsync();
       }
 
-      // Use provided URI or fall back to track's pixabayUrl
-      const audioUri = uri || track.pixabayUrl;
+      // Priority: provided URI > localFile > pixabayUrl
+      let audioSource: any;
 
-      if (!audioUri) {
-        console.error("No audio URI provided for track:", track.title);
+      if (uri) {
+        // Use provided URI string
+        audioSource = { uri };
+      } else if (track.localFile) {
+        // Use local asset file (require'd module)
+        audioSource = track.localFile;
+      } else if (track.pixabayUrl) {
+        // Use remote URL
+        audioSource = { uri: track.pixabayUrl };
+      } else {
+        console.error("No audio source provided for track:", track.title);
         return false;
       }
 
-      // Validate that URI looks like an audio file
-      if (!audioUri.includes('.mp3') && !audioUri.includes('.m4a') && !audioUri.includes('.wav') && !audioUri.startsWith('http')) {
-        console.error("Invalid audio URI format:", audioUri);
-        return false;
-      }
-
-      // Load new track from URI (either local file or remote URL)
+      // Load new track
       const { sound } = await Audio.Sound.createAsync(
-        { uri: audioUri },
+        audioSource,
         { shouldPlay: false, volume: this.volume, isLooping: this.isLooping },
         this.onPlaybackStatusUpdate
       );
@@ -130,7 +118,7 @@ class MusicService {
       return true;
     } catch (error: any) {
       console.error("Error loading track:", error);
-      console.error("Track details:", { title: track.title, uri });
+      console.error("Track details:", { title: track.title, hasLocalFile: !!track.localFile, uri });
 
       // Provide more specific error messages
       if (error.message && error.message.includes('-11850')) {

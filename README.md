@@ -4,6 +4,7 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Music Player Fixed** - Updated music library to use local audio files (4 meditation tracks now available)
 - ✅ **Refined Task Category Tabs** - Reduced tab heights with compact rectangular design and even 12px spacing between all tabs
 - ✅ **Reset Button on Breathwork Timer** - Added refresh icon button to reset breathwork session to default 5-minute duration
 - ✅ **First Name Only Greeting** - Home page now displays first name only in personalized greeting
