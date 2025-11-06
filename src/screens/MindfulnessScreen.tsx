@@ -15,7 +15,7 @@ import { THEMES } from "../utils/themes";
 import { ThemeConfig } from "../utils/themes";
 import StudyPal from "../components/StudyPal";
 
-type Tab = "timer" | "breathwork" | "tips" | "acupressure";
+type Tab = "breathwork" | "tips" | "acupressure";
 type BreathworkType = "box" | "46";
 
 const MindfulnessScreen = () => {
@@ -23,14 +23,7 @@ const MindfulnessScreen = () => {
   const theme = THEMES[user?.themeColor || "nature"];
 
   // Tab state
-  const [activeTab, setActiveTab] = useState<Tab>("timer");
-
-  // Timer state
-  const [timerMinutes, setTimerMinutes] = useState(5);
-  const [timerSeconds, setTimerSeconds] = useState(0);
-  const [isRunning, setIsRunning] = useState(false);
-  const [totalTime, setTotalTime] = useState(timerMinutes * 60);
-  const [elapsedTime, setElapsedTime] = useState(0);
+  const [activeTab, setActiveTab] = useState<Tab>("breathwork");
 
   // Breathwork state
   const [breathworkType, setBreathworkType] = useState<BreathworkType>("box");
@@ -91,31 +84,6 @@ const MindfulnessScreen = () => {
       instruction: "Massage gently with circular motions for 30-60 seconds.",
     },
   ];
-
-  // Timer effect
-  useEffect(() => {
-    if (!isRunning) return;
-
-    const interval = setInterval(() => {
-      setElapsedTime((prev) => {
-        const newTime = prev + 1;
-        if (newTime >= totalTime) {
-          setIsRunning(false);
-          return newTime;
-        }
-        return newTime;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [isRunning, totalTime]);
-
-  // Update timer display
-  useEffect(() => {
-    const remaining = totalTime - elapsedTime;
-    setTimerMinutes(Math.floor(remaining / 60));
-    setTimerSeconds(remaining % 60);
-  }, [elapsedTime, totalTime]);
 
   // Breathwork effect
   useEffect(() => {
@@ -251,7 +219,7 @@ const MindfulnessScreen = () => {
         {/* Tab Navigation */}
         <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 16 }}>
-            {(["timer", "breathwork", "tips", "acupressure"] as Tab[]).map((tab) => (
+            {(["breathwork", "tips", "acupressure"] as Tab[]).map((tab) => (
               <Pressable
                 key={tab}
                 onPress={() => setActiveTab(tab)}
@@ -270,9 +238,7 @@ const MindfulnessScreen = () => {
                     fontWeight: "600",
                   }}
                 >
-                  {tab === "timer"
-                    ? "Timer"
-                    : tab === "breathwork"
+                  {tab === "breathwork"
                     ? "Breathwork"
                     : tab === "tips"
                     ? "Tips"
@@ -289,177 +255,6 @@ const MindfulnessScreen = () => {
           contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Timer Tab */}
-          {activeTab === "timer" && (
-            <Animated.View entering={FadeIn}>
-              <View className="bg-white dark:bg-gray-800 rounded-3xl p-8 mb-6 items-center shadow-lg" style={{ elevation: 5 }}>
-                {/* Companion */}
-                <View className="mb-6">
-                  <StudyPal
-                    animal={user?.studyPalConfig.animal || "redpanda"}
-                    name={user?.studyPalConfig.name || "Tomo"}
-                    animationsEnabled={false}
-                    size={60}
-                    showName={false}
-                    showMessage={false}
-                  />
-                </View>
-
-                {/* Timer Display */}
-                <View className="mb-8">
-                  <Text
-                    style={{
-                      fontSize: 72,
-                      fontFamily: "Poppins_700Bold",
-                      color: theme.primary,
-                      textAlign: "center",
-                    }}
-                  >
-                    {String(timerMinutes).padStart(2, "0")}:{String(timerSeconds).padStart(2, "0")}
-                  </Text>
-                </View>
-
-                {/* Progress Circle */}
-                {animationsEnabled && (
-                  <View
-                    className="rounded-full mb-8"
-                    style={{
-                      width: 150,
-                      height: 150,
-                      backgroundColor: theme.primary + "20",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                  >
-                    <Animated.View
-                      style={[
-                        {
-                          width: 100,
-                          height: 100,
-                          borderRadius: 50,
-                          backgroundColor: theme.primary + "40",
-                        },
-                        circleAnimatedStyle,
-                      ]}
-                    />
-                  </View>
-                )}
-
-                {/* Timer Input */}
-                <View className="flex-row gap-4 mb-6 items-center">
-                  <Pressable
-                    onPress={() => setTimerMinutes(Math.max(1, timerMinutes - 1))}
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 24,
-                      backgroundColor: theme.primary + "20",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Ionicons name="remove" size={24} color={theme.primary} />
-                  </Pressable>
-
-                  <View style={{
-                    flex: 1,
-                    backgroundColor: theme.primary + "10",
-                    borderRadius: 16,
-                    paddingHorizontal: 16,
-                    paddingVertical: 12,
-                    alignItems: "center",
-                  }}>
-                    <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
-                      {timerMinutes} min
-                    </Text>
-                  </View>
-
-                  <Pressable
-                    onPress={() => setTimerMinutes(Math.min(60, timerMinutes + 1))}
-                    style={{
-                      width: 48,
-                      height: 48,
-                      borderRadius: 24,
-                      backgroundColor: theme.primary + "20",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <Ionicons name="add" size={24} color={theme.primary} />
-                  </Pressable>
-                </View>
-
-                {/* Control Buttons */}
-                <View className="flex-row gap-3 w-full mb-6">
-                  <Pressable
-                    onPress={() => {
-                      setTotalTime(timerMinutes * 60);
-                      setElapsedTime(0);
-                      setIsRunning(true);
-                    }}
-                    disabled={isRunning}
-                    className="flex-1"
-                  >
-                    <LinearGradient
-                      colors={[theme.primary, theme.secondary]}
-                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center", opacity: isRunning ? 0.5 : 1 }}
-                    >
-                      <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
-                        Start
-                      </Text>
-                    </LinearGradient>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => setIsRunning(!isRunning)}
-                    disabled={!isRunning && elapsedTime === 0}
-                    className="flex-1"
-                  >
-                    <LinearGradient
-                      colors={[theme.secondary, theme.secondary + "CC"]}
-                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
-                    >
-                      <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "white" }}>
-                        {isRunning ? "Pause" : "Resume"}
-                      </Text>
-                    </LinearGradient>
-                  </Pressable>
-
-                  <Pressable
-                    onPress={() => {
-                      setIsRunning(false);
-                      setElapsedTime(0);
-                    }}
-                    className="flex-1"
-                  >
-                    <LinearGradient
-                      colors={[theme.secondary + "66", theme.secondary + "33"]}
-                      style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
-                    >
-                      <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                        Stop
-                      </Text>
-                    </LinearGradient>
-                  </Pressable>
-                </View>
-
-                {/* Encouragement */}
-                <View className="bg-blue-50 dark:bg-blue-900 rounded-2xl p-4 w-full">
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      fontFamily: "Poppins_500Medium",
-                      color: "#1E40AF",
-                      textAlign: "center",
-                    }}
-                  >
-                    🌬️ Breathe deeply, focus on the moment
-                  </Text>
-                </View>
-              </View>
-            </Animated.View>
-          )}
-
           {/* Breathwork Tab */}
           {activeTab === "breathwork" && (
             <Animated.View entering={FadeIn}>
