@@ -661,6 +661,25 @@ const MindfulnessScreen = () => {
                   </Text>
                 </View>
 
+                {/* Parent Support Guide */}
+                <View className="bg-blue-50 dark:bg-blue-900 rounded-2xl p-4 border border-blue-200 dark:border-blue-700">
+                  <View className="flex-row items-start gap-3 mb-2">
+                    <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: "#1E40AF" }}>
+                      👨‍👩‍👧 For Parents:
+                    </Text>
+                  </View>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      fontFamily: "Poppins_400Regular",
+                      color: "#1E40AF",
+                      lineHeight: 18,
+                    }}
+                  >
+                    Help your child locate each point using the descriptions below. Use your thumb or index finger to apply gentle, steady pressure. Encourage deep breathing while pressing each point. These techniques are safe, non-invasive, and can be done anywhere—at home, school, or during stressful moments.
+                  </Text>
+                </View>
+
                 {/* Acupressure Points */}
                 {acupressurePoints.map((point, index) => (
                   <View
