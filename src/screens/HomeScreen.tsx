@@ -78,6 +78,9 @@ const HomeScreen = () => {
 
   const getTasksForDate = (date: Date) => {
     return tasks.filter((task) => {
+      // Filter by user ID first
+      if (task.userId !== user?.id) return false;
+
       const taskDate = new Date(task.dueDate);
       return isSameDay(taskDate, date);
     });

@@ -98,6 +98,9 @@ const CalendarScreen = () => {
 
   const getTasksForWeek = () => {
     return tasks.filter((task) => {
+      // Filter by user ID first
+      if (task.userId !== user?.id) return false;
+
       const taskDateObj = new Date(task.dueDate);
       return taskDateObj >= weekStart && taskDateObj <= weekEnd;
     }).sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
@@ -125,6 +128,9 @@ const CalendarScreen = () => {
 
   const getTasksForDate = (date: Date) => {
     return tasks.filter((task) => {
+      // Filter by user ID first
+      if (task.userId !== user?.id) return false;
+
       const taskDateObj = new Date(task.dueDate);
       return isSameDay(taskDateObj, date);
     });

@@ -203,9 +203,12 @@ const TasksScreen = () => {
     }
   };
 
+  // Filter tasks by current user first, then by category
+  const userTasks = tasks.filter((t) => t.userId === user?.id);
+
   const filteredTasks = filterCategory === "all"
-    ? tasks
-    : tasks.filter((t) => t.category === filterCategory);
+    ? userTasks
+    : userTasks.filter((t) => t.category === filterCategory);
 
   const sortedTasks = [...filteredTasks].sort((a, b) => {
     if (a.status !== b.status) {

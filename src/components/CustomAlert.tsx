@@ -17,11 +17,11 @@ interface CustomAlertProps {
   theme?: any;
 }
 
-const CustomAlert: React.FC<CustomAlertProps> = ({
+const CustomAlert = React.memo<CustomAlertProps>(({
   visible,
   title,
   message,
-  buttons = [{ text: "OK", style: "default" }],
+  buttons = [{ text: "OK", style: "default" as const }],
   onClose,
   theme,
 }) => {
@@ -153,6 +153,8 @@ const CustomAlert: React.FC<CustomAlertProps> = ({
       </Pressable>
     </Modal>
   );
-};
+});
+
+CustomAlert.displayName = 'CustomAlert';
 
 export default CustomAlert;

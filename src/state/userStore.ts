@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { User, Language, ThemeColor, StudyPalAnimal } from "../types";
+import useTaskStore from "./taskStore";
+import useStatsStore from "./statsStore";
+import useGroupStore from "./groupStore";
 
 interface UserStore {
   user: User | null;
@@ -101,7 +104,22 @@ const useUserStore = create<UserStore>()(
               }
             : null,
         })),
-      logout: () => set({ user: null }),
+      logout: () => {
+        // Clear all user-specific data when logging out
+        set({ user: null });
+
+        // Clear tasks
+        useTaskStore.getState().tasks = [];
+        useTaskStore.persist.clearStorage();
+
+        // Clear stats
+        useStatsStore.getState().stats = null;
+        useStatsStore.persist.clearStorage();
+
+        // Clear groups
+        useGroupStore.getState().groups = [];
+        useGroupStore.persist.clearStorage();
+      },
     }),
     {
       name: "user-storage",

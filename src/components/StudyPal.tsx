@@ -22,7 +22,7 @@ interface StudyPalProps {
   showMessage?: boolean;
 }
 
-const StudyPal: React.FC<StudyPalProps> = ({
+const StudyPal: React.FC<StudyPalProps> = React.memo(({
   animal,
   name,
   animationsEnabled,
@@ -535,6 +535,8 @@ const StudyPal: React.FC<StudyPalProps> = ({
       )}
     </View>
   );
-};
+});
+
+StudyPal.displayName = 'StudyPal';
 
 export default StudyPal;
