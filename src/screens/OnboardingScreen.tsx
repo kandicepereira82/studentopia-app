@@ -8,6 +8,7 @@ import useStatsStore from "../state/statsStore";
 import { StudyPalAnimal, ThemeColor } from "../types";
 import { cn } from "../utils/cn";
 import { getAnimalImage, getAnimalDisplayName, ALL_ANIMALS } from "../utils/animalUtils";
+import { ALL_THEMES } from "../utils/themeUtils";
 import StudyPal from "../components/StudyPal";
 
 interface OnboardingScreenProps {
@@ -27,17 +28,6 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [themeColor, setThemeColor] = useState<ThemeColor>("nature");
   const [showCelebration, setShowCelebration] = useState(false);
   const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
-
-  const themes: { color: ThemeColor; colors: [string, string]; emoji: string; name: string }[] = [
-    { color: "nature", colors: ["#4CAF50", "#2E7D32"], emoji: "🌿", name: "Nature" },
-    { color: "ocean", colors: ["#0288D1", "#01579B"], emoji: "🌊", name: "Ocean" },
-    { color: "galaxy", colors: ["#5E35B1", "#311B92"], emoji: "🌌", name: "Galaxy" },
-    { color: "rainbow", colors: ["#FBC02D", "#F57F17"], emoji: "🌈", name: "Rainbow" },
-    { color: "sunset", colors: ["#F57C00", "#E65100"], emoji: "🌅", name: "Sunset" },
-    { color: "arctic", colors: ["#00796B", "#004D40"], emoji: "❄️", name: "Arctic" },
-    { color: "golden", colors: ["#E64A19", "#BF360C"], emoji: "✨", name: "Golden" },
-    { color: "cherry", colors: ["#C2185B", "#880E4F"], emoji: "🌸", name: "Cherry Blossom" },
-  ];
 
   const validateEmail = (emailValue: string): boolean => {
     if (!emailValue.trim()) return true; // Email is optional
@@ -481,7 +471,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
               {/* Real-time theme preview */}
               <View className="items-center mb-6">
                 <LinearGradient
-                  colors={themes.find((t) => t.color === themeColor)?.colors || ["#4CAF50", "#2E7D32"]}
+                  colors={ALL_THEMES.find((t) => t.color === themeColor)?.colors || ["#4CAF50", "#2E7D32"]}
                   className="w-full h-32 rounded-2xl items-center justify-center"
                 >
                   <StudyPal
@@ -507,7 +497,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
               </View>
 
               <View className="flex-row flex-wrap gap-3">
-                {themes.map((theme) => (
+                {ALL_THEMES.map((theme) => (
                   <Pressable
                     key={theme.color}
                     onPress={() => setThemeColor(theme.color)}

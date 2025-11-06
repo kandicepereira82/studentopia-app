@@ -7,6 +7,7 @@ import { useTranslation, languageNames } from "../utils/translations";
 import { Language, ThemeColor, StudyPalAnimal } from "../types";
 import { cn } from "../utils/cn";
 import { getAnimalImage, getAnimalDisplayName, ALL_ANIMALS } from "../utils/animalUtils";
+import { ALL_THEMES } from "../utils/themeUtils";
 import StudyPal from "../components/StudyPal";
 import SettingsScreen from "./SettingsScreen";
 
@@ -41,17 +42,6 @@ const ProfileScreen = () => {
     { code: "tr", name: "Türkçe", flag: "🇹🇷" },
     { code: "ru", name: "Русский", flag: "🇷🇺" },
     { code: "id", name: "Bahasa Indonesia", flag: "🇮🇩" },
-  ];
-
-  const themes: { color: ThemeColor; name: string; colors: [string, string]; emoji: string }[] = [
-    { color: "nature", name: "Nature", colors: ["#4CAF50", "#2E7D32"], emoji: "🌿" },
-    { color: "ocean", name: "Ocean", colors: ["#0288D1", "#01579B"], emoji: "🌊" },
-    { color: "galaxy", name: "Galaxy", colors: ["#5E35B1", "#311B92"], emoji: "🌌" },
-    { color: "rainbow", name: "Rainbow", colors: ["#FBC02D", "#F57F17"], emoji: "🌈" },
-    { color: "sunset", name: "Sunset", colors: ["#F57C00", "#E65100"], emoji: "🌅" },
-    { color: "arctic", name: "Arctic", colors: ["#00796B", "#004D40"], emoji: "❄️" },
-    { color: "golden", name: "Golden", colors: ["#E64A19", "#BF360C"], emoji: "✨" },
-    { color: "cherry", name: "Cherry Blossom", colors: ["#C2185B", "#880E4F"], emoji: "🌸" },
   ];
 
   const handleSavePalName = () => {
@@ -253,7 +243,7 @@ const ProfileScreen = () => {
                 <View
                   className="w-6 h-6 rounded-full mr-2"
                   style={{
-                    backgroundColor: themes.find((t) => t.color === user.themeColor)
+                    backgroundColor: ALL_THEMES.find((t) => t.color === user.themeColor)
                       ?.colors[0],
                   }}
                 />
@@ -352,7 +342,7 @@ const ProfileScreen = () => {
             </Pressable>
           </View>
           <ScrollView className="flex-1 px-6 py-4">
-            {themes.map((theme) => (
+            {ALL_THEMES.map((theme) => (
               <Pressable
                 key={theme.color}
                 onPress={() => {
