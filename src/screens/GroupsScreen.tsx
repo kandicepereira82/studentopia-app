@@ -285,7 +285,7 @@ const GroupsScreen = () => {
                   fontFamily: 'Poppins_700Bold',
                   color: theme.textPrimary
                 }}>
-                  Groups
+                  {isTeacher ? "Students" : "Friends"}
                 </Text>
                 {user && (
                   <View style={{ marginLeft: 16 }}>
@@ -306,7 +306,7 @@ const GroupsScreen = () => {
                 color: theme.textSecondary,
                 marginTop: 4
               }}>
-                Create, join, and manage class groups
+                {isTeacher ? "Communicate and collaborate with your students" : "Connect and study with friends"}
               </Text>
             </View>
           </View>
@@ -396,7 +396,7 @@ const GroupsScreen = () => {
               fontSize: 14,
               color: activeTab === "groups" ? "white" : theme.textSecondary,
             }}>
-              Class Groups
+              {isTeacher ? "My Students" : "Friend Groups"}
             </Text>
           </Pressable>
           <Pressable
@@ -419,7 +419,7 @@ const GroupsScreen = () => {
               fontSize: 14,
               color: activeTab === "live" ? "white" : theme.textSecondary,
             }}>
-              Live Sessions
+              {isTeacher ? "Live with Students" : "Study with Friends"}
             </Text>
           </Pressable>
         </View>
