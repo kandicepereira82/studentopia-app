@@ -40,6 +40,7 @@ const SettingsScreen = () => {
   const [scheduledNotificationsCount, setScheduledNotificationsCount] = useState(0);
   const [availableCalendars, setAvailableCalendars] = useState<number>(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showCalendarInstructions, setShowCalendarInstructions] = useState(false);
 
   // Convert 24-hour format to 12-hour format
   const userHour24 = user?.dailyReminderTime?.hour || 9;
@@ -374,9 +375,24 @@ const SettingsScreen = () => {
 
           {/* Calendar Sync Section */}
           <View className="mb-6">
-            <Text className="text-lg font-bold mb-3" style={{ color: theme.textPrimary }}>
-              Calendar Integration
-            </Text>
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-lg font-bold" style={{ color: theme.textPrimary }}>
+                Calendar Integration
+              </Text>
+              <Pressable
+                onPress={() => setShowCalendarInstructions(true)}
+                style={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 16,
+                  backgroundColor: theme.primary + "20",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Ionicons name="help-circle" size={20} color={theme.primary} />
+              </Pressable>
+            </View>
 
             {/* Enable Calendar Sync */}
             <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
@@ -765,6 +781,186 @@ const SettingsScreen = () => {
                 </Text>
               </Pressable>
             </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Calendar Sync Instructions Modal */}
+      <Modal
+        visible={showCalendarInstructions}
+        transparent
+        animationType="slide"
+        onRequestClose={() => setShowCalendarInstructions(false)}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <View
+            style={{
+              backgroundColor: theme.cardBackground,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              maxHeight: "90%",
+            }}
+          >
+            {/* Header */}
+            <View className="flex-row items-center justify-between p-6 border-b" style={{ borderBottomColor: theme.textSecondary + "20" }}>
+              <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
+                How to Sync Calendar
+              </Text>
+              <Pressable onPress={() => setShowCalendarInstructions(false)}>
+                <Ionicons name="close" size={24} color={theme.textPrimary} />
+              </Pressable>
+            </View>
+
+            {/* Instructions Content */}
+            <ScrollView className="flex-1 p-6" showsVerticalScrollIndicator={false}>
+              {/* What is Calendar Sync */}
+              <View className="mb-6">
+                <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: theme.primary, marginBottom: 8 }}>
+                  📅 What is Calendar Sync?
+                </Text>
+                <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 20 }}>
+                  Calendar Sync automatically adds your Studentopia tasks to your device&rsquo;s calendar. This helps you see all your study sessions and deadlines in one place.
+                </Text>
+              </View>
+
+              {/* Step by Step Instructions */}
+              <View className="mb-6">
+                <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: theme.primary, marginBottom: 12 }}>
+                  📋 Step-by-Step Instructions
+                </Text>
+
+                {/* Step 1 */}
+                <View className="mb-5 pb-5 border-b" style={{ borderBottomColor: theme.textSecondary + "20" }}>
+                  <View className="flex-row items-start gap-3 mb-2">
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: theme.primary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontFamily: "Poppins_700Bold" }}>1</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                        Enable Calendar Sync
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 18, marginLeft: 35 }}>
+                    Toggle the &ldquo;Calendar Sync&rdquo; switch ON in this settings screen. Your phone will ask for calendar access permission.
+                  </Text>
+                </View>
+
+                {/* Step 2 */}
+                <View className="mb-5 pb-5 border-b" style={{ borderBottomColor: theme.textSecondary + "20" }}>
+                  <View className="flex-row items-start gap-3 mb-2">
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: theme.primary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontFamily: "Poppins_700Bold" }}>2</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                        Grant Permission
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 18, marginLeft: 35 }}>
+                    When prompted, select &ldquo;Allow&rdquo; to let Studentopia access your device calendar. This gives the app permission to add events.
+                  </Text>
+                </View>
+
+                {/* Step 3 */}
+                <View className="mb-5 pb-5 border-b" style={{ borderBottomColor: theme.textSecondary + "20" }}>
+                  <View className="flex-row items-start gap-3 mb-2">
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: theme.primary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontFamily: "Poppins_700Bold" }}>3</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                        Create or Edit Tasks
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 18, marginLeft: 35 }}>
+                    When you create a new task or edit an existing one, add a due date. Tasks with due dates will automatically sync to your calendar.
+                  </Text>
+                </View>
+
+                {/* Step 4 */}
+                <View className="mb-5">
+                  <View className="flex-row items-start gap-3 mb-2">
+                    <View
+                      style={{
+                        width: 28,
+                        height: 28,
+                        borderRadius: 14,
+                        backgroundColor: theme.primary,
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <Text style={{ color: "white", fontFamily: "Poppins_700Bold" }}>4</Text>
+                    </View>
+                    <View className="flex-1">
+                      <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                        View in Calendar
+                      </Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 18, marginLeft: 35 }}>
+                    Open your device&rsquo;s calendar app to see all your Studentopia tasks displayed alongside your other events.
+                  </Text>
+                </View>
+              </View>
+
+              {/* Tips Section */}
+              <View className="mb-6 rounded-2xl p-4" style={{ backgroundColor: theme.primary + "10" }}>
+                <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.primary, marginBottom: 8 }}>
+                  💡 Tips
+                </Text>
+                <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textPrimary, lineHeight: 18, marginBottom: 6 }}>
+                  • Tasks are synced in real-time whenever you create or update them
+                </Text>
+                <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textPrimary, lineHeight: 18, marginBottom: 6 }}>
+                  • You can edit tasks from either Studentopia or your calendar—changes sync both ways
+                </Text>
+                <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textPrimary, lineHeight: 18 }}>
+                  • Toggle calendar sync off any time in settings to stop syncing
+                </Text>
+              </View>
+
+              {/* Close Button */}
+              <Pressable
+                onPress={() => setShowCalendarInstructions(false)}
+                className="rounded-2xl py-4 items-center justify-center mb-6"
+                style={{ backgroundColor: theme.primary }}
+              >
+                <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: "white" }}>
+                  Got it!
+                </Text>
+              </Pressable>
+            </ScrollView>
           </View>
         </View>
       </Modal>
