@@ -145,7 +145,14 @@ const HomeScreen = () => {
               {getGreetingSubMessage()}
             </Text>
           </View>
-          <View style={{ marginLeft: 12 }}>
+          <Pressable
+            onPress={() => navigation.navigate("Profile" as never)}
+            style={({ pressed }) => ({
+              marginLeft: 12,
+              transform: [{ scale: pressed ? 0.95 : 1 }],
+              opacity: pressed ? 0.8 : 1,
+            })}
+          >
             <StudyPal
               animal={user.studyPalConfig.animal}
               name={user.studyPalConfig.name}
@@ -153,8 +160,9 @@ const HomeScreen = () => {
               size={50}
               showName={false}
               showMessage={false}
+              customAvatar={user.studyPalConfig.avatar}
             />
-          </View>
+          </Pressable>
         </View>
 
         {/* Daily Study Reminder Card */}
