@@ -105,8 +105,8 @@ const HomeScreen = () => {
     );
   }
 
-  const todayTasks = getTodayTasks();
-  const weekTasks = getWeekTasks();
+  const todayTasks = getTodayTasks(user?.id);
+  const weekTasks = getWeekTasks(user?.id);
   const todayCompleted = todayTasks.filter((t) => t.status === "completed").length;
   const weekCompleted = weekTasks.filter((t) => t.status === "completed").length;
 
@@ -114,7 +114,7 @@ const HomeScreen = () => {
   const weekProgress = weekTasks.length > 0 ? (weekCompleted / weekTasks.length) * 100 : 0;
 
   const upcomingTasks = tasks
-    .filter((t) => t.status === "pending")
+    .filter((t) => t.status === "pending" && t.userId === user?.id)
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     .slice(0, 5);
 
