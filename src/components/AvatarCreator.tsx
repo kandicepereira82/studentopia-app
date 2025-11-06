@@ -71,24 +71,30 @@ const OUTFITS = [
 ];
 
 const BACKGROUND_COLORS = [
-  { id: "none", name: "None", color: "#FFFFFF" },
-  { id: "soft_pink", name: "Soft Pink", color: "#FFC0CB" },
+  { id: "red", name: "Red", color: "#FF4444" },
+  { id: "blue", name: "Blue", color: "#4A90E2" },
+  { id: "yellow", name: "Yellow", color: "#FFD93D" },
+  { id: "green", name: "Green", color: "#6BCF7F" },
+  { id: "pink", name: "Pink", color: "#FF69B4" },
+  { id: "purple", name: "Purple", color: "#9B59B6" },
+  { id: "orange", name: "Orange", color: "#FF8C42" },
+  { id: "teal", name: "Teal", color: "#20B2AA" },
+  { id: "cyan", name: "Cyan", color: "#00CED1" },
+  { id: "magenta", name: "Magenta", color: "#E91E63" },
   { id: "lavender", name: "Lavender", color: "#E6E6FA" },
-  { id: "mint", name: "Mint", color: "#B2F5EA" },
-  { id: "peach", name: "Peach", color: "#FFDAB9" },
-  { id: "sky_blue", name: "Sky Blue", color: "#87CEEB" },
-  { id: "lemon", name: "Lemon", color: "#FFF68F" },
+  { id: "gold", name: "Gold", color: "#FFD700" },
   { id: "coral", name: "Coral", color: "#FF7F50" },
-  { id: "lilac", name: "Lilac", color: "#DDA0DD" },
-  { id: "aqua", name: "Aqua", color: "#7FDBFF" },
-  { id: "cream", name: "Cream", color: "#FFF8DC" },
-  { id: "rose", name: "Rose", color: "#FFB6C1" },
-  { id: "sage", name: "Sage", color: "#C3E6CB" },
-  { id: "butter", name: "Butter", color: "#FFFACD" },
-  { id: "periwinkle", name: "Periwinkle", color: "#CCCCFF" },
-  { id: "apricot", name: "Apricot", color: "#FBCEB1" },
-  { id: "powder_blue", name: "Powder Blue", color: "#B0E0E6" },
-  { id: "champagne", name: "Champagne", color: "#F7E7CE" },
+  { id: "lime", name: "Lime", color: "#BFFF00" },
+  { id: "peach", name: "Peach", color: "#FFDAB9" },
+  { id: "navy", name: "Navy", color: "#1E3A8A" },
+  { id: "turquoise", name: "Turquoise", color: "#40E0D0" },
+  { id: "violet", name: "Violet", color: "#8B5CF6" },
+  { id: "mint", name: "Mint", color: "#98FF98" },
+  { id: "amber", name: "Amber", color: "#FFBF00" },
+  { id: "rose", name: "Rose", color: "#FF66B2" },
+  { id: "beige", name: "Beige", color: "#F5F5DC" },
+  { id: "chocolate", name: "Chocolate", color: "#8B4513" },
+  { id: "grey", name: "Grey", color: "#9CA3AF" },
 ];
 
 const ACCESSORIES = [
@@ -129,7 +135,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
     furColor: currentAvatar.furColor || "natural",
     outfit: currentAvatar.outfit || "none",
     accessory: currentAvatar.accessory || "none",
-    backgroundColor: currentAvatar.backgroundColor || "none",
+    backgroundColor: currentAvatar.backgroundColor || "red",
     glasses: currentAvatar.glasses || false,
     headphones: currentAvatar.headphones || false,
   });
@@ -146,7 +152,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
       furColor: "natural",
       outfit: "none",
       accessory: "none",
-      backgroundColor: "none",
+      backgroundColor: "red",
       glasses: false,
       headphones: false,
     });
@@ -267,15 +273,16 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
                 <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
                   Background Colour
                 </Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 10, justifyContent: "space-between" }}>
                   {BACKGROUND_COLORS.map((color) => (
                     <Pressable
                       key={color.id}
                       onPress={() => setAvatar({ ...avatar, backgroundColor: color.id })}
                       style={{
-                        width: 95,
-                        paddingVertical: 14,
-                        borderRadius: 16,
+                        width: "15%",
+                        minWidth: 50,
+                        paddingVertical: 12,
+                        borderRadius: 12,
                         backgroundColor: color.color,
                         borderWidth: 3,
                         borderColor: avatar.backgroundColor === color.id ? theme.primary : "#E5E7EB",
@@ -290,8 +297,8 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
                     >
                       <Text style={{
                         fontFamily: "Poppins_600SemiBold",
-                        fontSize: 11,
-                        color: color.id === "none" ? theme.textPrimary : ["soft_pink", "mint", "lemon", "cream", "butter", "powder_blue", "champagne", "lavender", "peach", "aqua"].includes(color.id) ? theme.textPrimary : "#333",
+                        fontSize: 10,
+                        color: ["yellow", "lime", "peach", "beige", "lavender", "mint"].includes(color.id) ? "#333" : ["navy", "chocolate", "grey"].includes(color.id) ? "#FFF" : "#FFF",
                         textAlign: "center",
                       }}>
                         {color.name}
