@@ -264,13 +264,6 @@ Be conversational, motivating, and make learning feel exciting! Respond in ${use
                   ? "Ask me anything about your homework or studies! I'll help explain topics and suggest helpful videos to watch."
                   : "Paste your text below and I'll check it for grammar, spelling, and punctuation errors."}
               </Text>
-              {mode === "chat" && (
-                <View style={{ marginTop: 20, paddingHorizontal: 32 }}>
-                  <Text style={{ fontSize: 13, fontFamily: 'Poppins_500Medium', color: theme.textSecondary, textAlign: 'center' }}>
-                    📚 Math • Science • English • History • Study Skills
-                  </Text>
-                </View>
-              )}
             </View>
           ) : (
             <View>
