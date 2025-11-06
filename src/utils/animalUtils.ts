@@ -52,7 +52,7 @@ export const getAnimalImage = (animal: StudyPalAnimal) => {
     lion: require("../../assets/image-1762363428.png"),
     horse: require("../../assets/image-1762363432.png"),
     koala: require("../../assets/image-1762363431.png"),
-    hamster: require("../../assets/image-1762363420.png"),
+    hamster: require("../../assets/image-1762363436.png"),
     giraffe: require("../../assets/image-1762363438.png"),
     frog: require("../../assets/image-1762363440.png"),
     alpaca: require("../../assets/image-1762363456.png"),
@@ -63,7 +63,7 @@ export const getAnimalImage = (animal: StudyPalAnimal) => {
     bear: require("../../assets/image-1762363455.png"),
     elephant: require("../../assets/image-1762363444.png"),
     redpanda: require("../../assets/image-1762363418.png"),
-    lamb: require("../../assets/image-1762363436.png"),
+    lamb: require("../../assets/image-1762363420.png"),
   };
   return imageMap[animal] || imageMap.cat;
 };
