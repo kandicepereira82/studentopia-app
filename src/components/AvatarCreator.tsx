@@ -90,7 +90,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
   onSave,
 }) => {
   const theme = getTheme(currentTheme);
-  const [activeTab, setActiveTab] = useState<"hair" | "fur" | "outfit" | "accessories">("hair");
+  const [activeTab, setActiveTab] = useState<"fur" | "outfit" | "accessories">("fur");
 
   const [avatar, setAvatar] = useState<AvatarCustomization>({
     hairStyle: currentAvatar.hairStyle || "none",
@@ -195,7 +195,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
           {/* Tabs */}
           <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-              {(["hair", "fur", "outfit", "accessories"] as const).map((tab) => (
+              {(["fur", "outfit", "accessories"] as const).map((tab) => (
                 <Pressable
                   key={tab}
                   onPress={() => setActiveTab(tab)}
@@ -230,79 +230,6 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
           >
-            {activeTab === "hair" && (
-              <View style={{ gap: 20 }}>
-                {/* Hair Style */}
-                <View>
-                  <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
-                    Hair Style
-                  </Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-                    {HAIR_STYLES.map((style) => (
-                      <Pressable
-                        key={style.id}
-                        onPress={() => setAvatar({ ...avatar, hairStyle: style.id })}
-                        style={{
-                          paddingHorizontal: 16,
-                          paddingVertical: 12,
-                          borderRadius: 16,
-                          backgroundColor: avatar.hairStyle === style.id ? theme.primary : "white",
-                          borderWidth: 2,
-                          borderColor: avatar.hairStyle === style.id ? theme.primary : "#E5E7EB",
-                          flexDirection: "row",
-                          alignItems: "center",
-                          gap: 8,
-                        }}
-                      >
-                        <Text style={{ fontSize: 20 }}>{style.emoji}</Text>
-                        <Text style={{
-                          fontFamily: "Poppins_500Medium",
-                          fontSize: 13,
-                          color: avatar.hairStyle === style.id ? "white" : theme.textPrimary,
-                        }}>
-                          {style.name}
-                        </Text>
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-
-                {/* Hair Color */}
-                <View>
-                  <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
-                    Hair Color
-                  </Text>
-                  <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-                    {HAIR_COLORS.map((color) => (
-                      <Pressable
-                        key={color.id}
-                        onPress={() => setAvatar({ ...avatar, hairColor: color.id })}
-                        style={{
-                          width: 60,
-                          height: 60,
-                          borderRadius: 30,
-                          backgroundColor: color.color,
-                          borderWidth: 3,
-                          borderColor: avatar.hairColor === color.id ? theme.primary : "white",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          shadowColor: "#000",
-                          shadowOffset: { width: 0, height: 2 },
-                          shadowOpacity: 0.1,
-                          shadowRadius: 4,
-                          elevation: 2,
-                        }}
-                      >
-                        {avatar.hairColor === color.id && (
-                          <Ionicons name="checkmark" size={24} color="white" />
-                        )}
-                      </Pressable>
-                    ))}
-                  </View>
-                </View>
-              </View>
-            )}
-
             {activeTab === "fur" && (
               <View>
                 <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
