@@ -227,7 +227,7 @@ const BottomTabNavigator = () => {
         name="Friends"
         component={FriendsScreen}
         options={{
-          tabBarLabel: "Friends",
+          tabBarLabel: "Students",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people-circle" size={size} color={getRainbowTabColor("Friends") || color} />
           ),
@@ -243,7 +243,7 @@ const BottomTabNavigator = () => {
         name="StudyRooms"
         component={StudyRoomScreen}
         options={{
-          tabBarLabel: "Rooms",
+          tabBarLabel: "Sessions",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="videocam" size={size} color={getRainbowTabColor("StudyRooms") || color} />
           ),

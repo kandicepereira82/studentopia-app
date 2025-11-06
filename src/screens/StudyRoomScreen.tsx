@@ -530,7 +530,7 @@ const StudyRoomScreen = () => {
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
             <Text style={{ fontSize: 32, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-              Study Rooms
+              Live Sessions
             </Text>
             {user && (
               <View style={{ marginLeft: 16 }}>
@@ -566,7 +566,7 @@ const StudyRoomScreen = () => {
         </View>
 
         <Text style={{ paddingHorizontal: 24, fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginBottom: 16 }}>
-          Study together with friends in real-time
+          Study together with students in real-time
         </Text>
 
         {/* Room List */}
@@ -575,10 +575,10 @@ const StudyRoomScreen = () => {
             <View style={{ alignItems: "center", justifyContent: "center", paddingVertical: 80 }}>
               <Ionicons name="people-outline" size={80} color={theme.textSecondary} />
               <Text style={{ fontSize: 18, fontFamily: "Poppins_600SemiBold", marginTop: 16, color: theme.textPrimary }}>
-                No active rooms
+                No active sessions
               </Text>
               <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", marginTop: 8, color: theme.textSecondary, textAlign: "center", paddingHorizontal: 40 }}>
-                Create a study room to start studying with friends!
+                Create a live session to start studying with students!
               </Text>
               <Pressable
                 onPress={() => setShowCreateModal(true)}
@@ -591,7 +591,7 @@ const StudyRoomScreen = () => {
                 }}
               >
                 <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: "white" }}>
-                  Create Room
+                  Create Session
                 </Text>
               </Pressable>
             </View>
@@ -663,13 +663,13 @@ const StudyRoomScreen = () => {
           <View style={{ height: 20 }} />
         </ScrollView>
 
-        {/* Create Room Modal */}
+        {/* Create Session Modal */}
         <Modal visible={showCreateModal} transparent animationType="fade" onRequestClose={() => setShowCreateModal(false)}>
           <Pressable style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "center", alignItems: "center", padding: 24 }} onPress={() => setShowCreateModal(false)}>
             <Pressable style={{ backgroundColor: "white", borderRadius: 24, padding: 24, width: "100%", maxWidth: 400 }} onPress={(e) => e.stopPropagation()}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
                 <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                  Create Study Room
+                  Create Live Session
                 </Text>
                 <Pressable onPress={() => setShowCreateModal(false)}>
                   <Ionicons name="close" size={28} color={theme.textSecondary} />
@@ -679,7 +679,7 @@ const StudyRoomScreen = () => {
               <TextInput
                 value={roomName}
                 onChangeText={setRoomName}
-                placeholder="Room name"
+                placeholder="Session name"
                 placeholderTextColor={theme.textSecondary}
                 style={{
                   backgroundColor: theme.textSecondary + "10",
@@ -715,7 +715,7 @@ const StudyRoomScreen = () => {
                   {isPrivate && <Ionicons name="checkmark" size={16} color="white" />}
                 </View>
                 <Text style={{ fontSize: 14, fontFamily: "Poppins_500Medium", color: theme.textPrimary }}>
-                  Private room (invite only)
+                  Private session (invite only)
                 </Text>
               </Pressable>
 
@@ -729,7 +729,7 @@ const StudyRoomScreen = () => {
                 }}
               >
                 <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: "white" }}>
-                  Create Room
+                  Create Session
                 </Text>
               </Pressable>
             </Pressable>
