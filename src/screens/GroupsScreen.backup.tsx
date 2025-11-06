@@ -15,7 +15,6 @@ import CustomAlert from "../components/CustomAlert";
 import StudyPal from "../components/StudyPal";
 import { useGlobalToast } from "../context/ToastContext";
 import GroupAnalyticsScreen from "./GroupAnalyticsScreen";
-import StudyRoomScreen from "./StudyRoomScreen";
 
 interface AlertState {
   visible: boolean;
@@ -29,9 +28,6 @@ const GroupsScreen = () => {
   const theme = getTheme(user?.themeColor);
   const { t } = useTranslation(user?.language || "en");
   const toast = useGlobalToast();
-
-  // Tab state for Groups and Live Sessions
-  const [activeTab, setActiveTab] = useState<"groups" | "live">("groups");
 
   const groups = useGroupStore((s) => s.groups);
   const addGroup = useGroupStore((s) => s.addGroup);
@@ -373,62 +369,6 @@ const GroupsScreen = () => {
             </Pressable>
           </View>
         </View>
-
-        {/* Tab Navigation */}
-        <View style={{ paddingHorizontal: 24, paddingVertical: 12, flexDirection: "row", gap: 12 }}>
-          <Pressable
-            onPress={() => setActiveTab("groups")}
-            style={{
-              flex: 1,
-              paddingVertical: 12,
-              borderRadius: 16,
-              backgroundColor: activeTab === "groups" ? theme.primary : "white",
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 4,
-              elevation: 1,
-            }}
-          >
-            <Text style={{
-              fontFamily: "Poppins_600SemiBold",
-              fontSize: 14,
-              color: activeTab === "groups" ? "white" : theme.textSecondary,
-            }}>
-              Class Groups
-            </Text>
-          </Pressable>
-          <Pressable
-            onPress={() => setActiveTab("live")}
-            style={{
-              flex: 1,
-              paddingVertical: 12,
-              borderRadius: 16,
-              backgroundColor: activeTab === "live" ? theme.primary : "white",
-              alignItems: "center",
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.05,
-              shadowRadius: 4,
-              elevation: 1,
-            }}
-          >
-            <Text style={{
-              fontFamily: "Poppins_600SemiBold",
-              fontSize: 14,
-              color: activeTab === "live" ? "white" : theme.textSecondary,
-            }}>
-              Live Sessions
-            </Text>
-          </Pressable>
-        </View>
-
-        {/* Conditional Content Based on Active Tab */}
-        {activeTab === "live" ? (
-          <StudyRoomScreen />
-        ) : (
-          <>
 
         {/* Search Bar */}
         <View style={{ paddingHorizontal: 24, paddingBottom: 8 }}>
@@ -1884,8 +1824,6 @@ const GroupsScreen = () => {
             </ScrollView>
           </SafeAreaView>
         </Modal>
-          </>
-        )}
       </SafeAreaView>
 
       {/* Analytics Modal */}
@@ -1915,4 +1853,3 @@ const GroupsScreen = () => {
 };
 
 export default GroupsScreen;
-

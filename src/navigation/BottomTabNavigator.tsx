@@ -9,7 +9,6 @@ import AIHelperScreen from "../screens/AIHelperScreen";
 import StudyTipsScreen from "../screens/StudyTipsScreen";
 import GroupsScreen from "../screens/GroupsScreen";
 import FriendsScreen from "../screens/FriendsScreen";
-import StudyRoomScreen from "../screens/StudyRoomScreen";
 import ProfileScreen from "../screens/ProfileScreen";
 import MindfulnessScreen from "../screens/MindfulnessScreen";
 import useUserStore from "../state/userStore";
@@ -24,7 +23,6 @@ export type RootTabParamList = {
   StudyTips: undefined;
   Groups: undefined;
   Friends: undefined;
-  StudyRooms: undefined;
   Mindfulness: undefined;
   Profile: undefined;
 };
@@ -79,10 +77,10 @@ const BottomTabNavigator = () => {
         return "#9400D3"; // Purple
       case "Friends":
         return "#FF1493"; // Deep Pink
-      case "StudyRooms":
+      case "Mindfulness":
         return "#FF69B4"; // Hot Pink
       case "Profile":
-        return "#8B008B"; // Dark Magenta (10 tabs)
+        return "#8B008B"; // Dark Magenta
       default:
         return undefined;
     }
@@ -236,22 +234,6 @@ const BottomTabNavigator = () => {
             fontWeight: "600",
             marginTop: 4,
             color: getRainbowTabColor("Friends") || undefined,
-          },
-        }}
-      />
-      <Tab.Screen
-        name="StudyRooms"
-        component={StudyRoomScreen}
-        options={{
-          tabBarLabel: "Live",
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="videocam" size={size} color={getRainbowTabColor("StudyRooms") || color} />
-          ),
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontWeight: "600",
-            marginTop: 4,
-            color: getRainbowTabColor("StudyRooms") || undefined,
           },
         }}
       />
