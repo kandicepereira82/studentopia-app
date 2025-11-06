@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import { StudyPalAnimal, ThemeColor } from "../types";
+import { StudyPalAnimal, ThemeColor, AgeRange } from "../types";
 
 interface OnboardingPreferences {
   username: string;
   email: string;
   role: "student" | "teacher";
+  ageRange?: AgeRange;
   studyPalName: string;
   animal: StudyPalAnimal;
   themeColor: ThemeColor;

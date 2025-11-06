@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import useUserStore from "../state/userStore";
 import useOnboardingStore from "../state/onboardingStore";
-import { StudyPalAnimal, ThemeColor } from "../types";
+import { StudyPalAnimal, ThemeColor, AgeRange } from "../types";
 import { cn } from "../utils/cn";
 import { getAnimalImage, getAnimalDisplayName, ALL_ANIMALS } from "../utils/animalUtils";
 import { ALL_THEMES } from "../utils/themeUtils";
