@@ -4,6 +4,7 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Task Reminder System** - Added customizable reminder date/time picker below Due Date section when adding/editing tasks with automatic notification scheduling
 - ✅ **Daily Study Reminder System** - Added 20 rotating motivational messages displayed on Home Page header, switching daily with dynamic companion name integration (e.g., "Tomo's cheering you on!")
 - ✅ **Calendar Sync Instructions** - Added comprehensive help modal with step-by-step instructions on how to enable and use calendar sync feature
 - ✅ **Growth Mindset Study Reminders** - Daily study reminder messages now integrate growth mindset principles (effort, learning, challenges, progress) with 20+ varied messages randomized by time of day
@@ -135,7 +136,12 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 - **Task CRUD Operations**: Add, edit, delete, and complete tasks
 - **Task Categories**: Homework, projects, exams, and other custom categories
 - **Due Dates & Times**: Set both date and time for precise task scheduling
-- **Reminders**: Custom reminder notifications with date and time
+- **Task Reminders**:
+  - Custom reminder date & time picker integrated below Due Date section
+  - Automatic notification scheduling at specified reminder time
+  - Visual reminder indicator on task cards showing reminder date/time
+  - Edit/delete reminder functionality with notification cancellation
+  - Automatic reminder cancellation when task is marked complete
 - **Task Filtering**: Filter tasks by category and status
 - **Progress Tracking**: Daily and weekly progress bars with visual feedback
 - **🎉 Celebration Animations**: Animated modal with your Study Pal celebrating when tasks are completed

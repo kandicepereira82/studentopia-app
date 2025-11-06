@@ -66,6 +66,46 @@ export const requestNotificationPermissions = async (): Promise<boolean> => {
 };
 
 /**
+ * Schedule a task reminder at a specific date/time
+ */
+export const scheduleTaskReminderAtTime = async (
+  taskId: string,
+  taskTitle: string,
+  reminderDate: Date
+): Promise<string | null> => {
+  try {
+    const hasPermission = await requestNotificationPermissions();
+    if (!hasPermission) {
+      return null;
+    }
+
+    // Don't schedule if the reminder time is in the past
+    if (reminderDate.getTime() <= Date.now()) {
+      console.warn("Reminder time is in the past, not scheduling");
+      return null;
+    }
+
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: "📚 Task Reminder",
+        body: `"${taskTitle}" - don't forget!`,
+        data: { taskId, type: "task_reminder" },
+        sound: "default",
+      },
+      trigger: {
+        date: reminderDate,
+        channelId: "tasks",
+      },
+    });
+
+    return notificationId;
+  } catch (error) {
+    console.error("Error scheduling task reminder at time:", error);
+    return null;
+  }
+};
+
+/**
  * Schedule a task reminder notification
  */
 export const scheduleTaskReminder = async (

@@ -23,6 +23,7 @@ import { Task, TaskCategory } from "../types";
 import { cn } from "../utils/cn";
 import CelebrationModal from "../components/CelebrationModal";
 import StudyPal from "../components/StudyPal";
+import { scheduleTaskReminderAtTime, cancelNotification } from "../services/notificationService";
 
 const TasksScreen = () => {
   const user = useUserStore((s) => s.user);
@@ -43,7 +44,11 @@ const TasksScreen = () => {
   const [dueDate, setDueDate] = useState(new Date());
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [reminderDate, setReminderDate] = useState<Date | null>(null);
+  const [showReminderDatePicker, setShowReminderDatePicker] = useState(false);
+  const [showReminderTimePicker, setShowReminderTimePicker] = useState(false);
   const [filterCategory, setFilterCategory] = useState<TaskCategory | "all">("all");
+  const [taskNotificationIds, setTaskNotificationIds] = useState<Record<string, string>>({});
 
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
@@ -54,6 +59,7 @@ const TasksScreen = () => {
     setDescription("");
     setCategory("homework");
     setDueDate(new Date());
+    setReminderDate(null);
     setModalVisible(true);
   };
 
@@ -63,12 +69,35 @@ const TasksScreen = () => {
     setDescription(task.description);
     setCategory(task.category);
     setDueDate(new Date(task.dueDate));
+    setReminderDate(task.reminder ? new Date(task.reminder) : null);
     setModalVisible(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!title.trim()) {
       return;
+    }
+
+    let taskId = editingTask?.id || Date.now().toString() + Math.random().toString(36);
+
+    // Cancel old notification if editing existing reminder
+    if (editingTask?.reminder && taskNotificationIds[editingTask.id]) {
+      await cancelNotification(taskNotificationIds[editingTask.id]);
+    }
+
+    // Schedule new notification if reminder is set
+    if (reminderDate) {
+      const notificationId = await scheduleTaskReminderAtTime(
+        taskId,
+        title,
+        reminderDate
+      );
+      if (notificationId) {
+        setTaskNotificationIds(prev => ({
+          ...prev,
+          [taskId]: notificationId
+        }));
+      }
     }
 
     if (editingTask) {
@@ -77,6 +106,7 @@ const TasksScreen = () => {
         description,
         category,
         dueDate,
+        reminder: reminderDate || undefined,
       });
     } else {
       addTask({
@@ -85,22 +115,42 @@ const TasksScreen = () => {
         description,
         category,
         dueDate,
+        reminder: reminderDate || undefined,
       });
     }
 
     setModalVisible(false);
   };
 
-  const handleDelete = (taskId: string) => {
+  const handleDelete = async (taskId: string) => {
+    // Cancel notification if exists
+    if (taskNotificationIds[taskId]) {
+      await cancelNotification(taskNotificationIds[taskId]);
+      setTaskNotificationIds(prev => {
+        const updated = { ...prev };
+        delete updated[taskId];
+        return updated;
+      });
+    }
     deleteTask(taskId);
   };
 
-  const handleToggle = (task: Task) => {
+  const handleToggle = async (task: Task) => {
     toggleTaskStatus(task.id);
     if (task.status === "pending") {
       incrementTasksCompleted();
       setCompletedTaskTitle(task.title);
       setCelebrationVisible(true);
+
+      // Cancel reminder notification when task is completed
+      if (taskNotificationIds[task.id]) {
+        await cancelNotification(taskNotificationIds[task.id]);
+        setTaskNotificationIds(prev => {
+          const updated = { ...prev };
+          delete updated[task.id];
+          return updated;
+        });
+      }
     }
   };
 
@@ -357,6 +407,14 @@ const TasksScreen = () => {
                           {new Date(task.dueDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                         </Text>
                       </View>
+                      {task.reminder && (
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 8 }}>
+                          <Ionicons name="notifications" size={14} color={theme.primary} />
+                          <Text style={{ fontSize: 12, fontFamily: 'Poppins_400Regular', marginLeft: 4, color: theme.primary }}>
+                            Reminder: {new Date(task.reminder).toLocaleDateString()} {new Date(task.reminder).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
 
@@ -504,6 +562,50 @@ const TasksScreen = () => {
                 </Pressable>
               </View>
 
+              {/* Set Reminder */}
+              <View className="mb-4">
+                <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Set Reminder
+                </Text>
+                <Pressable
+                  onPress={() => setShowReminderDatePicker(true)}
+                  style={{
+                    backgroundColor: reminderDate ? theme.primary + "15" : "white",
+                    borderWidth: reminderDate ? 2 : 1,
+                    borderColor: reminderDate ? theme.primary : "#E5E7EB",
+                  }}
+                  className="dark:bg-gray-800 rounded-xl px-4 py-3 flex-row items-center justify-between"
+                >
+                  <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
+                    <Ionicons
+                      name="time"
+                      size={20}
+                      color={reminderDate ? theme.primary : "#9CA3AF"}
+                      style={{ marginRight: 8 }}
+                    />
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: reminderDate ? theme.textPrimary : "#9CA3AF",
+                      }}
+                    >
+                      {reminderDate
+                        ? `${reminderDate.toLocaleDateString()} ${reminderDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+                        : "Add a reminder to stay on track"
+                      }
+                    </Text>
+                  </View>
+                  {reminderDate && (
+                    <Pressable
+                      onPress={() => setReminderDate(null)}
+                      style={{ padding: 4 }}
+                    >
+                      <Ionicons name="close-circle" size={20} color={theme.primary} />
+                    </Pressable>
+                  )}
+                </Pressable>
+              </View>
+
               {showDatePicker && (
                 <DateTimePicker
                   value={dueDate}
@@ -535,6 +637,43 @@ const TasksScreen = () => {
                       newDate.setHours(selectedTime.getHours());
                       newDate.setMinutes(selectedTime.getMinutes());
                       setDueDate(newDate);
+                    }
+                  }}
+                />
+              )}
+
+              {showReminderDatePicker && (
+                <DateTimePicker
+                  value={reminderDate || new Date()}
+                  mode="date"
+                  display="default"
+                  onChange={(event, selectedDate) => {
+                    setShowReminderDatePicker(false);
+                    if (selectedDate) {
+                      const newDate = new Date(selectedDate);
+                      if (reminderDate) {
+                        newDate.setHours(reminderDate.getHours());
+                        newDate.setMinutes(reminderDate.getMinutes());
+                      }
+                      setReminderDate(newDate);
+                      setShowReminderTimePicker(true);
+                    }
+                  }}
+                />
+              )}
+
+              {showReminderTimePicker && (
+                <DateTimePicker
+                  value={reminderDate || new Date()}
+                  mode="time"
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    setShowReminderTimePicker(false);
+                    if (selectedTime && reminderDate) {
+                      const newDate = new Date(reminderDate);
+                      newDate.setHours(selectedTime.getHours());
+                      newDate.setMinutes(selectedTime.getMinutes());
+                      setReminderDate(newDate);
                     }
                   }}
                 />
