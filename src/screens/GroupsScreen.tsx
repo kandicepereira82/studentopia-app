@@ -238,8 +238,12 @@ const GroupsScreen = () => {
   };
 
   const handleShowQR = (shareCode: string) => {
-    setQRGroupCode(shareCode);
-    setShowQRModal(true);
+    if (shareCode && shareCode.length > 0) {
+      setQRGroupCode(shareCode);
+      setShowQRModal(true);
+    } else {
+      toast.error("Invalid share code");
+    }
   };
 
   const getGroupTasks = (groupId: string) => {
@@ -1427,7 +1431,7 @@ const GroupsScreen = () => {
 
         {/* QR Code Modal */}
         <Modal
-          visible={showQRModal}
+          visible={showQRModal && qrGroupCode.length > 0}
           animationType="fade"
           transparent={true}
           onRequestClose={() => setShowQRModal(false)}
@@ -1479,12 +1483,20 @@ const GroupsScreen = () => {
                 shadowRadius: 12,
                 elevation: 4
               }}>
-                <QRCode
-                  value={qrGroupCode}
-                  size={200}
-                  backgroundColor="white"
-                  color={theme.primary}
-                />
+                {qrGroupCode && qrGroupCode.length > 0 ? (
+                  <QRCode
+                    value={qrGroupCode}
+                    size={200}
+                    backgroundColor="white"
+                    color={theme.primary || "#4CAF50"}
+                  />
+                ) : (
+                  <View style={{ width: 200, height: 200, alignItems: "center", justifyContent: "center" }}>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary }}>
+                      Loading QR Code...
+                    </Text>
+                  </View>
+                )}
               </View>
 
               <Text style={{
