@@ -4,6 +4,12 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Email Validation on Onboarding** - Step 1 now validates email format with real-time error feedback
+- ✅ **Form Validation** - Required field validation prevents proceeding without entering name
+- ✅ **Authentication System** - Full login/signup system with email and password protection
+- ✅ **User Registration** - Create new accounts with email, password, and full name
+- ✅ **User Login** - Return users can log back into their accounts
+- ✅ **Password Hashing** - Secure password storage using SHA256 hashing
 - ✅ **Fixed Animal Grid Layout** - Step 3 now displays all 25 animals in a perfect 5×5 grid with seamless scrolling
 - ✅ **Corrected Animal Images** - All 25 animal companions now display with the correct matching images
 - ✅ **Enhanced Onboarding Experience** - New 4-step guided setup with Studentopia Companion welcome and role selection

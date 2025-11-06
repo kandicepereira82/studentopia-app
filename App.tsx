@@ -12,6 +12,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import BottomTabNavigator from "./src/navigation/BottomTabNavigator";
 import OnboardingScreen from "./src/screens/OnboardingScreen";
+import AuthenticationScreen from "./src/screens/AuthenticationScreen";
 import useUserStore from "./src/state/userStore";
 
 /*
@@ -40,6 +41,7 @@ export default function App() {
   const logout = useUserStore((s) => s.logout);
   const [isReady, setIsReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
+  const [showAuth, setShowAuth] = useState(false);
 
   // Load Poppins fonts
   const [fontsLoaded] = useFonts({
@@ -92,7 +94,9 @@ export default function App() {
       <SafeAreaProvider>
         <NavigationContainer>
           {showOnboarding ? (
-            <OnboardingScreen onComplete={() => setShowOnboarding(false)} />
+            <OnboardingScreen onComplete={() => setShowAuth(true)} />
+          ) : showAuth ? (
+            <AuthenticationScreen onComplete={() => setShowAuth(false)} />
           ) : (
             <BottomTabNavigator />
           )}

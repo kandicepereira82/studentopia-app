@@ -25,6 +25,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [animal, setAnimal] = useState<StudyPalAnimal>("redpanda");
   const [themeColor, setThemeColor] = useState<ThemeColor>("nature");
   const [showCelebration, setShowCelebration] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<{ [key: string]: string }>({});
 
   const animals: StudyPalAnimal[] = [
     "cat", "redpanda", "owl", "penguin", "horse",
@@ -106,6 +107,28 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
     { color: "golden", colors: ["#E64A19", "#BF360C"], emoji: "✨", name: "Golden" },
     { color: "cherry", colors: ["#C2185B", "#880E4F"], emoji: "🌸", name: "Cherry Blossom" },
   ];
+
+  const validateEmail = (emailValue: string): boolean => {
+    if (!emailValue.trim()) return true; // Email is optional
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(emailValue);
+  };
+
+  const validateStep = (stepNumber: number): boolean => {
+    const errors: { [key: string]: string } = {};
+
+    if (stepNumber === 1) {
+      if (!username.trim()) {
+        errors.username = "Please enter your name";
+      }
+      if (email.trim() && !validateEmail(email)) {
+        errors.email = "Please enter a valid email address";
+      }
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleComplete = () => {
     setShowCelebration(true);
@@ -226,12 +249,22 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   paddingVertical: 16,
                   fontSize: 16,
                   fontFamily: 'Poppins_400Regular',
-                  marginBottom: 24,
-                  borderWidth: 1,
-                  borderColor: '#E5E7EB'
+                  marginBottom: validationErrors.username ? 8 : 24,
+                  borderWidth: validationErrors.username ? 2 : 1,
+                  borderColor: validationErrors.username ? '#EF4444' : '#E5E7EB'
                 }}
                 autoFocus
               />
+              {validationErrors.username && (
+                <Text style={{
+                  fontSize: 13,
+                  fontFamily: 'Poppins_500Medium',
+                  color: '#EF4444',
+                  marginBottom: 16
+                }}>
+                  {validationErrors.username}
+                </Text>
+              )}
 
               <Text style={{
                 fontSize: 15,
@@ -256,11 +289,21 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   paddingVertical: 16,
                   fontSize: 16,
                   fontFamily: 'Poppins_400Regular',
-                  marginBottom: 24,
-                  borderWidth: 1,
-                  borderColor: '#E5E7EB'
+                  marginBottom: validationErrors.email ? 8 : 24,
+                  borderWidth: validationErrors.email ? 2 : 1,
+                  borderColor: validationErrors.email ? '#EF4444' : '#E5E7EB'
                 }}
               />
+              {validationErrors.email && (
+                <Text style={{
+                  fontSize: 13,
+                  fontFamily: 'Poppins_500Medium',
+                  color: '#EF4444',
+                  marginBottom: 16
+                }}>
+                  {validationErrors.email}
+                </Text>
+              )}
 
               <Text style={{
                 fontSize: 20,
@@ -584,12 +627,15 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
             <Pressable
               onPress={() => {
                 if (step < 4) {
-                  setStep(step + 1);
+                  if (validateStep(step)) {
+                    setStep(step + 1);
+                    setValidationErrors({});
+                  }
                 } else {
                   handleComplete();
                 }
               }}
-              disabled={step === 1 && !username.trim()}
+              disabled={step === 1 && (!username.trim() || (email.trim() && !validateEmail(email))) || false}
               style={{ flex: 1 }}
             >
               <LinearGradient
