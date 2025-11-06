@@ -19,6 +19,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
 
   const [step, setStep] = useState(1);
   const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [role, setRole] = useState<"student" | "teacher">("student");
   const [studyPalName, setStudyPalName] = useState("Tomo");
   const [animal, setAnimal] = useState<StudyPalAnimal>("redpanda");
@@ -113,6 +114,7 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
       setUser({
         id: userId,
         username: username.trim() || "Student",
+        email: email.trim() || undefined,
         role,
         language: "en",
         themeColor,
@@ -229,6 +231,35 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
                   borderColor: '#E5E7EB'
                 }}
                 autoFocus
+              />
+
+              <Text style={{
+                fontSize: 15,
+                fontFamily: 'Poppins_400Regular',
+                color: '#6B7280',
+                marginBottom: 8
+              }}>
+                Email (optional)
+              </Text>
+              <TextInput
+                value={email}
+                onChangeText={setEmail}
+                placeholder="Enter your email"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  color: '#1F2937',
+                  borderRadius: 16,
+                  paddingHorizontal: 24,
+                  paddingVertical: 16,
+                  fontSize: 16,
+                  fontFamily: 'Poppins_400Regular',
+                  marginBottom: 24,
+                  borderWidth: 1,
+                  borderColor: '#E5E7EB'
+                }}
               />
 
               <Text style={{
