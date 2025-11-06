@@ -118,6 +118,7 @@ class MusicService {
       return true;
     } catch (error: any) {
       console.error("Error loading track:", error);
+      console.error("Error message:", error?.message || "Unknown error");
       console.error("Track details:", { title: track.title, hasLocalFile: !!track.localFile, uri });
 
       // Provide more specific error messages

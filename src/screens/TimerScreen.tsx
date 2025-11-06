@@ -362,9 +362,8 @@ const TimerScreen = () => {
 
   const handleSelectTrack = async (track: MusicTrack) => {
     setSelectedTrack(track);
-    // For demo purposes, we'll use a placeholder URL
-    // In production, you would load actual music files
-    const success = await musicService.loadTrack(track, "");
+    // Load track - will use localFile from track if no URI provided
+    const success = await musicService.loadTrack(track);
     if (success) {
       setShowMusicSelector(false);
       await musicService.play();
