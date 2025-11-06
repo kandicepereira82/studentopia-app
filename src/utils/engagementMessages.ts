@@ -1,6 +1,75 @@
 import { format } from "date-fns";
 
 /**
+ * Daily Study Reminder Messages (20 messages for daily rotation)
+ */
+const DAILY_STUDY_REMINDERS = [
+  "Ready to focus and grow today?",
+  "A few mindful minutes can lead to amazing progress.",
+  "Your Studentopia Companion believes in you — let's begin!",
+  "Small steps, steady focus, big results.",
+  "Take a deep breath — it's time to learn with calm and clarity.",
+  "Every bit of effort today moves you closer to your goals.",
+  "Your study journey starts now — one task at a time.",
+  "{companionName}'s cheering you on — let's make today count!",
+  "Breathe in focus, breathe out distraction.",
+  "You've got this — your future self will thank you.",
+  "Focus is your superpower today.",
+  "Stay curious — learning something new starts with one page.",
+  "Your Studentopia friend is proud of your effort.",
+  "Let's make today's study time count!",
+  "It's a great day to learn something inspiring.",
+  "Consistency creates confidence — one session at a time.",
+  "Take a deep breath, find your rhythm, and begin.",
+  "You're doing better than you think — keep going!",
+  "Your mind is ready. Let's study with calm focus.",
+  "Learning today builds the tomorrow you imagine.",
+];
+
+/**
+ * Get today's daily study reminder message
+ * Rotates through 20 messages, one per day (sequentially)
+ * Inserts companion name dynamically
+ */
+export const getDailyStudyReminder = (companionName: string = "Your Companion"): string => {
+  // Get today's date to determine which message to show
+  const today = new Date();
+  const dayOfYear = Math.floor((today.getTime() - new Date(today.getFullYear(), 0, 0).getTime()) / 86400000);
+
+  // Use day of year to select message (rotates through 20 messages)
+  const messageIndex = dayOfYear % DAILY_STUDY_REMINDERS.length;
+  let message = DAILY_STUDY_REMINDERS[messageIndex];
+
+  // Replace {companionName} placeholder with actual companion name
+  message = message.replace("{companionName}", companionName);
+
+  return message;
+};
+
+/**
+ * Get a random daily study reminder message
+ * Useful for variety, but respects that only one shows per day
+ */
+export const getRandomDailyStudyReminder = (companionName: string = "Your Companion"): string => {
+  const randomIndex = Math.floor(Math.random() * DAILY_STUDY_REMINDERS.length);
+  let message = DAILY_STUDY_REMINDERS[randomIndex];
+
+  // Replace {companionName} placeholder with actual companion name
+  message = message.replace("{companionName}", companionName);
+
+  return message;
+};
+
+/**
+ * Get daily study reminder with companion name
+ * This is the main function to use for displaying daily reminders
+ */
+export const getTodaysDailyReminder = (companionName?: string): string => {
+  const name = companionName || "Your Companion";
+  return getDailyStudyReminder(name);
+};
+
+/**
  * Get time-based greeting based on current hour
  */
 export const getTimeBasedGreeting = (username: string, hour: number = new Date().getHours()): string => {

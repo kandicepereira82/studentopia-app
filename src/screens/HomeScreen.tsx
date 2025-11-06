@@ -22,6 +22,7 @@ import {
   getWeeklyTaskPrompt,
   getEncouragementMessage,
   getTimeOfDay,
+  getTodaysDailyReminder,
 } from "../utils/engagementMessages";
 
 const HomeScreen = () => {
@@ -146,6 +147,42 @@ const HomeScreen = () => {
               showName={false}
               showMessage={false}
             />
+          </View>
+        </View>
+
+        {/* Daily Study Reminder Card */}
+        <View style={{ paddingHorizontal: 24, marginBottom: 20 }}>
+          <View
+            style={{
+              backgroundColor: theme.primary + "12",
+              borderRadius: 16,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: theme.primary + "30",
+            }}
+          >
+            <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
+              <Ionicons name="sparkles" size={18} color={theme.primary} style={{ marginRight: 8 }} />
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontFamily: "Poppins_600SemiBold",
+                  color: theme.primary,
+                }}
+              >
+                Today&rsquo;s Motivation
+              </Text>
+            </View>
+            <Text
+              style={{
+                fontSize: 14,
+                fontFamily: "Poppins_500Medium",
+                color: theme.textPrimary,
+                lineHeight: 20,
+              }}
+            >
+              {getTodaysDailyReminder(user.studyPalConfig.name)}
+            </Text>
           </View>
         </View>
 

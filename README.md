@@ -4,6 +4,7 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Daily Study Reminder System** - Added 20 rotating motivational messages displayed on Home Page header, switching daily with dynamic companion name integration (e.g., "Tomo's cheering you on!")
 - ✅ **Calendar Sync Instructions** - Added comprehensive help modal with step-by-step instructions on how to enable and use calendar sync feature
 - ✅ **Growth Mindset Study Reminders** - Daily study reminder messages now integrate growth mindset principles (effort, learning, challenges, progress) with 20+ varied messages randomized by time of day
 - ✅ **Time-Based Study Reminder Messages** - Daily study reminders now show contextual greetings (Good morning, Good afternoon, Good evening, Good night) based on reminder time
