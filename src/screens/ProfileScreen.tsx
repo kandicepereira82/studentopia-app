@@ -219,7 +219,7 @@ const ProfileScreen = () => {
           </View>
 
           <View className="bg-white dark:bg-gray-800 rounded-2xl p-4">
-            {/* Study Pal Name */}
+            {/* Studentopia Companion Name */}
             <View className="mb-4">
               <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 {t("studyPalName")}
@@ -241,7 +241,7 @@ const ProfileScreen = () => {
               </View>
             </View>
 
-            {/* Study Pal Animal */}
+            {/* Studentopia Companion Animal */}
             <Pressable
               onPress={() => setShowAnimalModal(true)}
               className="flex-row items-center justify-between py-3"

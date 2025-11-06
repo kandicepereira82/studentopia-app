@@ -89,7 +89,7 @@ const HomeScreen = () => {
       <SafeAreaView className="flex-1" style={{ backgroundColor: theme.backgroundGradient[0] }}>
         <View className="flex-1 items-center justify-center p-6">
           <Text className="text-2xl font-bold mb-4" style={{ color: theme.textPrimary }}>
-            Welcome to StudyPal
+            Welcome to Studentopia
           </Text>
           <Text className="text-center" style={{ color: theme.textSecondary }}>
             Please set up your profile to get started
@@ -147,7 +147,7 @@ const HomeScreen = () => {
         </View>
 
         <ScrollView style={{ flex: 1, paddingHorizontal: 24 }} showsVerticalScrollIndicator={false}>
-          {/* Study Pal Welcome Message Card */}
+          {/* Studentopia Companion Welcome Message Card */}
           <View style={{
             backgroundColor: 'white',
             borderRadius: 24,
@@ -604,9 +604,9 @@ const HomeScreen = () => {
               </View>
             </View>
 
-            {/* Right Column - Study Pal & Goals */}
+            {/* Right Column - Studentopia Companion & Goals */}
             <View className="w-[35%]">
-              {/* Study Pal */}
+              {/* Studentopia Companion */}
               <View style={{
                 backgroundColor: 'white',
                 borderRadius: 20,
@@ -842,7 +842,7 @@ const HomeScreen = () => {
               </Text>
             </View>
 
-            {/* Timer Display with Study Pal */}
+            {/* Timer Display with Studentopia Companion */}
             <View style={{ alignItems: 'center', marginBottom: 20 }}>
               <View style={{ marginBottom: 12 }}>
                 <StudyPal

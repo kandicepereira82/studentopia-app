@@ -80,7 +80,7 @@ const CelebrationModal: React.FC<CelebrationModalProps> = ({
             <Text className="text-6xl">🎉</Text>
           </Animated.View>
 
-          {/* Study Pal Celebrating */}
+          {/* Studentopia Companion Celebrating */}
           <View className="my-4">
             <StudyPal
               animal={user.studyPalConfig.animal}
