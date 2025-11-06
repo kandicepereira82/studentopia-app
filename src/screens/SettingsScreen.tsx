@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, ScrollView, Pressable, Switch, Modal } from "react-native";
+import { View, Text, ScrollView, Pressable, Switch, Modal, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -39,8 +39,14 @@ const SettingsScreen = () => {
   const [scheduledNotificationsCount, setScheduledNotificationsCount] = useState(0);
   const [availableCalendars, setAvailableCalendars] = useState<number>(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
-  const [reminderHour, setReminderHour] = useState(user?.dailyReminderTime?.hour || 9);
-  const [reminderMinute, setReminderMinute] = useState(user?.dailyReminderTime?.minute || 0);
+
+  // Convert 24-hour format to 12-hour format
+  const userHour24 = user?.dailyReminderTime?.hour || 9;
+  const userMinute = user?.dailyReminderTime?.minute || 0;
+  const [reminderHour, setReminderHour] = useState(userHour24 === 0 ? 12 : userHour24 > 12 ? userHour24 - 12 : userHour24);
+  const [reminderMinute, setReminderMinute] = useState(userMinute);
+  const [reminderPeriod, setReminderPeriod] = useState<"AM" | "PM">(userHour24 >= 12 ? "PM" : "AM");
+
   const [alertState, setAlertState] = useState<AlertState>({
     visible: false,
     title: "",
@@ -112,18 +118,26 @@ const SettingsScreen = () => {
 
   const handleToggleDailyReminder = async (value: boolean) => {
     if (value) {
+      // Convert 12-hour format to 24-hour format
+      let hour24 = reminderHour;
+      if (reminderPeriod === "AM" && reminderHour === 12) {
+        hour24 = 0; // 12 AM = 00:00
+      } else if (reminderPeriod === "PM" && reminderHour !== 12) {
+        hour24 = reminderHour + 12; // Convert PM to 24-hour (except 12 PM)
+      }
+
       const notificationId = await scheduleDailyStudyReminder(
-        reminderHour,
+        hour24,
         reminderMinute,
         "Good morning! Time to plan your study session 📚"
       );
       if (notificationId) {
         setDailyReminderEnabled(true);
-        updateDailyReminderTime(reminderHour, reminderMinute);
+        updateDailyReminderTime(hour24, reminderMinute);
         loadScheduledNotifications();
         showAlert(
           "Daily Reminder Set",
-          `You will receive a reminder at ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")} every day.`
+          `You will receive a reminder at ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")} ${reminderPeriod} every day.`
         );
       }
     } else {
@@ -145,14 +159,22 @@ const SettingsScreen = () => {
   };
 
   const handleSaveReminderTime = async () => {
-    updateDailyReminderTime(reminderHour, reminderMinute);
+    // Convert 12-hour format to 24-hour format
+    let hour24 = reminderHour;
+    if (reminderPeriod === "AM" && reminderHour === 12) {
+      hour24 = 0; // 12 AM = 00:00
+    } else if (reminderPeriod === "PM" && reminderHour !== 12) {
+      hour24 = reminderHour + 12; // Convert PM to 24-hour (except 12 PM)
+    }
+
+    updateDailyReminderTime(hour24, reminderMinute);
     setShowTimePicker(false);
 
     // If daily reminder is already enabled, reschedule with new time
     if (dailyReminderEnabled) {
       await cancelAllNotifications();
       const notificationId = await scheduleDailyStudyReminder(
-        reminderHour,
+        hour24,
         reminderMinute,
         "Good morning! Time to plan your study session 📚"
       );
@@ -160,13 +182,13 @@ const SettingsScreen = () => {
         loadScheduledNotifications();
         showAlert(
           "Reminder Time Updated",
-          `Daily reminder updated to ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")}.`
+          `Daily reminder updated to ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")} ${reminderPeriod}.`
         );
       }
     } else {
       showAlert(
         "Time Saved",
-        `Reminder time set to ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")}.`
+        `Reminder time set to ${String(reminderHour).padStart(2, "0")}:${String(reminderMinute).padStart(2, "0")} ${reminderPeriod}.`
       );
     }
   };
@@ -278,13 +300,13 @@ const SettingsScreen = () => {
                     Daily Study Reminder
                   </Text>
                   <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
-                    {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")} daily reminder
+                    {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")} {reminderPeriod} daily reminder
                   </Text>
                 </View>
               </View>
               <View className="flex-row items-center gap-2">
                 <Text style={{ color: theme.primary, fontWeight: "600" }}>
-                  {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")}
+                  {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")} {reminderPeriod}
                 </Text>
                 <Switch
                   value={dailyReminderEnabled}
@@ -532,7 +554,7 @@ const SettingsScreen = () => {
                 <Text style={{ fontSize: 12, color: theme.textSecondary, marginBottom: 8 }}>Hour</Text>
                 <View className="flex-row items-center gap-3">
                   <Pressable
-                    onPress={() => setReminderHour((h) => (h === 0 ? 23 : h - 1))}
+                    onPress={() => setReminderHour((h) => (h === 1 ? 12 : h - 1))}
                     style={{
                       width: 40,
                       height: 40,
@@ -545,25 +567,32 @@ const SettingsScreen = () => {
                     <Ionicons name="chevron-up" size={24} color={theme.primary} />
                   </Pressable>
 
-                  <View
+                  <TextInput
                     style={{
-                      width: 80,
-                      height: 80,
+                      width: 70,
+                      height: 70,
                       borderRadius: 16,
                       backgroundColor: theme.primary + "10",
-                      alignItems: "center",
-                      justifyContent: "center",
                       borderWidth: 2,
                       borderColor: theme.primary,
+                      textAlign: "center",
+                      fontSize: 36,
+                      fontFamily: "Poppins_700Bold",
+                      color: theme.primary,
                     }}
-                  >
-                    <Text style={{ fontSize: 40, fontFamily: "Poppins_700Bold", color: theme.primary }}>
-                      {String(reminderHour).padStart(2, "0")}
-                    </Text>
-                  </View>
+                    value={String(reminderHour).padStart(2, "0")}
+                    onChangeText={(text) => {
+                      const num = parseInt(text) || 0;
+                      if (num >= 1 && num <= 12) {
+                        setReminderHour(num);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
 
                   <Pressable
-                    onPress={() => setReminderHour((h) => (h === 23 ? 0 : h + 1))}
+                    onPress={() => setReminderHour((h) => (h === 12 ? 1 : h + 1))}
                     style={{
                       width: 40,
                       height: 40,
@@ -599,22 +628,29 @@ const SettingsScreen = () => {
                     <Ionicons name="chevron-up" size={24} color={theme.secondary} />
                   </Pressable>
 
-                  <View
+                  <TextInput
                     style={{
-                      width: 80,
-                      height: 80,
+                      width: 70,
+                      height: 70,
                       borderRadius: 16,
                       backgroundColor: theme.secondary + "10",
-                      alignItems: "center",
-                      justifyContent: "center",
                       borderWidth: 2,
                       borderColor: theme.secondary,
+                      textAlign: "center",
+                      fontSize: 36,
+                      fontFamily: "Poppins_700Bold",
+                      color: theme.secondary,
                     }}
-                  >
-                    <Text style={{ fontSize: 40, fontFamily: "Poppins_700Bold", color: theme.secondary }}>
-                      {String(reminderMinute).padStart(2, "0")}
-                    </Text>
-                  </View>
+                    value={String(reminderMinute).padStart(2, "0")}
+                    onChangeText={(text) => {
+                      const num = parseInt(text) || 0;
+                      if (num >= 0 && num <= 59) {
+                        setReminderMinute(num);
+                      }
+                    }}
+                    keyboardType="number-pad"
+                    maxLength={2}
+                  />
 
                   <Pressable
                     onPress={() => setReminderMinute((m) => (m === 59 ? 0 : m + 1))}
@@ -631,6 +667,49 @@ const SettingsScreen = () => {
                   </Pressable>
                 </View>
               </View>
+            </View>
+
+            {/* AM/PM Toggle */}
+            <View className="flex-row gap-3 mb-6 justify-center">
+              <Pressable
+                onPress={() => setReminderPeriod("AM")}
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  backgroundColor: reminderPeriod === "AM" ? theme.primary : theme.textSecondary + "20",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "Poppins_600SemiBold",
+                    color: reminderPeriod === "AM" ? "white" : theme.textPrimary,
+                  }}
+                >
+                  AM
+                </Text>
+              </Pressable>
+
+              <Pressable
+                onPress={() => setReminderPeriod("PM")}
+                style={{
+                  paddingHorizontal: 20,
+                  paddingVertical: 12,
+                  borderRadius: 12,
+                  backgroundColor: reminderPeriod === "PM" ? theme.primary : theme.textSecondary + "20",
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontFamily: "Poppins_600SemiBold",
+                    color: reminderPeriod === "PM" ? "white" : theme.textPrimary,
+                  }}
+                >
+                  PM
+                </Text>
+              </Pressable>
             </View>
 
             {/* Preview */}
@@ -653,7 +732,7 @@ const SettingsScreen = () => {
                   textAlign: "center",
                 }}
               >
-                {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")}
+                {String(reminderHour).padStart(2, "0")}:{String(reminderMinute).padStart(2, "0")} {reminderPeriod}
               </Text>
             </View>
 
