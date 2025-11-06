@@ -8,13 +8,11 @@ import {
   Modal,
   KeyboardAvoidingView,
   Platform,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import useUserStore from "../state/userStore";
 import useTaskStore from "../state/taskStore";
 import useStatsStore from "../state/statsStore";
 import { useTranslation } from "../utils/translations";
@@ -24,15 +22,20 @@ import { cn } from "../utils/cn";
 import CelebrationModal from "../components/CelebrationModal";
 import StudyPal from "../components/StudyPal";
 import { scheduleTaskReminderAtTime, cancelNotification } from "../services/notificationService";
+import { useGlobalToast } from "../context/ToastContext";
+import { useCurrentUser, useUserTheme, useUserLanguage, useAllTasks } from "../hooks/useStoreSelectors";
 
 const TasksScreen = () => {
-  const user = useUserStore((s) => s.user);
-  const tasks = useTaskStore((s) => s.tasks);
+  const user = useCurrentUser();
+  const themeColor = useUserTheme();
+  const language = useUserLanguage();
+  const tasks = useAllTasks();
   const addTask = useTaskStore((s) => s.addTask);
   const updateTask = useTaskStore((s) => s.updateTask);
   const deleteTask = useTaskStore((s) => s.deleteTask);
   const toggleTaskStatus = useTaskStore((s) => s.toggleTaskStatus);
   const incrementTasksCompleted = useStatsStore((s) => s.incrementTasksCompleted);
+  const toast = useGlobalToast();
 
   const [modalVisible, setModalVisible] = useState(false);
   const [celebrationVisible, setCelebrationVisible] = useState(false);
@@ -49,11 +52,9 @@ const TasksScreen = () => {
   const [showReminderTimePicker, setShowReminderTimePicker] = useState(false);
   const [filterCategory, setFilterCategory] = useState<TaskCategory | "all">("all");
   const [taskNotificationIds, setTaskNotificationIds] = useState<Record<string, string>>({});
-  const [formError, setFormError] = useState("");
-  const [reminderConfirmation, setReminderConfirmation] = useState("");
 
-  const { t } = useTranslation(user?.language || "en");
-  const theme = getTheme(user?.themeColor);
+  const { t } = useTranslation(language || "en");
+  const theme = getTheme(themeColor);
 
   const openAddModal = () => {
     setEditingTask(null);
@@ -62,7 +63,6 @@ const TasksScreen = () => {
     setCategory("homework");
     setDueDate(new Date());
     setReminderDate(null);
-    setFormError("");
     setModalVisible(true);
   };
 
@@ -78,7 +78,7 @@ const TasksScreen = () => {
 
   const handleSave = async () => {
     if (!title.trim()) {
-      setFormError("Please enter a task title");
+      toast.error("Please enter a task title");
       return;
     }
 
@@ -88,11 +88,10 @@ const TasksScreen = () => {
     dueDateAtMidnight.setHours(0, 0, 0, 0);
 
     if (dueDateAtMidnight < today) {
-      setFormError("Due date cannot be in the past. Please select today or a future date.");
+      toast.error("Due date cannot be in the past. Please select today or a future date.");
       return;
     }
 
-    setFormError("");
     let taskId = editingTask?.id || Date.now().toString() + Math.random().toString(36);
 
     // Cancel old notification if editing existing reminder
@@ -112,7 +111,9 @@ const TasksScreen = () => {
           ...prev,
           [taskId]: notificationId
         }));
-        setReminderConfirmation(`Reminder set for ${new Date(reminderDate).toLocaleDateString()} at ${new Date(reminderDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`);
+        const reminderTime = new Date(reminderDate).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const reminderDate_formatted = new Date(reminderDate).toLocaleDateString();
+        toast.success(`Reminder set for ${reminderDate_formatted} at ${reminderTime}`);
       }
     }
 
@@ -124,6 +125,7 @@ const TasksScreen = () => {
         dueDate,
         reminder: reminderDate || undefined,
       });
+      toast.success("Task updated successfully");
     } else {
       addTask({
         userId: user?.id || "default",
@@ -133,6 +135,7 @@ const TasksScreen = () => {
         dueDate,
         reminder: reminderDate || undefined,
       });
+      toast.success("Task created successfully");
     }
 
     setModalVisible(false);
@@ -214,21 +217,6 @@ const TasksScreen = () => {
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
       <SafeAreaView style={{ flex: 1 }}>
-        {/* Reminder Confirmation Banner */}
-        {reminderConfirmation ? (
-          <View style={{ backgroundColor: theme.secondary, paddingHorizontal: 24, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-              <Ionicons name="checkmark-circle" size={20} color="white" />
-              <Text style={{ fontSize: 14, fontFamily: 'Poppins_500Medium', color: 'white', marginLeft: 8 }}>
-                {reminderConfirmation}
-              </Text>
-            </View>
-            <Pressable onPress={() => setReminderConfirmation("")}>
-              <Ionicons name="close" size={20} color="white" />
-            </Pressable>
-          </View>
-        ) : null}
-
         {/* Header with Poppins */}
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
@@ -498,15 +486,6 @@ const TasksScreen = () => {
             </View>
 
             <ScrollView className="flex-1 px-6 py-4" showsVerticalScrollIndicator={false}>
-              {/* Error Message */}
-              {formError ? (
-                <View className="mb-4 bg-red-100 dark:bg-red-900 rounded-xl px-4 py-3">
-                  <Text className="text-red-700 dark:text-red-200 font-medium">
-                    {formError}
-                  </Text>
-                </View>
-              ) : null}
-
               {/* Title */}
               <View className="mb-4">
                 <Text className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">

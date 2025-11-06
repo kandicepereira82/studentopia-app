@@ -13,6 +13,7 @@ import { useTranslation } from "../utils/translations";
 import { cn } from "../utils/cn";
 import CustomAlert from "../components/CustomAlert";
 import StudyPal from "../components/StudyPal";
+import { useGlobalToast } from "../context/ToastContext";
 
 interface AlertState {
   visible: boolean;
@@ -25,6 +26,7 @@ const GroupsScreen = () => {
   const user = useUserStore((s) => s.user);
   const theme = getTheme(user?.themeColor);
   const { t } = useTranslation(user?.language || "en");
+  const toast = useGlobalToast();
 
   const groups = useGroupStore((s) => s.groups);
   const addGroup = useGroupStore((s) => s.addGroup);
@@ -76,12 +78,12 @@ const GroupsScreen = () => {
 
   const handleCreateGroup = () => {
     if (!groupName.trim()) {
-      showAlert("Error", "Please enter a group name");
+      toast.error("Please enter a group name");
       return;
     }
 
     if (!acceptedRules) {
-      showAlert("Error", "Please accept the group rules to continue");
+      toast.error("Please accept the group rules to continue");
       return;
     }
 
@@ -104,12 +106,12 @@ const GroupsScreen = () => {
     setTeacherEmail("");
     setAcceptedRules(false);
     setShowCreateModal(false);
-    showAlert("Success", "Group created successfully!");
+    toast.success("Group created successfully!");
   };
 
   const handleJoinGroup = () => {
     if (!joinCode.trim()) {
-      showAlert("Error", "Please enter a group code");
+      toast.error("Please enter a group code");
       return;
     }
 
@@ -121,9 +123,9 @@ const GroupsScreen = () => {
       const group = groups.find((g) => g.shareCode === joinCode.toUpperCase());
       setJoinCode("");
       setShowJoinModal(false);
-      showAlert("Success", `Joined "${group?.name}"!`);
+      toast.success(`Joined "${group?.name}"!`);
     } else {
-      showAlert("Error", "Invalid group code or you are already a member");
+      toast.error("Invalid group code or you are already a member");
     }
   };
 
@@ -169,7 +171,7 @@ const GroupsScreen = () => {
 
   const handleSaveEdit = () => {
     if (!groupName.trim()) {
-      showAlert("Error", "Please enter a group name");
+      toast.error("Please enter a group name");
       return;
     }
 
@@ -191,21 +193,21 @@ const GroupsScreen = () => {
       setClassName("");
       setTeacherEmail("");
       setShowEditModal(false);
-      showAlert("Success", "Group updated successfully!");
+      toast.success("Group updated successfully!");
     } else {
-      showAlert("Error", "Failed to update group. You must be the group creator to edit.");
+      toast.error("Failed to update group. You must be the group creator to edit.");
     }
   };
 
   const handleCopyCode = (shareCode: string) => {
     Clipboard.setString(shareCode);
-    showAlert("Copied!", `Code "${shareCode}" copied to clipboard`);
+    toast.success(`Code "${shareCode}" copied to clipboard`);
   };
 
   const handleRegenerateCode = (groupId: string, groupName: string) => {
     if (!user) return;
 
-    const userId = user.id; // Capture userId for closure
+    const userId = user.id;
 
     showAlert(
       "Regenerate Code",
@@ -218,9 +220,9 @@ const GroupsScreen = () => {
           onPress: () => {
             const newCode = regenerateShareCode(groupId, userId);
             if (newCode) {
-              showAlert("Success", `New code: ${newCode}`);
+              toast.success(`New code: ${newCode}`);
             } else {
-              showAlert("Error", "Failed to regenerate code. You must be the group creator.");
+              toast.error("Failed to regenerate code. You must be the group creator.");
             }
           },
         },

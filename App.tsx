@@ -17,6 +17,9 @@ import useUserStore from "./src/state/userStore";
 import useConnectivityStore from "./src/state/connectivityStore";
 import { connectivityService } from "./src/services/connectivityService";
 import { syncService } from "./src/services/syncService";
+import { ToastProvider } from "./src/context/ToastContext";
+import ToastContainer from "./src/components/ToastContainer";
+import { useToast } from "./src/hooks/useToast";
 
 /*
 IMPORTANT NOTICE: DO NOT REMOVE
@@ -39,12 +42,13 @@ const openai_api_key = Constants.expoConfig.extra.apikey;
 
 */
 
-export default function App() {
+const AppContent = () => {
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
   const [isReady, setIsReady] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(true);
   const [showAuth, setShowAuth] = useState(false);
+  const { toasts, dismiss } = useToast();
 
   // Load Poppins fonts
   const [fontsLoaded] = useFonts({
@@ -112,7 +116,16 @@ export default function App() {
           )}
           <StatusBar style="auto" />
         </NavigationContainer>
+        <ToastContainer toasts={toasts} onDismiss={dismiss} />
       </SafeAreaProvider>
     </GestureHandlerRootView>
+  );
+};
+
+export default function App() {
+  return (
+    <ToastProvider>
+      <AppContent />
+    </ToastProvider>
   );
 }

@@ -19,11 +19,14 @@ import { getOpenAITextResponse } from "../api/chat-service";
 import { AIChatMessage, AIChatMode } from "../types";
 import { cn } from "../utils/cn";
 import StudyPal from "../components/StudyPal";
+import { useGlobalToast } from "../context/ToastContext";
+import { parseError, logError } from "../utils/errorUtils";
 
 const AIHelperScreen = () => {
   const user = useUserStore((s) => s.user);
   const { t } = useTranslation(user?.language || "en");
   const theme = getTheme(user?.themeColor);
+  const toast = useGlobalToast();
 
   const [mode, setMode] = useState<AIChatMode>("chat");
   const [messages, setMessages] = useState<AIChatMessage[]>([]);
@@ -68,25 +71,9 @@ const AIHelperScreen = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      let errorContent = "Sorry, I encountered an error. Please try again.";
-
-      if (error instanceof Error) {
-        if (error.message.includes("API") || error.message.includes("401") || error.message.includes("403")) {
-          errorContent = "⚠️ API Error: Unable to connect to the AI service. Check your internet connection and try again.";
-        } else if (error.message.includes("timeout") || error.message.includes("network")) {
-          errorContent = "⏱️ Connection Timeout: The request took too long. Check your internet and try again.";
-        } else if (error.message.includes("rate limit")) {
-          errorContent = "⚡ Rate Limited: Too many requests. Please wait a moment before trying again.";
-        }
-      }
-
-      const errorMessage: AIChatMessage = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: errorContent,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      logError("AIHelperScreen:handleSend", error);
+      const errorInfo = parseError(error);
+      toast.error(errorInfo.userMessage);
     } finally {
       setIsLoading(false);
       setTimeout(() => {
@@ -97,6 +84,7 @@ const AIHelperScreen = () => {
 
   const clearChat = () => {
     setMessages([]);
+    toast.info("Chat cleared");
   };
 
   return (

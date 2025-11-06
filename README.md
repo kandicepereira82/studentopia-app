@@ -4,6 +4,9 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Phase 1 Integration Complete** - Toast notification system integrated into TasksScreen, AIHelperScreen, and GroupsScreen. Custom Zustand selectors optimized for better performance. Error utilities applied for consistent error handling across the app.
+- ✅ **Animal Label Fixed** - Changed "lamb" to "pig" throughout codebase (type definitions, utilities, and components). Pig and hamster image mappings corrected.
+- ✅ **Group Permission Checks Enhanced** - Added userId parameter to updateGroup() and regenerateShareCode() with proper permission enforcement. Teachers cannot leave groups they created.
 - ✅ **Quick Wins Sprint Complete** - Fixed animal name mapping bugs, added form error feedback, improved task reminder UX, enhanced AI error messages, validated past due dates, extracted 70+ lines of duplicated code
 - ✅ **Polish Sprint Complete** - Created centralized theme utilities, standardized error handling system, optimized Zustand selectors with custom hooks, added toast notification system, created keyboard management utilities
 - ✅ **Complete Offline Mode System** - App works fully offline with automatic data caching, offline action queueing, and auto-sync when reconnected. Offline indicator shows connection status and sync progress.
