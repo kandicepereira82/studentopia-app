@@ -159,7 +159,7 @@ const FriendsScreen = () => {
         <View style={{ paddingHorizontal: 24, paddingTop: 16, paddingBottom: 8, flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
           <View style={{ flex: 1, flexDirection: "row", alignItems: "center" }}>
             <Text style={{ fontSize: 32, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-              Students
+              {user?.role === "teacher" ? "Students" : "Friends"}
             </Text>
             {user && (
               <View style={{ marginLeft: 16 }}>
@@ -212,7 +212,7 @@ const FriendsScreen = () => {
             }}
           >
             <Text style={{ fontFamily: "Poppins_600SemiBold", fontSize: 14, color: activeTab === "friends" ? "white" : theme.textSecondary }}>
-              Students {myFriends.length > 0 && `(${myFriends.length})`}
+              {user?.role === "teacher" ? "Students" : "Friends"} {myFriends.length > 0 && `(${myFriends.length})`}
             </Text>
           </Pressable>
 
@@ -268,7 +268,7 @@ const FriendsScreen = () => {
                   <TextInput
                     value={searchQuery}
                     onChangeText={setSearchQuery}
-                    placeholder="Search students..."
+                    placeholder={user?.role === "teacher" ? "Search students..." : "Search friends..."}
                     placeholderTextColor={theme.textSecondary}
                     style={{ flex: 1, marginLeft: 8, fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textPrimary }}
                   />
@@ -285,10 +285,10 @@ const FriendsScreen = () => {
                 <View style={{ alignItems: "center", justifyContent: "center", paddingVertical: 80 }}>
                   <Ionicons name="people-outline" size={80} color={theme.textSecondary} />
                   <Text style={{ fontSize: 18, fontFamily: "Poppins_600SemiBold", marginTop: 16, color: theme.textPrimary }}>
-                    {searchQuery ? "No students found" : "No students yet"}
+                    {searchQuery ? (user?.role === "teacher" ? "No students found" : "No friends found") : (user?.role === "teacher" ? "No students yet" : "No friends yet")}
                   </Text>
                   <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", marginTop: 8, color: theme.textSecondary, textAlign: "center", paddingHorizontal: 40 }}>
-                    {searchQuery ? "Try a different search term" : "Add students to study together and track their progress!"}
+                    {searchQuery ? "Try a different search term" : (user?.role === "teacher" ? "Add students to track their progress and help them succeed!" : "Add friends to study together and track your progress!")}
                   </Text>
                   {!searchQuery && (
                     <Pressable
@@ -302,7 +302,7 @@ const FriendsScreen = () => {
                       }}
                     >
                       <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: "white" }}>
-                        Add Students
+                        {user?.role === "teacher" ? "Add Students" : "Add Friends"}
                       </Text>
                     </Pressable>
                   )}
@@ -553,7 +553,7 @@ const FriendsScreen = () => {
                   No activity yet
                 </Text>
                 <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", marginTop: 8, color: theme.textSecondary, textAlign: "center", paddingHorizontal: 40 }}>
-                  When your students complete tasks or earn achievements, they will appear here
+                  {user?.role === "teacher" ? "When your students complete tasks or earn achievements, they will appear here" : "When your friends complete tasks or earn achievements, they will appear here"}
                 </Text>
               </View>
             ) : (
@@ -618,7 +618,7 @@ const FriendsScreen = () => {
             <Pressable style={{ backgroundColor: "white", borderRadius: 24, padding: 24, width: "100%", maxWidth: 400 }} onPress={(e) => e.stopPropagation()}>
               <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
                 <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                  Add Student
+                  {user?.role === "teacher" ? "Add Student" : "Add Friend"}
                 </Text>
                 <Pressable onPress={() => setShowAddFriendModal(false)}>
                   <Ionicons name="close" size={28} color={theme.textSecondary} />
@@ -626,13 +626,13 @@ const FriendsScreen = () => {
               </View>
 
               <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginBottom: 16 }}>
-                {"Enter your student's email address to send them a connection request"}
+                {user?.role === "teacher" ? "Enter your student's email address to send them a connection request" : "Enter your friend's email address to send them a connection request"}
               </Text>
 
               <TextInput
                 value={friendEmail}
                 onChangeText={setFriendEmail}
-                placeholder="student@example.com"
+                placeholder={user?.role === "teacher" ? "student@example.com" : "friend@example.com"}
                 placeholderTextColor={theme.textSecondary}
                 keyboardType="email-address"
                 autoCapitalize="none"

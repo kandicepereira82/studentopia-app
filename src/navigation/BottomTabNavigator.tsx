@@ -226,7 +226,7 @@ const BottomTabNavigator = () => {
         name="Friends"
         component={FriendsScreen}
         options={{
-          tabBarLabel: "Students",
+          tabBarLabel: user?.role === "teacher" ? "Students" : "Friends",
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="people-circle" size={size} color={getRainbowTabColor("Friends") || color} />
           ),
