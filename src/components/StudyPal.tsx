@@ -550,9 +550,9 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       backpack: "🎒",
       book: "📚",
       pencil: "🖊️",
-      water: "🍶",
+      water: "🎙️",
       plant: "🪴",
-      study_pet: "🐹",
+      study_pet: "🎋",
       knitting: "🧶",
       stars: "⭐",
       paws: "🐾",
@@ -563,7 +563,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       speaker: "🔊",
       paint: "🎨",
       smiley: "😊",
-      dancing: "🕺",
+      dancing: "💃🕺",
     };
 
     return accessoryMap[customAvatar.accessory] || null;
