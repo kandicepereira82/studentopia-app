@@ -80,12 +80,12 @@ const StudyRoomScreen = () => {
 
     const roomId = createRoom(user.id, user.username, roomName, isPrivate);
     setCurrentRoom(roomId);
-    sendSystemMessage(roomId, `${user.username} created the room`);
+    sendSystemMessage(roomId, `${user.username} created the session`);
 
     setRoomName("");
     setIsPrivate(false);
     setShowCreateModal(false);
-    toast.success("Study room created!");
+    toast.success("Live session created!");
   };
 
   const handleJoinRoom = (roomId: string) => {
@@ -94,20 +94,20 @@ const StudyRoomScreen = () => {
     const success = joinRoom(roomId, user.id, user.username, user.studyPalConfig.animal);
     if (success) {
       setCurrentRoom(roomId);
-      sendSystemMessage(roomId, `${user.username} joined the room`);
-      toast.success("Joined room!");
+      sendSystemMessage(roomId, `${user.username} joined the session`);
+      toast.success("Joined session!");
     } else {
-      toast.error("Cannot join room");
+      toast.error("Cannot join session");
     }
   };
 
   const handleLeaveRoom = () => {
     if (!user || !currentRoom) return;
 
-    sendSystemMessage(currentRoom.id, `${user.username} left the room`);
+    sendSystemMessage(currentRoom.id, `${user.username} left the session`);
     leaveRoom(currentRoom.id, user.id);
     setCurrentRoom(null);
-    toast.info("Left the room");
+    toast.info("Left the session");
   };
 
   const handleStartTimer = () => {
@@ -174,7 +174,7 @@ const StudyRoomScreen = () => {
                   {currentRoom.name}
                 </Text>
                 <Text style={{ fontSize: 12, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 2 }}>
-                  {currentRoom.participants.length} {currentRoom.participants.length === 1 ? "person" : "people"} studying
+                  {currentRoom.participants.length} {currentRoom.participants.length === 1 ? "participant" : "participants"} in session
                 </Text>
               </View>
               <Pressable
@@ -263,7 +263,7 @@ const StudyRoomScreen = () => {
               minWidth: 280,
             }}>
               <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textSecondary, marginBottom: 8 }}>
-                {currentRoom.timerMode === "study" ? "Study Time" : "Break Time"}
+                {currentRoom.timerMode === "study" ? "Focus Time" : "Break Time"}
               </Text>
               <Text style={{ fontSize: 72, fontFamily: "Poppins_700Bold", color: theme.primary, letterSpacing: -2 }}>
                 {String(currentRoom.timerMinutes).padStart(2, "0")}:{String(currentRoom.timerSeconds).padStart(2, "0")}
@@ -313,7 +313,7 @@ const StudyRoomScreen = () => {
                     }}
                   >
                     <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: currentRoom.timerRunning ? "#9CA3AF" : "white" }}>
-                      Switch to {currentRoom.timerMode === "study" ? "Break" : "Study"}
+                      Switch to {currentRoom.timerMode === "study" ? "Break" : "Focus"}
                     </Text>
                   </Pressable>
                 </View>
@@ -321,7 +321,7 @@ const StudyRoomScreen = () => {
 
               {!userIsHost && (
                 <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 16, textAlign: "center" }}>
-                  {currentRoom.timerRunning ? "Timer is running..." : "Waiting for host to start"}
+                  {currentRoom.timerRunning ? "Session in progress..." : "Waiting for host to start"}
                 </Text>
               )}
             </View>
@@ -423,14 +423,14 @@ const StudyRoomScreen = () => {
             </KeyboardAvoidingView>
           </View>
 
-          {/* Invite Friends Modal */}
+          {/* Invite Students Modal */}
           <Modal visible={showInviteModal} transparent animationType="slide" onRequestClose={() => setShowInviteModal(false)}>
             <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
               <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "80%" }}>
                 <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: "#F3F4F6" }}>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                      Invite Friends
+                      Invite Students
                     </Text>
                     <Pressable onPress={() => setShowInviteModal(false)}>
                       <Ionicons name="close" size={28} color={theme.textSecondary} />
@@ -443,10 +443,10 @@ const StudyRoomScreen = () => {
                     <View style={{ alignItems: "center", paddingVertical: 40 }}>
                       <Ionicons name="people-outline" size={60} color={theme.textSecondary} />
                       <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginTop: 12 }}>
-                        No friends yet
+                        No students yet
                       </Text>
                       <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 6 }}>
-                        Add friends to invite them
+                        Add students to invite them
                       </Text>
                     </View>
                   ) : (
@@ -488,7 +488,7 @@ const StudyRoomScreen = () => {
                           </Text>
                           {alreadyInRoom ? (
                             <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.secondary }}>
-                              In Room
+                              In Session
                             </Text>
                           ) : alreadyInvited ? (
                             <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.textSecondary }}>
