@@ -14,6 +14,7 @@ import MindfulnessScreen from "../screens/MindfulnessScreen";
 import useUserStore from "../state/userStore";
 import { useTranslation } from "../utils/translations";
 
+// Live Sessions merged into Groups page
 export type RootTabParamList = {
   Home: undefined;
   Tasks: undefined;
