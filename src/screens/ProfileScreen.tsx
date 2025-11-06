@@ -155,6 +155,9 @@ const ProfileScreen = () => {
                   animationsEnabled: true,
                 },
                 notificationEnabled: true,
+                notificationSound: true,
+                notificationVibration: true,
+                mindfulnessBreakEnabled: true,
                 createdAt: new Date(),
               };
               useUserStore.getState().setUser(newUser);

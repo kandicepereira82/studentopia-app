@@ -82,6 +82,9 @@ export interface User {
   themeColor: ThemeColor;
   studyPalConfig: StudyPalConfig;
   notificationEnabled: boolean;
+  notificationSound: boolean; // Sound enabled for notifications
+  notificationVibration: boolean; // Vibration enabled for notifications
+  mindfulnessBreakEnabled: boolean; // Mindfulness break reminders after focus sessions
   dailyReminderTime?: { hour: number; minute: number }; // Daily study reminder time (24-hour format)
   createdAt: Date;
 }

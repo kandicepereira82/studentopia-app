@@ -62,6 +62,9 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
           animationsEnabled: false,
         },
         notificationEnabled: true,
+        notificationSound: true,
+        notificationVibration: true,
+        mindfulnessBreakEnabled: true,
         createdAt: new Date(),
       };
       setUser(newUser);
@@ -108,6 +111,9 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
           animationsEnabled: false,
         },
         notificationEnabled: true,
+        notificationSound: true,
+        notificationVibration: true,
+        mindfulnessBreakEnabled: true,
         createdAt: new Date(),
       };
       setUser(newUser);

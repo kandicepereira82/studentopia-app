@@ -11,6 +11,9 @@ interface UserStore {
   updateStudyPal: (name: string, animal: StudyPalAnimal) => void;
   toggleAnimations: () => void;
   toggleNotifications: () => void;
+  updateNotificationSound: (enabled: boolean) => void;
+  updateNotificationVibration: (enabled: boolean) => void;
+  updateMindfulnessBreak: (enabled: boolean) => void;
   updateDailyReminderTime: (hour: number, minute: number) => void;
   logout: () => void;
 }
@@ -59,6 +62,33 @@ const useUserStore = create<UserStore>()(
             ? {
                 ...state.user,
                 notificationEnabled: !state.user.notificationEnabled,
+              }
+            : null,
+        })),
+      updateNotificationSound: (enabled: boolean) =>
+        set((state) => ({
+          user: state.user
+            ? {
+                ...state.user,
+                notificationSound: enabled,
+              }
+            : null,
+        })),
+      updateNotificationVibration: (enabled: boolean) =>
+        set((state) => ({
+          user: state.user
+            ? {
+                ...state.user,
+                notificationVibration: enabled,
+              }
+            : null,
+        })),
+      updateMindfulnessBreak: (enabled: boolean) =>
+        set((state) => ({
+          user: state.user
+            ? {
+                ...state.user,
+                mindfulnessBreakEnabled: enabled,
               }
             : null,
         })),

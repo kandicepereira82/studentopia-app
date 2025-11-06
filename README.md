@@ -4,6 +4,7 @@ Studentopia is a comprehensive mobile productivity app designed for students to 
 
 ## ✨ Latest Updates
 
+- ✅ **Comprehensive Reminder & Notification System** - Added sound/vibration toggles, mindfulness break reminders after 45-60 min focus, notification permission controls, with theme-aware UI
 - ✅ **Task Reminder System** - Added customizable reminder date/time picker below Due Date section when adding/editing tasks with automatic notification scheduling
 - ✅ **Daily Study Reminder System** - Added 20 rotating motivational messages displayed on Home Page header, switching daily with dynamic companion name integration (e.g., "Tomo's cheering you on!")
 - ✅ **Calendar Sync Instructions** - Added comprehensive help modal with step-by-step instructions on how to enable and use calendar sync feature

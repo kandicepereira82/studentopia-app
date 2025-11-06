@@ -35,6 +35,9 @@ const SettingsScreen = () => {
   const { t } = useTranslation(user?.language || "en");
 
   const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notificationSoundEnabled, setNotificationSoundEnabled] = useState(user?.notificationSound ?? true);
+  const [notificationVibrationEnabled, setNotificationVibrationEnabled] = useState(user?.notificationVibration ?? true);
+  const [mindfulnessBreakEnabled, setMindfulnessBreakEnabled] = useState(user?.mindfulnessBreakEnabled ?? true);
   const [calendarSyncEnabled, setCalendarSyncEnabled] = useState(false);
   const [dailyReminderEnabled, setDailyReminderEnabled] = useState(false);
   const [scheduledNotificationsCount, setScheduledNotificationsCount] = useState(0);
@@ -325,6 +328,102 @@ const SettingsScreen = () => {
                 />
               </View>
             </Pressable>
+
+            {/* Sound Toggle */}
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                    style={{ backgroundColor: theme.primary + "20" }}
+                  >
+                    <Ionicons name={notificationSoundEnabled ? "volume-high" : "volume-mute"} size={20} color={theme.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                      Notification Sounds
+                    </Text>
+                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                      Play sound when notifications arrive
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={notificationSoundEnabled}
+                  onValueChange={(value) => {
+                    setNotificationSoundEnabled(value);
+                    useUserStore.getState().updateNotificationSound(value);
+                  }}
+                  trackColor={{ false: theme.textSecondary + "30", true: theme.primary }}
+                  thumbColor="#FFFFFF"
+                  disabled={!notificationsEnabled}
+                />
+              </View>
+            </View>
+
+            {/* Vibration Toggle */}
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                    style={{ backgroundColor: theme.primary + "20" }}
+                  >
+                    <Ionicons name={notificationVibrationEnabled ? "phone-portrait" : "phone-portrait-outline"} size={20} color={theme.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                      Vibration
+                    </Text>
+                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                      Vibrate when notifications arrive
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={notificationVibrationEnabled}
+                  onValueChange={(value) => {
+                    setNotificationVibrationEnabled(value);
+                    useUserStore.getState().updateNotificationVibration(value);
+                  }}
+                  trackColor={{ false: theme.textSecondary + "30", true: theme.primary }}
+                  thumbColor="#FFFFFF"
+                  disabled={!notificationsEnabled}
+                />
+              </View>
+            </View>
+
+            {/* Mindfulness Break Toggle */}
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                    style={{ backgroundColor: theme.secondary + "20" }}
+                  >
+                    <Ionicons name="leaf" size={20} color={theme.secondary} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                      Mindfulness Breaks
+                    </Text>
+                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                      Remind to take breaks after 45-60 min of focus
+                    </Text>
+                  </View>
+                </View>
+                <Switch
+                  value={mindfulnessBreakEnabled}
+                  onValueChange={(value) => {
+                    setMindfulnessBreakEnabled(value);
+                    useUserStore.getState().updateMindfulnessBreak(value);
+                  }}
+                  trackColor={{ false: theme.textSecondary + "30", true: theme.secondary }}
+                  thumbColor="#FFFFFF"
+                  disabled={!notificationsEnabled}
+                />
+              </View>
+            </View>
 
             {/* Scheduled Notifications Info */}
             <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>

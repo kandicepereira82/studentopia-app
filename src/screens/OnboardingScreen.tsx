@@ -147,6 +147,9 @@ const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
           animationsEnabled: false,
         },
         notificationEnabled: true,
+        notificationSound: true,
+        notificationVibration: true,
+        mindfulnessBreakEnabled: true,
         createdAt: new Date(),
       });
       initStats(userId);
