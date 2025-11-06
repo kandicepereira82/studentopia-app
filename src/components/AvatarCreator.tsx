@@ -95,8 +95,8 @@ const ACCESSORIES = [
   { id: "none", name: "None", emoji: "🚫" },
   { id: "backpack", name: "Backpack", emoji: "🎒" },
   { id: "book", name: "Books", emoji: "📚" },
-  { id: "pencil", name: "Pen", emoji: "✏️" },
-  { id: "water", name: "Water Bottle", emoji: "💧" },
+  { id: "pencil", name: "Pen", emoji: "🖊️" },
+  { id: "water", name: "Water Bottle", emoji: "🍶" },
   { id: "plant", name: "Study Plant", emoji: "🪴" },
   { id: "study_pet", name: "Smaller Study Pet", emoji: "🐹" },
   { id: "knitting", name: "Knitting Yarn", emoji: "🧶" },
@@ -108,6 +108,8 @@ const ACCESSORIES = [
   { id: "basketball", name: "Basketball", emoji: "🏀" },
   { id: "speaker", name: "Music Speaker", emoji: "🔊" },
   { id: "paint", name: "Paint Paddle", emoji: "🎨" },
+  { id: "smiley", name: "Smiley", emoji: "😊" },
+  { id: "dancing", name: "Dancing", emoji: "🕺" },
 ];
 
 const AvatarCreator: React.FC<AvatarCreatorProps> = ({
