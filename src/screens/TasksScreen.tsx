@@ -118,14 +118,19 @@ const TasksScreen = () => {
     }
 
     if (editingTask) {
-      updateTask(editingTask.id, {
+      const success = updateTask(editingTask.id, user?.id || "default", {
         title,
         description,
         category,
         dueDate,
         reminder: reminderDate || undefined,
       });
-      toast.success("Task updated successfully");
+      if (success) {
+        toast.success("Task updated successfully");
+      } else {
+        toast.error("Failed to update task");
+        return;
+      }
     } else {
       addTask({
         userId: user?.id || "default",
@@ -142,6 +147,8 @@ const TasksScreen = () => {
   };
 
   const handleDelete = async (taskId: string) => {
+    if (!user?.id) return;
+
     // Cancel notification if exists
     if (taskNotificationIds[taskId]) {
       await cancelNotification(taskNotificationIds[taskId]);
@@ -151,7 +158,12 @@ const TasksScreen = () => {
         return updated;
       });
     }
-    deleteTask(taskId);
+    const success = deleteTask(taskId, user.id);
+    if (success) {
+      toast.success("Task deleted");
+    } else {
+      toast.error("Failed to delete task");
+    }
   };
 
   const handleToggle = async (task: Task) => {

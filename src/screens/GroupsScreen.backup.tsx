@@ -121,14 +121,14 @@ const GroupsScreen = () => {
     if (!user) return;
 
     // Use the share code to join the group
-    const success = joinGroupWithCode(joinCode.toUpperCase(), user.id);
-    if (success) {
+    const result = joinGroupWithCode(joinCode.toUpperCase(), user.id, user.id);
+    if (result.success) {
       const group = groups.find((g) => g.shareCode === joinCode.toUpperCase());
       setJoinCode("");
       setShowJoinModal(false);
       toast.success(`Joined "${group?.name}"!`);
     } else {
-      toast.error("Invalid group code or you are already a member");
+      toast.error(result.message || "Failed to join group");
     }
   };
 

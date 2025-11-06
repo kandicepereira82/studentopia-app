@@ -7,8 +7,7 @@ interface GroupStore {
   groups: Group[];
   addGroup: (group: Omit<Group, "id" | "createdAt" | "shareCode">) => void;
   updateGroup: (groupId: string, userId: string, updates: Partial<Omit<Group, "id" | "createdAt" | "shareCode" | "teacherId" | "studentIds">>) => boolean;
-  joinGroupWithCode: (shareCode: string, studentId: string) => boolean;
-  joinGroup: (groupId: string, studentId: string) => void;
+  joinGroupWithCode: (shareCode: string, studentId: string, authenticatedUserId: string) => { success: boolean; message: string };
   leaveGroup: (groupId: string, studentId: string) => void;
   regenerateShareCode: (groupId: string, userId: string) => string | null;
   getGroupsByStudent: (studentId: string) => Group[];
@@ -58,29 +57,40 @@ const useGroupStore = create<GroupStore>()(
         }));
         return true;
       },
-      joinGroupWithCode: (shareCode, studentId) => {
-        const group = get().groups.find((g) => g.shareCode === shareCode);
-        if (group && !group.studentIds.includes(studentId)) {
-          set((state) => ({
-            groups: state.groups.map((g) =>
-              g.id === group.id
-                ? { ...g, studentIds: [...g.studentIds, studentId] }
-                : g
-            ),
-          }));
-          return true;
+      joinGroupWithCode: (shareCode, studentId, authenticatedUserId) => {
+        // SECURITY: Validate that studentId matches authenticated user
+        if (studentId !== authenticatedUserId) {
+          console.error("Permission denied: Cannot join as another user");
+          return { success: false, message: "Authentication error" };
         }
-        return false;
-      },
-      joinGroup: (groupId, studentId) =>
+
+        const group = get().groups.find((g) => g.shareCode === shareCode);
+
+        if (!group) {
+          return { success: false, message: "Invalid share code" };
+        }
+
+        if (group.studentIds.includes(studentId)) {
+          return { success: false, message: "Already a member of this group" };
+        }
+
+        // Optional: Check maximum group size
+        const MAX_GROUP_SIZE = 100;
+        if (group.studentIds.length >= MAX_GROUP_SIZE) {
+          return { success: false, message: "Group is full" };
+        }
+
         set((state) => ({
-          groups: state.groups.map((group) =>
-            group.id === groupId && !group.studentIds.includes(studentId)
-              ? { ...group, studentIds: [...group.studentIds, studentId] }
-              : group,
+          groups: state.groups.map((g) =>
+            g.id === group.id
+              ? { ...g, studentIds: [...g.studentIds, studentId] }
+              : g
           ),
-        })),
-      leaveGroup: (groupId, studentId) => {
+        }));
+
+        return { success: true, message: "Successfully joined group" };
+      },
+      leaveGroup: (groupId: string, studentId: string) => {
         const group = get().groups.find((g) => g.id === groupId);
         if (!group) return;
 
