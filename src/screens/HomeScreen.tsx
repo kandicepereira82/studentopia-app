@@ -112,6 +112,9 @@ const HomeScreen = () => {
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())
     .slice(0, 5);
 
+  // Extract first name from username
+  const firstName = user.username.split(" ")[0];
+
   return (
     <View style={{ flex: 1, backgroundColor: theme.backgroundGradient[0] }}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -124,7 +127,7 @@ const HomeScreen = () => {
               color: theme.textPrimary,
               marginBottom: 4
             }}>
-              {getTimeBasedGreeting(user.username)}
+              {getTimeBasedGreeting(firstName)}
             </Text>
             <Text style={{
               fontSize: 16,
