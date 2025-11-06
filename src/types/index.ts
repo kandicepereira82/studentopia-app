@@ -57,8 +57,6 @@ export type ThemeColor =
   | "golden"
   | "cherry";
 
-export type AgeRange = "12-14" | "15-17" | "18-21" | "22-25" | "25+";
-
 export interface Task {
   id: string;
   userId: string;
@@ -80,7 +78,6 @@ export interface User {
   username: string;
   email?: string;
   role: UserRole;
-  ageRange?: AgeRange; // Optional age range for personalization
   language: Language;
   themeColor: ThemeColor;
   studyPalConfig: StudyPalConfig;
