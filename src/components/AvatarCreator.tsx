@@ -115,7 +115,7 @@ const ACCESSORIES = [
   { id: "speaker", name: "Music Speaker", emoji: "🔊" },
   { id: "paint", name: "Paint Paddle", emoji: "🎨" },
   { id: "smiley", name: "Smiley", emoji: "😊" },
-  { id: "dancing", name: "Cloud Dancing", emoji: "💃🕺" },
+  { id: "dancing", name: "Dancing", emoji: "💃🕺" },
 ];
 
 const AvatarCreator: React.FC<AvatarCreatorProps> = ({
