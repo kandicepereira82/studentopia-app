@@ -456,6 +456,31 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
 
   // Get background color based on animal type for kawaii styling
   const getAnimalBackgroundColor = (animal: StudyPalAnimal): string => {
+    // If custom background color is set, use that first
+    if (customAvatar?.backgroundColor && customAvatar.backgroundColor !== "none") {
+      const backgroundColorMap: Record<string, string> = {
+        soft_pink: "#FFC0CB",
+        lavender: "#E6E6FA",
+        mint: "#B2F5EA",
+        peach: "#FFDAB9",
+        sky_blue: "#87CEEB",
+        lemon: "#FFF68F",
+        coral: "#FF7F50",
+        lilac: "#DDA0DD",
+        aqua: "#7FDBFF",
+        cream: "#FFF8DC",
+        rose: "#FFB6C1",
+        sage: "#C3E6CB",
+        butter: "#FFFACD",
+        periwinkle: "#CCCCFF",
+        apricot: "#FBCEB1",
+        powder_blue: "#B0E0E6",
+        champagne: "#F7E7CE",
+      };
+      const customBgColor = backgroundColorMap[customAvatar.backgroundColor];
+      if (customBgColor) return customBgColor;
+    }
+
     // If custom fur color, use that
     const customFurColor = getFurColorTint();
     if (customFurColor) return customFurColor;
@@ -518,10 +543,18 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       backpack: "🎒",
       book: "📚",
       pencil: "✏️",
-      notebook: "📓",
-      coffee: "☕",
       water: "💧",
       plant: "🪴",
+      study_pet: "🐹",
+      knitting: "🧶",
+      stars: "⭐",
+      paws: "🐾",
+      leaf: "🍃",
+      flower: "🌸",
+      football: "⚽",
+      basketball: "🏀",
+      speaker: "🔊",
+      paint: "🎨",
     };
 
     return accessoryMap[customAvatar.accessory] || null;

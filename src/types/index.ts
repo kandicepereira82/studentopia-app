@@ -103,6 +103,7 @@ export interface AvatarCustomization {
   furColor?: string;
   outfit?: string;
   accessory?: string;
+  backgroundColor?: string;
   glasses?: boolean;
   headphones?: boolean;
 }

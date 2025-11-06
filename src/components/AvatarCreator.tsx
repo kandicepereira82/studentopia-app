@@ -70,15 +70,44 @@ const OUTFITS = [
   { id: "meditation_robe", name: "Mindful Meditation Robe", emoji: "🧘" },
 ];
 
+const BACKGROUND_COLORS = [
+  { id: "none", name: "None", color: "#FFFFFF" },
+  { id: "soft_pink", name: "Soft Pink", color: "#FFC0CB" },
+  { id: "lavender", name: "Lavender", color: "#E6E6FA" },
+  { id: "mint", name: "Mint", color: "#B2F5EA" },
+  { id: "peach", name: "Peach", color: "#FFDAB9" },
+  { id: "sky_blue", name: "Sky Blue", color: "#87CEEB" },
+  { id: "lemon", name: "Lemon", color: "#FFF68F" },
+  { id: "coral", name: "Coral", color: "#FF7F50" },
+  { id: "lilac", name: "Lilac", color: "#DDA0DD" },
+  { id: "aqua", name: "Aqua", color: "#7FDBFF" },
+  { id: "cream", name: "Cream", color: "#FFF8DC" },
+  { id: "rose", name: "Rose", color: "#FFB6C1" },
+  { id: "sage", name: "Sage", color: "#C3E6CB" },
+  { id: "butter", name: "Butter", color: "#FFFACD" },
+  { id: "periwinkle", name: "Periwinkle", color: "#CCCCFF" },
+  { id: "apricot", name: "Apricot", color: "#FBCEB1" },
+  { id: "powder_blue", name: "Powder Blue", color: "#B0E0E6" },
+  { id: "champagne", name: "Champagne", color: "#F7E7CE" },
+];
+
 const ACCESSORIES = [
   { id: "none", name: "None", emoji: "🚫" },
   { id: "backpack", name: "Backpack", emoji: "🎒" },
-  { id: "book", name: "Book", emoji: "📚" },
-  { id: "pencil", name: "Pencil", emoji: "✏️" },
-  { id: "notebook", name: "Notebook", emoji: "📓" },
-  { id: "coffee", name: "Coffee Cup", emoji: "☕" },
+  { id: "book", name: "Books", emoji: "📚" },
+  { id: "pencil", name: "Pen", emoji: "✏️" },
   { id: "water", name: "Water Bottle", emoji: "💧" },
   { id: "plant", name: "Study Plant", emoji: "🪴" },
+  { id: "study_pet", name: "Smaller Study Pet", emoji: "🐹" },
+  { id: "knitting", name: "Knitting Yarn", emoji: "🧶" },
+  { id: "stars", name: "Stars", emoji: "⭐" },
+  { id: "paws", name: "Paws", emoji: "🐾" },
+  { id: "leaf", name: "Leaf", emoji: "🍃" },
+  { id: "flower", name: "Flower", emoji: "🌸" },
+  { id: "football", name: "Football", emoji: "⚽" },
+  { id: "basketball", name: "Basketball", emoji: "🏀" },
+  { id: "speaker", name: "Music Speaker", emoji: "🔊" },
+  { id: "paint", name: "Paint Paddle", emoji: "🎨" },
 ];
 
 const AvatarCreator: React.FC<AvatarCreatorProps> = ({
@@ -90,7 +119,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
   onSave,
 }) => {
   const theme = getTheme(currentTheme);
-  const [activeTab, setActiveTab] = useState<"fur" | "outfit" | "accessories">("fur");
+  const [activeTab, setActiveTab] = useState<"background" | "accessories">("background");
 
   const [avatar, setAvatar] = useState<AvatarCustomization>({
     hairStyle: currentAvatar.hairStyle || "none",
@@ -98,6 +127,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
     furColor: currentAvatar.furColor || "natural",
     outfit: currentAvatar.outfit || "none",
     accessory: currentAvatar.accessory || "none",
+    backgroundColor: currentAvatar.backgroundColor || "none",
     glasses: currentAvatar.glasses || false,
     headphones: currentAvatar.headphones || false,
   });
@@ -114,6 +144,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
       furColor: "natural",
       outfit: "none",
       accessory: "none",
+      backgroundColor: "none",
       glasses: false,
       headphones: false,
     });
@@ -137,7 +168,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
             <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
               <View style={{ flex: 1 }}>
                 <Text style={{ fontSize: 28, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                  Avatar Creator
+                  Companion Customisation
                 </Text>
                 <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 4 }}>
                   Customize your study pal
@@ -195,7 +226,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
           {/* Tabs */}
           <View style={{ paddingHorizontal: 24, paddingVertical: 16 }}>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 8 }}>
-              {(["fur", "outfit", "accessories"] as const).map((tab) => (
+              {(["background", "accessories"] as const).map((tab) => (
                 <Pressable
                   key={tab}
                   onPress={() => setActiveTab(tab)}
@@ -215,9 +246,8 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
                     fontFamily: "Poppins_600SemiBold",
                     fontSize: 14,
                     color: activeTab === tab ? "white" : theme.textSecondary,
-                    textTransform: "capitalize",
                   }}>
-                    {tab}
+                    {tab === "background" ? "Choose Background Colour" : "Accessories"}
                   </Text>
                 </Pressable>
               ))}
@@ -230,23 +260,23 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
             showsVerticalScrollIndicator={false}
           >
-            {activeTab === "fur" && (
+            {activeTab === "background" && (
               <View>
                 <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
-                  Fur Color
+                  Background Colour
                 </Text>
                 <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-                  {FUR_COLORS.map((color) => (
+                  {BACKGROUND_COLORS.map((color) => (
                     <Pressable
                       key={color.id}
-                      onPress={() => setAvatar({ ...avatar, furColor: color.id })}
+                      onPress={() => setAvatar({ ...avatar, backgroundColor: color.id })}
                       style={{
-                        width: 70,
-                        paddingVertical: 12,
+                        width: 95,
+                        paddingVertical: 14,
                         borderRadius: 16,
                         backgroundColor: color.color,
                         borderWidth: 3,
-                        borderColor: avatar.furColor === color.id ? theme.primary : "white",
+                        borderColor: avatar.backgroundColor === color.id ? theme.primary : "#E5E7EB",
                         alignItems: "center",
                         justifyContent: "center",
                         shadowColor: "#000",
@@ -259,46 +289,10 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
                       <Text style={{
                         fontFamily: "Poppins_600SemiBold",
                         fontSize: 11,
-                        color: ["white", "cream", "light"].includes(color.id) ? theme.textPrimary : "white",
+                        color: color.id === "none" ? theme.textPrimary : ["soft_pink", "mint", "lemon", "cream", "butter", "powder_blue", "champagne", "lavender", "peach", "aqua"].includes(color.id) ? theme.textPrimary : "#333",
                         textAlign: "center",
                       }}>
                         {color.name}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {activeTab === "outfit" && (
-              <View>
-                <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
-                  Outfit
-                </Text>
-                <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-                  {OUTFITS.map((outfit) => (
-                    <Pressable
-                      key={outfit.id}
-                      onPress={() => setAvatar({ ...avatar, outfit: outfit.id })}
-                      style={{
-                        paddingHorizontal: 16,
-                        paddingVertical: 12,
-                        borderRadius: 16,
-                        backgroundColor: avatar.outfit === outfit.id ? theme.primary : "white",
-                        borderWidth: 2,
-                        borderColor: avatar.outfit === outfit.id ? theme.primary : "#E5E7EB",
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                      }}
-                    >
-                      <Text style={{ fontSize: 20 }}>{outfit.emoji}</Text>
-                      <Text style={{
-                        fontFamily: "Poppins_500Medium",
-                        fontSize: 13,
-                        color: avatar.outfit === outfit.id ? "white" : theme.textPrimary,
-                      }}>
-                        {outfit.name}
                       </Text>
                     </Pressable>
                   ))}
