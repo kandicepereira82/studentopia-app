@@ -68,10 +68,22 @@ const AIHelperScreen = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
+      let errorContent = "Sorry, I encountered an error. Please try again.";
+
+      if (error instanceof Error) {
+        if (error.message.includes("API") || error.message.includes("401") || error.message.includes("403")) {
+          errorContent = "⚠️ API Error: Unable to connect to the AI service. Check your internet connection and try again.";
+        } else if (error.message.includes("timeout") || error.message.includes("network")) {
+          errorContent = "⏱️ Connection Timeout: The request took too long. Check your internet and try again.";
+        } else if (error.message.includes("rate limit")) {
+          errorContent = "⚡ Rate Limited: Too many requests. Please wait a moment before trying again.";
+        }
+      }
+
       const errorMessage: AIChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: "Sorry, I encountered an error. Please try again.",
+        content: errorContent,
         timestamp: new Date(),
       };
       setMessages((prev) => [...prev, errorMessage]);
