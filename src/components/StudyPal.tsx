@@ -492,7 +492,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
 
   // Get outfit emoji
   const getOutfitEmoji = (): string | null => {
-    if (!customAvatar?.outfit) return null;
+    if (!customAvatar?.outfit || customAvatar.outfit === "none") return null;
 
     const outfitMap: Record<string, string> = {
       casual: "👕",

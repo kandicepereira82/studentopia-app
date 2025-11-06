@@ -57,6 +57,7 @@ const FUR_COLORS = [
 ];
 
 const OUTFITS = [
+  { id: "none", name: "None", emoji: "🚫" },
   { id: "casual", name: "Casual", emoji: "👕" },
   { id: "formal", name: "Formal", emoji: "👔" },
   { id: "sporty", name: "Sporty", emoji: "🏃" },
@@ -91,7 +92,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
     hairStyle: currentAvatar.hairStyle || "none",
     hairColor: currentAvatar.hairColor || "brown",
     furColor: currentAvatar.furColor || "natural",
-    outfit: currentAvatar.outfit || "casual",
+    outfit: currentAvatar.outfit || "none",
     accessory: currentAvatar.accessory || "none",
     glasses: currentAvatar.glasses || false,
     headphones: currentAvatar.headphones || false,
@@ -107,7 +108,7 @@ const AvatarCreator: React.FC<AvatarCreatorProps> = ({
       hairStyle: "none",
       hairColor: "brown",
       furColor: "natural",
-      outfit: "casual",
+      outfit: "none",
       accessory: "none",
       glasses: false,
       headphones: false,
