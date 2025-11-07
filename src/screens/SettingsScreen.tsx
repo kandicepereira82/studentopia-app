@@ -3,6 +3,8 @@ import { View, Text, ScrollView, Pressable, Switch, Modal, TextInput } from "rea
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { ProfileStackParamList } from "../navigation/ProfileStack";
 import useUserStore from "../state/userStore";
 import { getTheme } from "../utils/themes";
 import { useTranslation } from "../utils/translations";
@@ -21,6 +23,12 @@ import {
 import CustomAlert from "../components/CustomAlert";
 import { useGlobalToast } from "../context/ToastContext";
 
+type SettingsScreenNavigationProp = NativeStackNavigationProp<ProfileStackParamList, "Settings">;
+
+interface SettingsScreenProps {
+  navigation?: SettingsScreenNavigationProp;
+}
+
 interface AlertState {
   visible: boolean;
   title: string;
@@ -28,7 +36,7 @@ interface AlertState {
   buttons?: Array<{ text: string; onPress?: () => void; style?: "default" | "cancel" | "destructive" }>;
 }
 
-const SettingsScreen = ({ navigation }: any) => {
+const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
   const user = useUserStore((s) => s.user);
   const logout = useUserStore((s) => s.logout);
   const updateDailyReminderTime = useUserStore((s) => s.updateDailyReminderTime);
@@ -248,20 +256,22 @@ const SettingsScreen = ({ navigation }: any) => {
       <SafeAreaView style={{ flex: 1 }}>
         {/* Header */}
         <View className="px-6 pt-4 pb-2 flex-row items-center">
-          <Pressable
-            onPress={() => navigation.goBack()}
-            style={{
-              width: 40,
-              height: 40,
-              borderRadius: 20,
-              backgroundColor: theme.textSecondary + "20",
-              alignItems: "center",
-              justifyContent: "center",
-              marginRight: 12,
-            }}
-          >
-            <Ionicons name="arrow-back" size={24} color={theme.textPrimary} />
-          </Pressable>
+          {navigation && (
+            <Pressable
+              onPress={() => navigation.goBack()}
+              style={{
+                width: 40,
+                height: 40,
+                borderRadius: 20,
+                backgroundColor: theme.textSecondary + "20",
+                alignItems: "center",
+                justifyContent: "center",
+                marginRight: 12,
+              }}
+            >
+              <Ionicons name="arrow-back" size={24} color={theme.textPrimary} />
+            </Pressable>
+          )}
           <View className="flex-1">
             <Text className="text-3xl font-bold" style={{ color: theme.textPrimary }}>
               Settings
@@ -512,31 +522,54 @@ const SettingsScreen = ({ navigation }: any) => {
             </View>
 
             {/* Enable Calendar Sync */}
-            <Pressable
-              onPress={() => navigation.navigate("CalendarConnections")}
-              className="rounded-2xl p-4 mb-3"
-              style={{ backgroundColor: theme.cardBackground }}
-            >
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center flex-1">
-                  <View
-                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                    style={{ backgroundColor: theme.primary + "20" }}
-                  >
-                    <Ionicons name="calendar" size={20} color={theme.primary} />
+            {navigation ? (
+              <Pressable
+                onPress={() => navigation.navigate("CalendarConnections")}
+                className="rounded-2xl p-4 mb-3"
+                style={{ backgroundColor: theme.cardBackground }}
+              >
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                      style={{ backgroundColor: theme.primary + "20" }}
+                    >
+                      <Ionicons name="calendar" size={20} color={theme.primary} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                        Manage Calendars
+                      </Text>
+                      <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                        Connect and sync multiple calendars
+                      </Text>
+                    </View>
                   </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
-                      Manage Calendars
-                    </Text>
-                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
-                      Connect and sync multiple calendars
-                    </Text>
+                  <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
+                </View>
+              </Pressable>
+            ) : (
+              <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                      style={{ backgroundColor: theme.primary + "20" }}
+                    >
+                      <Ionicons name="calendar" size={20} color={theme.primary} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                        Calendar Sync
+                      </Text>
+                      <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                        Basic calendar sync enabled
+                      </Text>
+                    </View>
                   </View>
                 </View>
-                <Ionicons name="chevron-forward" size={20} color={theme.textSecondary} />
               </View>
-            </Pressable>
+            )}
 
             {/* Legacy Toggle - Keep for backward compatibility */}
             <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
