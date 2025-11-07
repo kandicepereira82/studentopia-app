@@ -32,16 +32,6 @@ export const musicLibrary: MusicTrack[] = [
     localFile: require("../../assets/chopin-nocturne-op-9-no-2-slowed-rainmp3.mp3"),
   },
   {
-    id: "calm-soul-meditation",
-    title: "Calm Soul Meditation",
-    artist: "Meditation Music",
-    duration: 240,
-    mood: "calming",
-    genre: "ambient",
-    pixabayUrl: "",
-    localFile: require("../../assets/calm-soul-meditation.mp3"),
-  },
-  {
     id: "meditation-432hz",
     title: "432 Hz Meditation",
     artist: "Healing Frequencies",
