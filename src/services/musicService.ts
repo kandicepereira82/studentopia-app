@@ -59,7 +59,7 @@ export const musicLibrary: MusicTrack[] = [
     mood: "peaceful",
     genre: "classical",
     pixabayUrl: "",
-    localFile: require("../../assets/bach-talking-to-chopin-in-the-forest.mpeg"),
+    localFile: require("../../assets/bach-talking-to-chopin-in-the-forest.mp3"),
   },
 ];
 
