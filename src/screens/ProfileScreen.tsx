@@ -114,7 +114,10 @@ const ProfileScreen = ({ navigation }: any) => {
             {t("profile")}
           </Text>
           <Pressable
-            onPress={() => navigation.navigate("Settings")}
+            onPress={() => {
+              console.log("[ProfileScreen] Navigating to Settings with navigation:", !!navigation);
+              navigation.navigate("Settings");
+            }}
             className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center"
           >
             <Ionicons name="settings" size={20} color="white" />
