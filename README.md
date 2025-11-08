@@ -1,8 +1,10 @@
 # Studentopia - Your Personal Study Companion
 
-Studentopia is a comprehensive mobile productivity app designed for students to stay organized, complete tasks, maintain focus, and promote wellness. Built with React Native and Expo, it features a colorful, playful, and highly customizable interface with **26 adorable animal companions**, **8 dynamic themes**, and **dark mode support**.
+Studentopia is a comprehensive mobile productivity app designed for students to stay organized, complete tasks, maintain focus, and promote wellness. Built with React Native and Expo, it features a colorful, playful, and highly customizable interface with **27 adorable animal companions**, **8 dynamic themes**, and **dark mode support**.
 
 ## ✨ Latest Updates
+
+- ✅ **WOLF COMPANION ADDED** - New wolf study companion now available! 🐺 Added wolf as the 27th animal companion option with gray coloring, complete wolf emoji (🐺), and fully integrated into onboarding animal selection screen. Wolf joins the existing 26 adorable companions with proper positioning for all customization accessories (glasses, headphones, outfits). Perfect for students who love wild animals!
 
 - ✅ **SHARK COMPANION ADDED** - New shark study companion now available! 🦈 Added shark as the 26th animal companion option with steel blue coloring, complete shark emoji (🦈), and fully integrated into onboarding animal selection screen. Shark joins the existing 25 adorable companions with proper positioning for all customization accessories (glasses, headphones, outfits). Perfect for students who love ocean animals!
 

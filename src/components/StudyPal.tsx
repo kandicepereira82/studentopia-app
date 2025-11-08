@@ -377,6 +377,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       redpanda: require("../../assets/image-1762363418.png"),
       pig: require("../../assets/image-1762363420.png"),
       shark: require("../../assets/studypal - shark-1762573986744.png"),
+      wolf: require("../../assets/studypal - Wolf-1762618882290.png"),
     };
     return imageMap[animal] || imageMap.cat;
   };
@@ -409,6 +410,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       elephant: "🐘",
       goldfish: "🐠",
       shark: "🦈",
+      wolf: "🐺",
     };
     return emojiMap[animal] || "🐱";
   };
@@ -521,6 +523,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       elephant: "#B0C4DE", // Light steel blue
       goldfish: "#FFA500", // Orange
       shark: "#4682B4",    // Steel blue
+      wolf: "#808080",     // Gray
     };
     return colorMap[animal] || "#FFE5B4";
   };
@@ -947,6 +950,19 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
         accessoryBottom: 0.13,
         accessoryRight: -0.08,
         accessorySize: 0.37,
+      },
+      wolf: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
       },
     };
 
