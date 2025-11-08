@@ -435,7 +435,7 @@ const StudyRoomScreen = () => {
           {/* Invite Students Modal */}
           <Modal visible={showInviteModal} transparent animationType="slide" onRequestClose={() => setShowInviteModal(false)}>
             <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
-              <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, maxHeight: "80%" }}>
+              <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, height: "80%" }}>
                 <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: "#F3F4F6" }}>
                   <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
                     <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
@@ -447,7 +447,7 @@ const StudyRoomScreen = () => {
                   </View>
                 </View>
 
-                <ScrollView style={{ flex: 1, paddingHorizontal: 24, paddingVertical: 16 }}>
+                <ScrollView style={{ paddingHorizontal: 24, paddingVertical: 16 }} contentContainerStyle={{ flexGrow: 1 }}>
                   {myFriends.length === 0 ? (
                     <View style={{ alignItems: "center", paddingVertical: 40 }}>
                       <Ionicons name="people-outline" size={60} color={theme.textSecondary} />
