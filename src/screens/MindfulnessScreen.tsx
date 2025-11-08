@@ -69,34 +69,6 @@ const MindfulnessScreen = () => {
 
   const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
 
-  // Acupressure points
-  const acupressurePoints = [
-    {
-      name: "Yintang (Third Eye)",
-      location: "Between the eyebrows",
-      benefit: "Reduces anxiety and calms the mind",
-      instruction: "Apply gentle pressure with your index finger for 30-60 seconds while breathing deeply.",
-    },
-    {
-      name: "Shen Men (Spirit Gate)",
-      location: "Upper part of the ear",
-      benefit: "Calms the nervous system",
-      instruction: "Gently press with your thumb for 30-60 seconds, breathe slowly.",
-    },
-    {
-      name: "Neiguan (Pericardium 6)",
-      location: "Inner forearm, 3 finger-widths from wrist crease",
-      benefit: "Relieves stress and anxiety",
-      instruction: "Apply gentle pressure between the tendons for 30-60 seconds.",
-    },
-    {
-      name: "Hegu (LI4)",
-      location: "Webbing between thumb and index finger",
-      benefit: "Eases tension and stress",
-      instruction: "Massage gently with circular motions for 30-60 seconds.",
-    },
-  ];
-
   // Breathwork effect
   useEffect(() => {
     if (!isBreathworkActive) return;
@@ -1272,56 +1244,6 @@ const MindfulnessScreen = () => {
                     These acupressure points work best with a little help! Ask a parent, guardian, or trusted adult to help you locate and gently press each point. They can guide your fingers to the right spot and help you remember to breathe deeply. Learning together makes it even more helpful for reducing stress and anxiety.
                   </Text>
                 </View>
-
-                {/* Acupressure Points */}
-                {acupressurePoints.map((point, index) => (
-                  <View
-                    key={index}
-                    className="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow"
-                    style={{ elevation: 2 }}
-                  >
-                    <View className="flex-row items-start gap-3 mb-2">
-                      <View
-                        className="w-8 h-8 rounded-full items-center justify-center"
-                        style={{ backgroundColor: theme.primary + "40" }}
-                      >
-                        <Ionicons name="hand-left" size={18} color={theme.primary} />
-                      </View>
-                      <View className="flex-1">
-                        <Text style={{ fontSize: 16, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                          {point.name}
-                        </Text>
-                        <Text style={{ fontSize: 13, fontFamily: "Poppins_500Medium", color: theme.primary, marginTop: 2 }}>
-                          📍 {point.location}
-                        </Text>
-                      </View>
-                    </View>
-
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        fontFamily: "Poppins_500Medium",
-                        color: theme.secondary,
-                        marginBottom: 6,
-                        marginLeft: 32,
-                      }}
-                    >
-                      ✓ {point.benefit}
-                    </Text>
-
-                    <Text
-                      style={{
-                        fontSize: 13,
-                        fontFamily: "Poppins_400Regular",
-                        color: theme.textSecondary,
-                        lineHeight: 18,
-                        marginLeft: 32,
-                      }}
-                    >
-                      {point.instruction}
-                    </Text>
-                  </View>
-                ))}
               </View>
             </Animated.View>
           )}
