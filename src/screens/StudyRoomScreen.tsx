@@ -46,6 +46,8 @@ const StudyRoomScreen = () => {
   const [showChat, setShowChat] = useState(true);
   const [customMinutes, setCustomMinutes] = useState("25");
   const [customSeconds, setCustomSeconds] = useState("0");
+  const [inviteSearchQuery, setInviteSearchQuery] = useState("");
+  const [inviteEmail, setInviteEmail] = useState("");
 
   const scrollViewRef = useRef<ScrollView>(null);
   const currentRoom = getCurrentRoom();
@@ -188,6 +190,34 @@ const StudyRoomScreen = () => {
       setShowInviteModal(false);
     }
   };
+
+  const handleInviteByEmail = () => {
+    if (!user || !currentRoom || !inviteEmail.trim()) {
+      toast.error("Please enter an email");
+      return;
+    }
+
+    // Create a mock user from email (in production, this would search a user database)
+    const mockUser = {
+      id: "invited_" + Date.now(),
+      username: inviteEmail.split("@")[0],
+      email: inviteEmail,
+    };
+
+    const success = inviteFriend(currentRoom.id, user.id, mockUser.id);
+    if (success) {
+      toast.success(`Invitation sent to ${mockUser.username}!`);
+      setInviteEmail("");
+      setShowInviteModal(false);
+    }
+  };
+
+  const filteredFriends = inviteSearchQuery
+    ? myFriends.filter((f) =>
+        f.friendUsername.toLowerCase().includes(inviteSearchQuery.toLowerCase()) ||
+        f.friendEmail?.toLowerCase().includes(inviteSearchQuery.toLowerCase())
+      )
+    : myFriends;
 
   const handleSetCustomTime = () => {
     if (!user || !currentRoom || !userIsHost) return;
@@ -513,91 +543,214 @@ const StudyRoomScreen = () => {
           <Modal visible={showInviteModal} transparent animationType="slide" onRequestClose={() => setShowInviteModal(false)}>
             <View style={{ flex: 1, backgroundColor: "rgba(0,0,0,0.5)", justifyContent: "flex-end" }}>
               <View style={{ backgroundColor: "white", borderTopLeftRadius: 24, borderTopRightRadius: 24, height: "80%" }}>
+                {/* Header */}
                 <View style={{ paddingHorizontal: 24, paddingTop: 20, paddingBottom: 16, borderBottomWidth: 1, borderBottomColor: "#F3F4F6" }}>
-                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between" }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
                     <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
-                      Invite Students
+                      Invite to Session
                     </Text>
-                    <Pressable onPress={() => setShowInviteModal(false)}>
+                    <Pressable onPress={() => {
+                      setShowInviteModal(false);
+                      setInviteSearchQuery("");
+                      setInviteEmail("");
+                    }}>
                       <Ionicons name="close" size={28} color={theme.textSecondary} />
                     </Pressable>
+                  </View>
+
+                  {/* Search Bar */}
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <View style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      backgroundColor: "#F3F4F6",
+                      borderRadius: 12,
+                      paddingHorizontal: 12,
+                      paddingVertical: 10,
+                    }}>
+                      <Ionicons name="search" size={20} color={theme.textSecondary} />
+                      <TextInput
+                        value={inviteSearchQuery}
+                        onChangeText={setInviteSearchQuery}
+                        placeholder="Search friends..."
+                        placeholderTextColor={theme.textSecondary}
+                        style={{
+                          flex: 1,
+                          marginLeft: 8,
+                          fontSize: 14,
+                          fontFamily: "Poppins_400Regular",
+                          color: theme.textPrimary,
+                        }}
+                      />
+                      {inviteSearchQuery.length > 0 && (
+                        <Pressable onPress={() => setInviteSearchQuery("")}>
+                          <Ionicons name="close-circle" size={20} color={theme.textSecondary} />
+                        </Pressable>
+                      )}
+                    </View>
                   </View>
                 </View>
 
                 <ScrollView style={{ paddingHorizontal: 24, paddingVertical: 16 }} contentContainerStyle={{ flexGrow: 1 }}>
-                  {myFriends.length === 0 ? (
-                    <View style={{ alignItems: "center", paddingVertical: 40 }}>
-                      <Ionicons name="people-outline" size={60} color={theme.textSecondary} />
-                      <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginTop: 12 }}>
-                        No students yet
+                  {/* Invite by Email Section */}
+                  <View style={{ marginBottom: 20 }}>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 10 }}>
+                      Invite by Email
+                    </Text>
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                      <TextInput
+                        value={inviteEmail}
+                        onChangeText={setInviteEmail}
+                        placeholder="student@example.com"
+                        placeholderTextColor={theme.textSecondary}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                        style={{
+                          flex: 1,
+                          backgroundColor: "#F3F4F6",
+                          borderRadius: 12,
+                          paddingHorizontal: 16,
+                          paddingVertical: 12,
+                          fontSize: 14,
+                          fontFamily: "Poppins_400Regular",
+                          color: theme.textPrimary,
+                        }}
+                      />
+                      <Pressable
+                        onPress={handleInviteByEmail}
+                        disabled={!inviteEmail.trim()}
+                        style={{
+                          paddingHorizontal: 20,
+                          paddingVertical: 12,
+                          borderRadius: 12,
+                          backgroundColor: inviteEmail.trim() ? theme.primary : "#E5E7EB",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: inviteEmail.trim() ? "white" : "#9CA3AF" }}>
+                          Send
+                        </Text>
+                      </Pressable>
+                    </View>
+                  </View>
+
+                  {/* Friends List */}
+                  {filteredFriends.length > 0 && (
+                    <View>
+                      <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
+                        Your Friends ({filteredFriends.length})
                       </Text>
-                      <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 6 }}>
-                        Add students to invite them
+                      {filteredFriends.map((friend) => {
+                        const friendUserId = friend.friendUserId === user?.id ? friend.userId : friend.friendUserId;
+                        const alreadyInvited = currentRoom.invitedFriendIds.includes(friendUserId);
+                        const alreadyInRoom = currentRoom.participantIds.includes(friendUserId);
+
+                        return (
+                          <View
+                            key={friend.id}
+                            style={{
+                              flexDirection: "row",
+                              alignItems: "center",
+                              paddingVertical: 12,
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#F3F4F6",
+                            }}
+                          >
+                            <View style={{
+                              width: 44,
+                              height: 44,
+                              borderRadius: 22,
+                              backgroundColor: theme.primary + "20",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}>
+                              <StudyPal
+                                animal={friend.friendAnimal}
+                                name=""
+                                animationsEnabled={false}
+                                size={28}
+                                showName={false}
+                                showMessage={false}
+                              />
+                            </View>
+                            <View style={{ flex: 1, marginLeft: 12 }}>
+                              <Text style={{ fontSize: 15, fontFamily: "Poppins_500Medium", color: theme.textPrimary }}>
+                                {friend.friendUsername}
+                              </Text>
+                              {friend.friendEmail && (
+                                <Text style={{ fontSize: 12, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 2 }}>
+                                  {friend.friendEmail}
+                                </Text>
+                              )}
+                            </View>
+                            {alreadyInRoom ? (
+                              <View style={{
+                                paddingHorizontal: 12,
+                                paddingVertical: 6,
+                                borderRadius: 8,
+                                backgroundColor: theme.secondary + "20",
+                              }}>
+                                <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.secondary }}>
+                                  In Session
+                                </Text>
+                              </View>
+                            ) : alreadyInvited ? (
+                              <View style={{
+                                paddingHorizontal: 12,
+                                paddingVertical: 6,
+                                borderRadius: 8,
+                                backgroundColor: "#F3F4F6",
+                              }}>
+                                <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.textSecondary }}>
+                                  Invited
+                                </Text>
+                              </View>
+                            ) : (
+                              <Pressable
+                                onPress={() => handleInviteFriend(friendUserId, friend.friendUsername)}
+                                style={{
+                                  paddingHorizontal: 16,
+                                  paddingVertical: 8,
+                                  borderRadius: 12,
+                                  backgroundColor: theme.primary,
+                                }}
+                              >
+                                <Text style={{ fontSize: 13, fontFamily: "Poppins_600SemiBold", color: "white" }}>
+                                  Invite
+                                </Text>
+                              </Pressable>
+                            )}
+                          </View>
+                        );
+                      })}
+                    </View>
+                  )}
+
+                  {/* Empty State */}
+                  {filteredFriends.length === 0 && !inviteSearchQuery && (
+                    <View style={{ alignItems: "center", paddingVertical: 40, paddingHorizontal: 32 }}>
+                      <Ionicons name="people-outline" size={60} color={theme.textSecondary} />
+                      <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginTop: 12, textAlign: "center" }}>
+                        No Friends Yet
+                      </Text>
+                      <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 6, textAlign: "center", lineHeight: 20 }}>
+                        Add friends in the Friends tab to invite them to study sessions, or invite someone by email above
                       </Text>
                     </View>
-                  ) : (
-                    myFriends.map((friend) => {
-                      const friendUserId = friend.friendUserId === user?.id ? friend.userId : friend.friendUserId;
-                      const alreadyInvited = currentRoom.invitedFriendIds.includes(friendUserId);
-                      const alreadyInRoom = currentRoom.participantIds.includes(friendUserId);
+                  )}
 
-                      return (
-                        <View
-                          key={friend.id}
-                          style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            paddingVertical: 12,
-                            borderBottomWidth: 1,
-                            borderBottomColor: "#F3F4F6",
-                          }}
-                        >
-                          <View style={{
-                            width: 44,
-                            height: 44,
-                            borderRadius: 22,
-                            backgroundColor: theme.primary + "20",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}>
-                            <StudyPal
-                              animal={friend.friendAnimal}
-                              name=""
-                              animationsEnabled={false}
-                              size={28}
-                              showName={false}
-                              showMessage={false}
-                            />
-                          </View>
-                          <Text style={{ flex: 1, marginLeft: 12, fontSize: 15, fontFamily: "Poppins_500Medium", color: theme.textPrimary }}>
-                            {friend.friendUsername}
-                          </Text>
-                          {alreadyInRoom ? (
-                            <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.secondary }}>
-                              In Session
-                            </Text>
-                          ) : alreadyInvited ? (
-                            <Text style={{ fontSize: 12, fontFamily: "Poppins_500Medium", color: theme.textSecondary }}>
-                              Invited
-                            </Text>
-                          ) : (
-                            <Pressable
-                              onPress={() => handleInviteFriend(friendUserId, friend.friendUsername)}
-                              style={{
-                                paddingHorizontal: 16,
-                                paddingVertical: 8,
-                                borderRadius: 12,
-                                backgroundColor: theme.primary,
-                              }}
-                            >
-                              <Text style={{ fontSize: 13, fontFamily: "Poppins_600SemiBold", color: "white" }}>
-                                Invite
-                              </Text>
-                            </Pressable>
-                          )}
-                        </View>
-                      );
-                    })
+                  {/* No Search Results */}
+                  {filteredFriends.length === 0 && inviteSearchQuery && myFriends.length > 0 && (
+                    <View style={{ alignItems: "center", paddingVertical: 40 }}>
+                      <Ionicons name="search-outline" size={60} color={theme.textSecondary} />
+                      <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginTop: 12 }}>
+                        No Results Found
+                      </Text>
+                      <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, marginTop: 6 }}>
+                        Try a different search term
+                      </Text>
+                    </View>
                   )}
                 </ScrollView>
               </View>
