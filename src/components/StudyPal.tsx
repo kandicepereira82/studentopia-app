@@ -255,7 +255,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
             false,
           );
           break;
-        case "chick":
+        case "duck":
           rotation.value = withRepeat(
             withSequence(
               withTiming(6, { duration: 500 }),
@@ -362,7 +362,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       penguin: "🐧",
       horse: "🐴",
       dog: "🐶",
-      chick: "🐥",
+      duck: "🦆",
       bear: "🐻",
       hedgehog: "🦔",
       tiger: "🐯",
@@ -483,7 +483,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       penguin: "#E0F4FF",  // Light blue
       horse: "#E8D4B8",    // Cream
       dog: "#E8D4B8",      // Cream
-      chick: "#FFEB3B",    // Yellow
+      duck: "#FFEB3B",     // Yellow
       bear: "#D4A574",     // Tan
       hedgehog: "#D2B48C", // Tan
       tiger: "#FFB347",    // Orange
@@ -793,7 +793,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
         accessoryRight: -0.1,
         accessorySize: 0.35,
       },
-      // Small animals - hamster, hedgehog, chipmunk, chick, frog, turtle, sloth
+      // Small animals - hamster, hedgehog, chipmunk, duck, frog, turtle, sloth
       hamster: {
         hairTop: -0.12,
         hairSize: 0.42,
@@ -833,7 +833,7 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
         accessoryRight: -0.08,
         accessorySize: 0.37,
       },
-      chick: {
+      duck: {
         hairTop: -0.12,
         hairSize: 0.42,
         glassesTop: 0.32,

@@ -25,7 +25,7 @@ export type StudyPalAnimal =
   | "penguin"
   | "horse"
   | "dog"
-  | "chick"
+  | "duck"
   | "bear"
   | "hedgehog"
   | "tiger"

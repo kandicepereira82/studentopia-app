@@ -12,7 +12,7 @@ export const getAnimalDisplayName = (animal: StudyPalAnimal): string => {
     penguin: "Penguin",
     horse: "Horse",
     dog: "Dog",
-    chick: "Chick",
+    duck: "Duck",
     bear: "Bear",
     hedgehog: "Hedgehog",
     tiger: "Tiger",
@@ -57,7 +57,7 @@ export const getAnimalImage = (animal: StudyPalAnimal) => {
  */
 export const ALL_ANIMALS: StudyPalAnimal[] = [
   "cat", "redpanda", "owl", "penguin", "horse",
-  "dog", "chick", "bear", "hedgehog", "tiger",
+  "dog", "duck", "bear", "hedgehog", "tiger",
   "turtle", "bunny", "giraffe", "pig", "alpaca",
   "lion", "frog", "koala", "sloth", "monkey",
   "hamster", "reindeer", "chipmunk", "elephant", "goldfish", "shark", "wolf",

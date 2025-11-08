@@ -18,7 +18,7 @@ export const ANIMAL_IMAGE_CACHE: Record<StudyPalAnimal, any> = {
   penguin: require("../../assets/studypal-pengin-1762621622666.png"),
   monkey: require("../../assets/image-1762363426.png"), // No new image available
   owl: require("../../assets/studypal-owl-1762621617085.png"),
-  chick: require("../../assets/studypal-duck-1762621558698.png"),
+  duck: require("../../assets/studypal-duck-1762621558698.png"),
   lion: require("../../assets/studypal-lion-1762621607920.png"),
   horse: require("../../assets/studypal-horse-1762621595067.png"),
   koala: require("../../assets/studypal-koala-1762621600957.png"),
