@@ -213,13 +213,16 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
 
     setLoading(true);
     try {
-      // In a real app, this would send a password reset email via backend
-      // For now, simulate the process
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const result = await authService.requestPasswordReset(resetEmail);
 
-      setResetEmailSent(true);
-      toast.success("Password reset link sent to your email!");
+      if (result.success) {
+        setResetEmailSent(true);
+        toast.success("Password reset instructions sent!");
+      } else {
+        toast.error(result.error || "Failed to send reset email");
+      }
     } catch (error) {
+      logError("AuthenticationScreen:handleForgotPassword", error);
       toast.error("Failed to send reset email");
     } finally {
       setLoading(false);
@@ -742,10 +745,16 @@ const AuthenticationScreen: React.FC<AuthenticationScreenProps> = ({ onComplete 
                     <Ionicons name="checkmark" size={50} color="white" />
                   </View>
                   <Text style={{ fontSize: 22, fontFamily: "Poppins_700Bold", color: "#1F2937", marginBottom: 12, textAlign: "center" }}>
-                    Check Your Email
+                    Password Reset Email Sent
                   </Text>
-                  <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: "#6B7280", textAlign: "center", lineHeight: 20, marginBottom: 24 }}>
-                    We have sent a password reset link to {resetEmail}
+                  <Text style={{ fontSize: 14, fontFamily: "Poppins_400Regular", color: "#6B7280", textAlign: "center", lineHeight: 20, marginBottom: 8 }}>
+                    We have sent password reset instructions to:
+                  </Text>
+                  <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: "#3B82F6", textAlign: "center", marginBottom: 16 }}>
+                    {resetEmail}
+                  </Text>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: "#9CA3AF", textAlign: "center", lineHeight: 18, marginBottom: 24 }}>
+                    Please check your inbox or spam folder. The reset link will expire in 15 minutes.
                   </Text>
                   <Pressable
                     onPress={() => setShowForgotPasswordModal(false)}
