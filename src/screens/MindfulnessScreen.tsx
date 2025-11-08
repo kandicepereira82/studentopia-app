@@ -3,6 +3,7 @@ import { View, Text, ScrollView, Pressable, Image } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
+import Slider from "@react-native-community/slider";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -15,6 +16,7 @@ import { THEMES } from "../utils/themes";
 import { ThemeConfig } from "../utils/themes";
 import StudyPal from "../components/StudyPal";
 import ClickableCompanion from "../components/ClickableCompanion";
+import { musicService, musicLibrary, MusicTrack } from "../services/musicService";
 
 type Tab = "breathwork" | "tips" | "acupressure";
 type BreathworkType = "box" | "46";
@@ -43,6 +45,15 @@ const MindfulnessScreen = () => {
   // Settings
   const [musicEnabled, setMusicEnabled] = useState(false);
   const [animationsEnabled, setAnimationsEnabled] = useState(true);
+
+  // Background Music state
+  const [selectedMusicTrack, setSelectedMusicTrack] = useState<MusicTrack | null>(null);
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [musicPosition, setMusicPosition] = useState(0);
+  const [musicDuration, setMusicDuration] = useState(0);
+  const [musicVolume, setMusicVolume] = useState(0.5);
+  const [isMusicLooping, setIsMusicLooping] = useState(true);
+  const [showMusicLibrary, setShowMusicLibrary] = useState(false);
 
   // Quotes
   const quotes = [
@@ -194,6 +205,72 @@ const MindfulnessScreen = () => {
     setBreathworkMinutes(Math.floor(remaining / 60));
     setBreathworkSeconds(remaining % 60);
   }, [breathworkElapsedTime, breathworkTotalTime]);
+
+  // Initialize music service
+  useEffect(() => {
+    musicService.initializeAudio();
+    musicService.setVolume(musicVolume);
+    musicService.setLooping(isMusicLooping);
+
+    // Update playback status every 500ms
+    const interval = setInterval(async () => {
+      const status = await musicService.getStatus();
+      if (status && status.isLoaded) {
+        setMusicPosition(status.positionMillis);
+        setMusicDuration(status.durationMillis || 0);
+        setIsMusicPlaying(status.isPlaying);
+      }
+    }, 500);
+
+    return () => {
+      clearInterval(interval);
+      musicService.unload();
+    };
+  }, []);
+
+  // Update music service volume and looping when changed
+  useEffect(() => {
+    musicService.setVolume(musicVolume);
+  }, [musicVolume]);
+
+  useEffect(() => {
+    musicService.setLooping(isMusicLooping);
+  }, [isMusicLooping]);
+
+  // Music control handlers
+  const handlePlayPauseMusic = async () => {
+    if (!selectedMusicTrack) {
+      setShowMusicLibrary(true);
+      return;
+    }
+
+    if (isMusicPlaying) {
+      await musicService.pause();
+    } else {
+      await musicService.play();
+    }
+  };
+
+  const handleStopMusic = async () => {
+    await musicService.stop();
+    setMusicPosition(0);
+  };
+
+  const handleSelectMusicTrack = async (track: MusicTrack) => {
+    setSelectedMusicTrack(track);
+    const success = await musicService.loadTrack(track);
+    if (success) {
+      await musicService.play();
+    }
+    setShowMusicLibrary(false);
+  };
+
+  const formatMusicTime = (millis: number) => {
+    const totalSeconds = Math.floor(millis / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
 
   const circleAnimatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: circleScale.value }],
@@ -569,6 +646,271 @@ const MindfulnessScreen = () => {
                     </Pressable>
                   </View>
                 </View>
+
+                {/* Background Music Player Section */}
+                <View
+                  className="bg-white dark:bg-gray-800 rounded-3xl p-6 shadow-lg"
+                  style={{ elevation: 5 }}
+                >
+                  <View className="flex-row items-center justify-between mb-4">
+                    <View className="flex-row items-center gap-2">
+                      <Ionicons name="musical-notes" size={24} color={theme.primary} />
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontFamily: "Poppins_700Bold",
+                          color: theme.textPrimary,
+                        }}
+                      >
+                        Background Music
+                      </Text>
+                    </View>
+                    <Pressable
+                      onPress={() => setIsMusicLooping(!isMusicLooping)}
+                      style={{
+                        paddingHorizontal: 12,
+                        paddingVertical: 6,
+                        borderRadius: 12,
+                        backgroundColor: isMusicLooping ? theme.primary + "20" : theme.textSecondary + "20",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 4,
+                      }}
+                    >
+                      <Ionicons
+                        name={isMusicLooping ? "repeat" : "repeat-outline"}
+                        size={16}
+                        color={isMusicLooping ? theme.primary : theme.textSecondary}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontFamily: "Poppins_600SemiBold",
+                          color: isMusicLooping ? theme.primary : theme.textSecondary,
+                        }}
+                      >
+                        Loop
+                      </Text>
+                    </Pressable>
+                  </View>
+
+                  {selectedMusicTrack ? (
+                    <>
+                      {/* Now Playing */}
+                      <View style={{ marginBottom: 16 }}>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontFamily: "Poppins_500Medium",
+                            color: theme.textSecondary,
+                            marginBottom: 4,
+                          }}
+                        >
+                          Now Playing
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontFamily: "Poppins_600SemiBold",
+                            color: theme.textPrimary,
+                          }}
+                        >
+                          {selectedMusicTrack.title}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontFamily: "Poppins_400Regular",
+                            color: theme.textSecondary,
+                            marginTop: 2,
+                          }}
+                        >
+                          {selectedMusicTrack.artist}
+                        </Text>
+                      </View>
+
+                      {/* Progress Bar */}
+                      <View style={{ marginBottom: 16 }}>
+                        <Slider
+                          style={{ width: "100%", height: 40 }}
+                          minimumValue={0}
+                          maximumValue={musicDuration}
+                          value={musicPosition}
+                          onSlidingComplete={async (value) => await musicService.seekTo(value)}
+                          minimumTrackTintColor={theme.primary}
+                          maximumTrackTintColor={theme.textSecondary + "30"}
+                          thumbTintColor={theme.primary}
+                        />
+                        <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              fontFamily: "Poppins_400Regular",
+                              color: theme.textSecondary,
+                            }}
+                          >
+                            {formatMusicTime(musicPosition)}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              fontFamily: "Poppins_400Regular",
+                              color: theme.textSecondary,
+                            }}
+                          >
+                            {formatMusicTime(musicDuration)}
+                          </Text>
+                        </View>
+                      </View>
+
+                      {/* Playback Controls */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 16,
+                          marginBottom: 16,
+                        }}
+                      >
+                        <Pressable
+                          onPress={handleStopMusic}
+                          style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            backgroundColor: theme.textSecondary + "20",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Ionicons name="stop" size={24} color={theme.textPrimary} />
+                        </Pressable>
+
+                        <Pressable
+                          onPress={handlePlayPauseMusic}
+                          style={{
+                            width: 64,
+                            height: 64,
+                            borderRadius: 32,
+                            backgroundColor: theme.primary,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            shadowColor: "#000",
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowOpacity: 0.2,
+                            shadowRadius: 8,
+                            elevation: 4,
+                          }}
+                        >
+                          <Ionicons
+                            name={isMusicPlaying ? "pause" : "play"}
+                            size={32}
+                            color="white"
+                          />
+                        </Pressable>
+
+                        <Pressable
+                          onPress={() => setShowMusicLibrary(true)}
+                          style={{
+                            width: 48,
+                            height: 48,
+                            borderRadius: 24,
+                            backgroundColor: theme.secondary + "20",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Ionicons name="list" size={24} color={theme.secondary} />
+                        </Pressable>
+                      </View>
+
+                      {/* Volume Control */}
+                      <View style={{ marginTop: 8 }}>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            marginBottom: 8,
+                          }}
+                        >
+                          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                            <Ionicons name="volume-medium" size={18} color={theme.textSecondary} />
+                            <Text
+                              style={{
+                                fontSize: 12,
+                                fontFamily: "Poppins_500Medium",
+                                color: theme.textSecondary,
+                              }}
+                            >
+                              Volume
+                            </Text>
+                          </View>
+                          <Text
+                            style={{
+                              fontSize: 12,
+                              fontFamily: "Poppins_600SemiBold",
+                              color: theme.primary,
+                            }}
+                          >
+                            {Math.round(musicVolume * 100)}%
+                          </Text>
+                        </View>
+                        <Slider
+                          style={{ width: "100%", height: 32 }}
+                          minimumValue={0}
+                          maximumValue={1}
+                          value={musicVolume}
+                          onValueChange={setMusicVolume}
+                          minimumTrackTintColor={theme.secondary}
+                          maximumTrackTintColor={theme.textSecondary + "30"}
+                          thumbTintColor={theme.secondary}
+                        />
+                      </View>
+                    </>
+                  ) : (
+                    <Pressable
+                      onPress={() => setShowMusicLibrary(true)}
+                      style={{
+                        padding: 20,
+                        borderRadius: 16,
+                        backgroundColor: theme.primary + "10",
+                        alignItems: "center",
+                        borderWidth: 2,
+                        borderColor: theme.primary + "30",
+                        borderStyle: "dashed",
+                      }}
+                    >
+                      <Ionicons
+                        name="add-circle-outline"
+                        size={40}
+                        color={theme.primary}
+                        style={{ marginBottom: 12 }}
+                      />
+                      <Text
+                        style={{
+                          fontSize: 16,
+                          fontFamily: "Poppins_600SemiBold",
+                          color: theme.primary,
+                        }}
+                      >
+                        Select Calming Music
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 12,
+                          fontFamily: "Poppins_400Regular",
+                          color: theme.textSecondary,
+                          marginTop: 4,
+                          textAlign: "center",
+                        }}
+                      >
+                        Add background music to enhance your mindfulness session
+                      </Text>
+                    </Pressable>
+                  )}
+                </View>
               </View>
             </Animated.View>
           )}
@@ -759,6 +1101,142 @@ const MindfulnessScreen = () => {
 
           <View className="h-8" />
         </ScrollView>
+
+        {/* Music Library Modal */}
+        {showMusicLibrary && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.5)",
+              justifyContent: "center",
+              alignItems: "center",
+              padding: 24,
+            }}
+          >
+            <View
+              style={{
+                backgroundColor: "white",
+                borderRadius: 24,
+                padding: 24,
+                width: "100%",
+                maxHeight: "80%",
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: 16,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontFamily: "Poppins_700Bold",
+                    color: theme.textPrimary,
+                  }}
+                >
+                  Calming Music
+                </Text>
+                <Pressable onPress={() => setShowMusicLibrary(false)}>
+                  <Ionicons name="close" size={28} color={theme.textPrimary} />
+                </Pressable>
+              </View>
+
+              <ScrollView showsVerticalScrollIndicator={false}>
+                {musicLibrary.map((track) => (
+                  <Pressable
+                    key={track.id}
+                    onPress={() => handleSelectMusicTrack(track)}
+                    style={{
+                      padding: 16,
+                      borderRadius: 16,
+                      backgroundColor:
+                        selectedMusicTrack?.id === track.id
+                          ? theme.primary + "20"
+                          : theme.textSecondary + "10",
+                      marginBottom: 12,
+                    }}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                      }}
+                    >
+                      <View style={{ flex: 1 }}>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            fontFamily: "Poppins_600SemiBold",
+                            color: theme.textPrimary,
+                            marginBottom: 4,
+                          }}
+                        >
+                          {track.title}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 12,
+                            fontFamily: "Poppins_400Regular",
+                            color: theme.textSecondary,
+                          }}
+                        >
+                          {track.artist}
+                        </Text>
+                        <View
+                          style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            gap: 8,
+                            marginTop: 6,
+                          }}
+                        >
+                          <View
+                            style={{
+                              paddingHorizontal: 8,
+                              paddingVertical: 2,
+                              borderRadius: 8,
+                              backgroundColor: theme.secondary + "20",
+                            }}
+                          >
+                            <Text
+                              style={{
+                                fontSize: 10,
+                                fontFamily: "Poppins_500Medium",
+                                color: theme.secondary,
+                              }}
+                            >
+                              {track.mood.charAt(0).toUpperCase() + track.mood.slice(1)}
+                            </Text>
+                          </View>
+                          <Text
+                            style={{
+                              fontSize: 10,
+                              fontFamily: "Poppins_400Regular",
+                              color: theme.textSecondary,
+                            }}
+                          >
+                            {Math.floor(track.duration / 60)}:{String(track.duration % 60).padStart(2, "0")}
+                          </Text>
+                        </View>
+                      </View>
+                      {selectedMusicTrack?.id === track.id && (
+                        <Ionicons name="checkmark-circle" size={24} color={theme.primary} />
+                      )}
+                    </View>
+                  </Pressable>
+                ))}
+              </ScrollView>
+            </View>
+          </View>
+        )}
       </LinearGradient>
     </SafeAreaView>
   );
