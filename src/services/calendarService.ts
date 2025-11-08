@@ -61,7 +61,7 @@ export const getOrCreateStudentopiaCalendar = async (childName: string): Promise
     const defaultCalendarSource =
       Platform.OS === "ios"
         ? await getDefaultCalendarSource()
-        : { isLocalAccount: true, name: "Studentopia", type: Calendar.SourceType.LOCAL };
+        : await getGoogleCalendarSource();
 
     if (!defaultCalendarSource) {
       console.error("No default calendar source available");
@@ -135,6 +135,45 @@ const getDefaultCalendarSource = async () => {
 };
 
 /**
+ * Get Google Calendar source (Android)
+ * Tries to find a Google account calendar source for proper sync
+ */
+const getGoogleCalendarSource = async () => {
+  try {
+    const sources = await Calendar.getSourcesAsync();
+
+    // Try to find Google account first
+    const googleSource = sources.find(
+      (source) =>
+        source.name?.toLowerCase().includes("google") ||
+        source.type === "com.google"
+    );
+
+    if (googleSource) {
+      console.log("Found Google Calendar source:", googleSource.name);
+      return googleSource;
+    }
+
+    // Fallback to any non-local account
+    const cloudSource = sources.find(
+      (source) => !source.isLocalAccount
+    );
+
+    if (cloudSource) {
+      console.log("Found cloud calendar source:", cloudSource.name);
+      return cloudSource;
+    }
+
+    // Last resort: use first available source
+    console.warn("No Google or cloud calendar found, using first available source");
+    return sources[0] || null;
+  } catch (error) {
+    console.error("Error getting Google calendar source:", error);
+    return null;
+  }
+};
+
+/**
  * Add a task to the calendar
  */
 export const addTaskToCalendar = async (
@@ -160,7 +199,7 @@ export const addTaskToCalendar = async (
       endDate,
       notes: taskDescription,
       alarms: [{ relativeOffset: -reminderMinutes }],
-      timeZone: "GMT",
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
     return eventId;
@@ -195,7 +234,7 @@ export const addStudySessionToCalendar = async (
       endDate,
       notes: notes || "Studentopia study session",
       alarms: [{ relativeOffset: -5 }], // 5 minutes before
-      timeZone: "GMT",
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     });
 
     return eventId;
