@@ -22,6 +22,19 @@ import {
 } from "../services/calendarService";
 import CustomAlert from "../components/CustomAlert";
 import { useGlobalToast } from "../context/ToastContext";
+import {
+  exportAllData,
+  shareExportedData,
+  deleteExportedFile,
+  getLastExportTimestamp,
+  getDataSizeEstimate,
+} from "../services/exportService";
+import {
+  pickImportFile,
+  importData,
+  previewImportData,
+  ImportStrategy,
+} from "../services/importService";
 
 type SettingsScreenNavigationProp = NativeStackNavigationProp<ProfileStackParamList, "Settings">;
 
@@ -55,6 +68,12 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
   const [availableCalendars, setAvailableCalendars] = useState<number>(0);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [showCalendarInstructions, setShowCalendarInstructions] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
+  const [lastBackupDate, setLastBackupDate] = useState<Date | null>(null);
+  const [dataSizeKB, setDataSizeKB] = useState<number>(0);
+  const [showImportOptions, setShowImportOptions] = useState(false);
+  const [importFileData, setImportFileData] = useState<any>(null);
 
   // Convert 24-hour format to 12-hour format
   const userHour24 = user?.dailyReminderTime?.hour || 9;
@@ -86,7 +105,15 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
   useEffect(() => {
     checkPermissions();
     loadScheduledNotifications();
+    loadBackupInfo();
   }, []);
+
+  const loadBackupInfo = async () => {
+    const lastBackup = await getLastExportTimestamp();
+    setLastBackupDate(lastBackup);
+    const size = getDataSizeEstimate();
+    setDataSizeKB(size);
+  };
 
   const checkPermissions = async () => {
     const calPerms = await hasCalendarPermissions();
@@ -252,6 +279,85 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
     );
   };
 
+  const handleExportData = async () => {
+    try {
+      setIsExporting(true);
+
+      const fileUri = await exportAllData();
+      if (!fileUri) {
+        toast.show("Failed to export data. Please try again.", "error");
+        return;
+      }
+
+      // Share the file
+      const shared = await shareExportedData(fileUri);
+      if (shared) {
+        await loadBackupInfo();
+        toast.show("Data exported successfully!", "success");
+
+        // Clean up the file after sharing
+        setTimeout(async () => {
+          await deleteExportedFile(fileUri);
+        }, 5000);
+      } else {
+        toast.show("Export completed but sharing failed", "error");
+      }
+    } catch (error) {
+      console.error("Export error:", error);
+      toast.show("Failed to export data", "error");
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const handleImportData = async () => {
+    try {
+      setIsImporting(true);
+
+      const fileData = await pickImportFile();
+      if (!fileData) {
+        setIsImporting(false);
+        return; // User cancelled
+      }
+
+      // Preview import data
+      setImportFileData(fileData);
+      setShowImportOptions(true);
+    } catch (error) {
+      console.error("Import error:", error);
+      toast.show("Invalid backup file. Please select a valid Studentopia backup.", "error");
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleConfirmImport = async (strategy: ImportStrategy) => {
+    try {
+      if (!importFileData) return;
+
+      setShowImportOptions(false);
+      setIsImporting(true);
+
+      const result = await importData(importFileData, strategy);
+
+      if (result.success) {
+        await loadBackupInfo();
+        toast.show(
+          `${result.message}! ${result.itemsImported?.tasks || 0} tasks, ${result.itemsImported?.groups || 0} groups, ${result.itemsImported?.friends || 0} friends imported.`,
+          "success"
+        );
+      } else {
+        toast.show(result.message, "error");
+      }
+    } catch (error) {
+      console.error("Import confirm error:", error);
+      toast.show("Failed to import data", "error");
+    } finally {
+      setIsImporting(false);
+      setImportFileData(null);
+    }
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: "#E8F5E9" }}>
       <SafeAreaView style={{ flex: 1 }}>
@@ -316,6 +422,92 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
                   thumbColor="#FFFFFF"
                 />
               </View>
+            </View>
+          </View>
+
+          {/* Backup & Restore Section */}
+          <View className="mb-6">
+            <Text className="text-lg font-bold mb-3" style={{ color: theme.textPrimary }}>
+              Backup & Restore
+            </Text>
+
+            {/* Data Size Info */}
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                    style={{ backgroundColor: theme.primary + "20" }}
+                  >
+                    <Ionicons name="cloud-outline" size={20} color={theme.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                      Your Data Size
+                    </Text>
+                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                      {dataSizeKB < 1024 ? `${dataSizeKB} KB` : `${(dataSizeKB / 1024).toFixed(2)} MB`}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Last Backup Info */}
+            {lastBackupDate && (
+              <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                      style={{ backgroundColor: theme.secondary + "20" }}
+                    >
+                      <Ionicons name="time-outline" size={20} color={theme.secondary} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                        Last Backup
+                      </Text>
+                      <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                        {lastBackupDate.toLocaleDateString()} at {lastBackupDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Export Data Button */}
+            <Pressable
+              onPress={handleExportData}
+              disabled={isExporting}
+              className="rounded-2xl p-4 mb-3 flex-row items-center justify-center"
+              style={{ backgroundColor: isExporting ? theme.textSecondary + "30" : theme.primary }}
+            >
+              <Ionicons name={isExporting ? "hourglass-outline" : "download-outline"} size={20} color="white" />
+              <Text className="text-white font-semibold ml-2">
+                {isExporting ? "Exporting..." : "Export Data"}
+              </Text>
+            </Pressable>
+
+            {/* Import Data Button */}
+            <Pressable
+              onPress={handleImportData}
+              disabled={isImporting}
+              className="rounded-2xl p-4 flex-row items-center justify-center"
+              style={{ backgroundColor: isImporting ? theme.textSecondary + "30" : theme.secondary }}
+            >
+              <Ionicons name={isImporting ? "hourglass-outline" : "cloud-upload-outline"} size={20} color="white" />
+              <Text className="text-white font-semibold ml-2">
+                {isImporting ? "Importing..." : "Import Data"}
+              </Text>
+            </Pressable>
+
+            {/* Info Text */}
+            <View className="mt-3 rounded-2xl p-3" style={{ backgroundColor: theme.primary + "10" }}>
+              <Text className="text-xs text-center" style={{ color: theme.textSecondary }}>
+                Export your data to back it up or transfer to another device. Import a backup file to restore your data.
+              </Text>
             </View>
           </View>
 
@@ -1175,6 +1367,128 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
                 </Text>
               </Pressable>
             </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Import Options Modal */}
+      <Modal
+        visible={showImportOptions}
+        transparent
+        animationType="slide"
+        onRequestClose={() => {
+          setShowImportOptions(false);
+          setImportFileData(null);
+        }}
+      >
+        <View style={{ flex: 1, justifyContent: "flex-end", backgroundColor: "rgba(0, 0, 0, 0.5)" }}>
+          <View
+            style={{
+              backgroundColor: theme.cardBackground,
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              padding: 24,
+              paddingBottom: 32,
+            }}
+          >
+            {/* Header */}
+            <View className="flex-row items-center justify-between mb-6">
+              <Text style={{ fontSize: 20, fontFamily: "Poppins_700Bold", color: theme.textPrimary }}>
+                Import Backup
+              </Text>
+              <Pressable
+                onPress={() => {
+                  setShowImportOptions(false);
+                  setImportFileData(null);
+                }}
+              >
+                <Ionicons name="close" size={24} color={theme.textPrimary} />
+              </Pressable>
+            </View>
+
+            {/* Preview Data */}
+            {importFileData && (
+              <View className="mb-6">
+                <Text style={{ fontSize: 14, color: theme.textSecondary, marginBottom: 12 }}>
+                  Backup contains:
+                </Text>
+
+                <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.primary + "10" }}>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text style={{ fontSize: 13, color: theme.textPrimary }}>Tasks</Text>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_700Bold", color: theme.primary }}>
+                      {previewImportData(importFileData).itemCounts.tasks}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text style={{ fontSize: 13, color: theme.textPrimary }}>Groups</Text>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_700Bold", color: theme.primary }}>
+                      {previewImportData(importFileData).itemCounts.groups}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text style={{ fontSize: 13, color: theme.textPrimary }}>Friends</Text>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_700Bold", color: theme.primary }}>
+                      {previewImportData(importFileData).itemCounts.friends}
+                    </Text>
+                  </View>
+                  <View className="flex-row items-center justify-between">
+                    <Text style={{ fontSize: 13, color: theme.textPrimary }}>Achievements</Text>
+                    <Text style={{ fontSize: 14, fontFamily: "Poppins_700Bold", color: theme.primary }}>
+                      {previewImportData(importFileData).itemCounts.achievements}
+                    </Text>
+                  </View>
+                </View>
+
+                <Text style={{ fontSize: 12, color: theme.textSecondary, textAlign: "center", marginBottom: 16 }}>
+                  Exported: {previewImportData(importFileData).exportedAt.toLocaleDateString()} at{" "}
+                  {previewImportData(importFileData).exportedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                </Text>
+              </View>
+            )}
+
+            {/* Import Strategy */}
+            <Text style={{ fontSize: 14, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary, marginBottom: 12 }}>
+              Choose import method:
+            </Text>
+
+            {/* Replace Option */}
+            <Pressable
+              onPress={() => handleConfirmImport("replace")}
+              className="rounded-2xl p-4 mb-3"
+              style={{ backgroundColor: "#EF444420", borderWidth: 2, borderColor: "#EF4444" }}
+            >
+              <View className="flex-row items-start">
+                <Ionicons name="warning" size={24} color="#EF4444" style={{ marginRight: 12 }} />
+                <View className="flex-1">
+                  <Text style={{ fontSize: 15, fontFamily: "Poppins_600SemiBold", color: "#EF4444", marginBottom: 4 }}>
+                    Replace All Data
+                  </Text>
+                  <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                    Deletes your current data and replaces it with the backup. Cannot be undone.
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
+
+            {/* Merge Option */}
+            <Pressable
+              onPress={() => handleConfirmImport("merge")}
+              className="rounded-2xl p-4"
+              style={{ backgroundColor: theme.primary + "20", borderWidth: 2, borderColor: theme.primary }}
+            >
+              <View className="flex-row items-start">
+                <Ionicons name="git-merge" size={24} color={theme.primary} style={{ marginRight: 12 }} />
+                <View className="flex-1">
+                  <Text style={{ fontSize: 15, fontFamily: "Poppins_600SemiBold", color: theme.primary, marginBottom: 4 }}>
+                    Merge Data
+                  </Text>
+                  <Text style={{ fontSize: 12, color: theme.textSecondary }}>
+                    Keeps your current data and adds new items from the backup. Safer option.
+                  </Text>
+                </View>
+              </View>
+            </Pressable>
           </View>
         </View>
       </Modal>
