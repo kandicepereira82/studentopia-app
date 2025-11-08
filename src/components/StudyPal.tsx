@@ -378,6 +378,14 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       pig: require("../../assets/image-1762363420.png"),
       shark: require("../../assets/studypal - shark-1762573986744.png"),
       wolf: require("../../assets/studypal - Wolf-1762618882290.png"),
+      zebra: require("../../assets/studypal-zebra-1762619358695.png"),
+      snake: require("../../assets/studypal-snake-1762619345881.png"),
+      rooster: require("../../assets/studypal-Rooster-1762619337829.png"),
+      otter: require("../../assets/studypal-otter-1762619312827.png"),
+      lovebird: require("../../assets/studypal-love bird-1762619299842.png"),
+      lizard: require("../../assets/studypal-Lizard-1762619293233.png"),
+      dinosaur: require("../../assets/studypal-dinosaur-1762619240784.png"),
+      arcticfox: require("../../assets/studypal- Arctic fox-1762619203926.png"),
     };
     return imageMap[animal] || imageMap.cat;
   };
@@ -411,6 +419,14 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       goldfish: "🐠",
       shark: "🦈",
       wolf: "🐺",
+      zebra: "🦓",
+      snake: "🐍",
+      rooster: "🐓",
+      otter: "🦦",
+      lovebird: "🦜",
+      lizard: "🦎",
+      dinosaur: "🦖",
+      arcticfox: "🦊",
     };
     return emojiMap[animal] || "🐱";
   };
@@ -524,6 +540,14 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
       goldfish: "#FFA500", // Orange
       shark: "#4682B4",    // Steel blue
       wolf: "#808080",     // Gray
+      zebra: "#F0F0F0",    // Light gray with black stripes
+      snake: "#8FBC8F",    // Dark sea green
+      rooster: "#DC143C",  // Crimson red
+      otter: "#8B4513",    // Saddle brown
+      lovebird: "#00CED1", // Dark turquoise
+      lizard: "#9ACD32",   // Yellow green
+      dinosaur: "#556B2F", // Dark olive green
+      arcticfox: "#FFFFFF", // White
     };
     return colorMap[animal] || "#FFE5B4";
   };
@@ -952,6 +976,111 @@ const StudyPal: React.FC<StudyPalProps> = React.memo(({
         accessorySize: 0.37,
       },
       wolf: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      // New animals
+      zebra: {
+        hairTop: -0.2,
+        hairSize: 0.4,
+        glassesTop: 0.25,
+        glassesSize: 0.45,
+        headphonesTop: 0.0,
+        headphonesSize: 0.55,
+        outfitBottom: 0.12,
+        outfitSize: 0.4,
+        accessoryBottom: 0.18,
+        accessoryRight: -0.12,
+        accessorySize: 0.32,
+      },
+      snake: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      rooster: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      otter: {
+        hairTop: -0.15,
+        hairSize: 0.4,
+        glassesTop: 0.3,
+        glassesSize: 0.45,
+        headphonesTop: 0.05,
+        headphonesSize: 0.55,
+        outfitBottom: 0.1,
+        outfitSize: 0.4,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.35,
+      },
+      lovebird: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      lizard: {
+        hairTop: -0.12,
+        hairSize: 0.42,
+        glassesTop: 0.32,
+        glassesSize: 0.47,
+        headphonesTop: 0.08,
+        headphonesSize: 0.57,
+        outfitBottom: 0.08,
+        outfitSize: 0.42,
+        accessoryBottom: 0.13,
+        accessoryRight: -0.08,
+        accessorySize: 0.37,
+      },
+      dinosaur: {
+        hairTop: -0.18,
+        hairSize: 0.4,
+        glassesTop: 0.28,
+        glassesSize: 0.5,
+        headphonesTop: 0.03,
+        headphonesSize: 0.6,
+        outfitBottom: 0.1,
+        outfitSize: 0.48,
+        accessoryBottom: 0.15,
+        accessoryRight: -0.1,
+        accessorySize: 0.36,
+      },
+      arcticfox: {
         hairTop: -0.15,
         hairSize: 0.4,
         glassesTop: 0.3,

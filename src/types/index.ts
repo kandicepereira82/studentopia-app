@@ -45,7 +45,15 @@ export type StudyPalAnimal =
   | "elephant"
   | "goldfish"
   | "shark"
-  | "wolf";
+  | "wolf"
+  | "zebra"
+  | "snake"
+  | "rooster"
+  | "otter"
+  | "lovebird"
+  | "lizard"
+  | "dinosaur"
+  | "arcticfox";
 export type StudyPalMood = "happy" | "focused" | "celebrating" | "relaxed" | "neutral";
 export type TimerMode = "study" | "break";
 export type AIChatMode = "chat" | "grammar";

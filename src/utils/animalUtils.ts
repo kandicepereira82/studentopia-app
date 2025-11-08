@@ -32,6 +32,14 @@ export const getAnimalDisplayName = (animal: StudyPalAnimal): string => {
     goldfish: "Goldfish",
     shark: "Shark",
     wolf: "Wolf",
+    zebra: "Zebra",
+    snake: "Snake",
+    rooster: "Rooster",
+    otter: "Otter",
+    lovebird: "Love Bird",
+    lizard: "Lizard",
+    dinosaur: "Dinosaur",
+    arcticfox: "Arctic Fox",
   };
   return nameMap[animal] || animal;
 };
@@ -68,6 +76,14 @@ export const getAnimalImage = (animal: StudyPalAnimal) => {
     pig: require("../../assets/image-1762363420.png"),
     shark: require("../../assets/studypal - shark-1762573986744.png"),
     wolf: require("../../assets/studypal - Wolf-1762618882290.png"),
+    zebra: require("../../assets/studypal-zebra-1762619358695.png"),
+    snake: require("../../assets/studypal-snake-1762619345881.png"),
+    rooster: require("../../assets/studypal-Rooster-1762619337829.png"),
+    otter: require("../../assets/studypal-otter-1762619312827.png"),
+    lovebird: require("../../assets/studypal-love bird-1762619299842.png"),
+    lizard: require("../../assets/studypal-Lizard-1762619293233.png"),
+    dinosaur: require("../../assets/studypal-dinosaur-1762619240784.png"),
+    arcticfox: require("../../assets/studypal- Arctic fox-1762619203926.png"),
   };
   return imageMap[animal] || imageMap.cat;
 };
@@ -80,5 +96,6 @@ export const ALL_ANIMALS: StudyPalAnimal[] = [
   "dog", "chick", "bear", "hedgehog", "tiger",
   "turtle", "bunny", "giraffe", "pig", "alpaca",
   "lion", "frog", "koala", "sloth", "monkey",
-  "hamster", "reindeer", "chipmunk", "elephant", "goldfish", "shark", "wolf"
+  "hamster", "reindeer", "chipmunk", "elephant", "goldfish", "shark", "wolf",
+  "zebra", "snake", "rooster", "otter", "lovebird", "lizard", "dinosaur", "arcticfox"
 ];
