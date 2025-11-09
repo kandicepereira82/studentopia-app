@@ -20,46 +20,38 @@ export interface AudioError {
 
 // Curated list of calming classical music
 // Using local assets for music files
+// Note: Some MP3 files may have encoding issues with iOS AVFoundation
+// Using simpler audio files for better compatibility
 export const musicLibrary: MusicTrack[] = [
   {
-    id: "chopin-nocturne",
-    title: "Chopin Nocturne",
-    artist: "Chopin",
-    duration: 300,
-    mood: "peaceful",
-    genre: "classical",
-    pixabayUrl: "",
-    localFile: require("../../assets/chopin-nocturne-op-9-no-2-slowed-rainmp3.mp3"),
-  },
-  {
-    id: "meditation-432hz",
-    title: "432 Hz Meditation",
-    artist: "Healing Frequencies",
-    duration: 200,
+    id: "ocean-waves",
+    title: "Ocean Waves",
+    artist: "Nature Sounds",
+    duration: 180,
     mood: "peaceful",
     genre: "ambient",
     pixabayUrl: "",
-    localFile: require("../../assets/432-hz-meditation-short.mp3"),
+    localFile: require("../../assets/ocean-waves-376898.mp3"),
   },
   {
-    id: "release-negative-energy",
-    title: "Release Negative Energy",
-    artist: "Healing Frequencies",
-    duration: 300,
-    mood: "uplifting",
+    id: "wind-chime",
+    title: "Wind Chime",
+    artist: "Nature Sounds",
+    duration: 120,
+    mood: "calming",
     genre: "ambient",
     pixabayUrl: "",
-    localFile: require("../../assets/432-528-hz-release-negative-energy-.mp3"),
+    localFile: require("../../assets/wind-chime-small-64660.mp3"),
   },
   {
-    id: "bach-chopin-forest",
-    title: "Bach Talking to Chopin in the Forest",
-    artist: "Classical Composition",
-    duration: 360,
+    id: "gong",
+    title: "Meditation Gong",
+    artist: "Zen Sounds",
+    duration: 90,
     mood: "peaceful",
-    genre: "classical",
+    genre: "ambient",
     pixabayUrl: "",
-    localFile: require("../../assets/bach-talking-to-chopin-in-the-forest.mp3"),
+    localFile: require("../../assets/gong-79191.mp3"),
   },
 ];
 
