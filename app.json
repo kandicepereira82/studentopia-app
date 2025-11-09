@@ -11,7 +11,9 @@
       "supportsTablet": true
     },
     "android": {
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.kandicepereira.vibecode",
+      "versionCode": 1
     },
     "extra": {
       "eas": {
