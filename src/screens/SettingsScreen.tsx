@@ -503,10 +503,43 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
               </Text>
             </Pressable>
 
-            {/* Info Text */}
+            {/* Info Text - Export Instructions */}
             <View className="mt-3 rounded-2xl p-3" style={{ backgroundColor: theme.primary + "10" }}>
-              <Text className="text-xs text-center" style={{ color: theme.textSecondary }}>
-                Export your data to back it up or transfer to another device. Import a backup file to restore your data.
+              <View className="flex-row items-start mb-2">
+                <Ionicons name="download-outline" size={16} color={theme.primary} style={{ marginRight: 8, marginTop: 2 }} />
+                <View className="flex-1">
+                  <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                    Export/Backup:
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                    Creates a backup file with all your tasks, groups, friends, and stats. Save to email, iCloud, Google Drive, or any storage you choose.
+                  </Text>
+                </View>
+              </View>
+
+              <View className="flex-row items-start">
+                <Ionicons name="cloud-upload-outline" size={16} color={theme.secondary} style={{ marginRight: 8, marginTop: 2 }} />
+                <View className="flex-1">
+                  <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                    Import/Restore:
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                    Restore from a backup file. Choose &quot;Merge&quot; to keep current data or &quot;Replace All&quot; for complete restore.
+                  </Text>
+                </View>
+              </View>
+            </View>
+
+            {/* Use Cases */}
+            <View className="mt-2 rounded-2xl p-3" style={{ backgroundColor: theme.secondary + "10" }}>
+              <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                When to use:
+              </Text>
+              <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                • Before getting a new device{"\n"}
+                • Weekly backups for safety{"\n"}
+                • Recovering from data loss{"\n"}
+                • Switching between devices
               </Text>
             </View>
           </View>
