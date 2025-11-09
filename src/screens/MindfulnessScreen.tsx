@@ -1244,6 +1244,31 @@ const MindfulnessScreen = () => {
                     </Text>
                   </View>
                 </View>
+
+                {/* Reference Image */}
+                <View style={{
+                  backgroundColor: theme.cardBackground,
+                  borderRadius: 16,
+                  padding: 16,
+                  gap: 12,
+                }}>
+                  <Text style={{ fontSize: 16, fontFamily: "Poppins_600SemiBold", color: theme.textPrimary }}>
+                    Reference Photo
+                  </Text>
+                  <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 20 }}>
+                    Use this image to help you find the 5 acupressure points:
+                  </Text>
+                  <Image
+                    source={{ uri: "https://images.composerapi.com/019a4f25-c460-7470-8b3b-ce01c08bd9b9/assets/images/add_a_subheading_1762648912924_019a660f-f41c-768d-88d4-4d54a4363f6c.png" }}
+                    style={{
+                      width: "100%",
+                      height: 300,
+                      borderRadius: 12,
+                      backgroundColor: theme.textSecondary + "10",
+                    }}
+                    resizeMode="contain"
+                  />
+                </View>
               </View>
             </Animated.View>
           )}
