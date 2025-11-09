@@ -74,6 +74,7 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
   const [dataSizeKB, setDataSizeKB] = useState<number>(0);
   const [showImportOptions, setShowImportOptions] = useState(false);
   const [importFileData, setImportFileData] = useState<any>(null);
+  const [showBackupInstructions, setShowBackupInstructions] = useState(false);
 
   // Convert 24-hour format to 12-hour format
   const userHour24 = user?.dailyReminderTime?.hour || 9;
@@ -422,125 +423,6 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
                   thumbColor="#FFFFFF"
                 />
               </View>
-            </View>
-          </View>
-
-          {/* Backup & Restore Section */}
-          <View className="mb-6">
-            <Text className="text-lg font-bold mb-3" style={{ color: theme.textPrimary }}>
-              Backup & Restore
-            </Text>
-
-            {/* Data Size Info */}
-            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
-              <View className="flex-row items-center justify-between">
-                <View className="flex-row items-center flex-1">
-                  <View
-                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                    style={{ backgroundColor: theme.primary + "20" }}
-                  >
-                    <Ionicons name="cloud-outline" size={20} color={theme.primary} />
-                  </View>
-                  <View className="flex-1">
-                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
-                      Your Data Size
-                    </Text>
-                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
-                      {dataSizeKB < 1024 ? `${dataSizeKB} KB` : `${(dataSizeKB / 1024).toFixed(2)} MB`}
-                    </Text>
-                  </View>
-                </View>
-              </View>
-            </View>
-
-            {/* Last Backup Info */}
-            {lastBackupDate && (
-              <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-row items-center flex-1">
-                    <View
-                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
-                      style={{ backgroundColor: theme.secondary + "20" }}
-                    >
-                      <Ionicons name="time-outline" size={20} color={theme.secondary} />
-                    </View>
-                    <View className="flex-1">
-                      <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
-                        Last Backup
-                      </Text>
-                      <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
-                        {lastBackupDate.toLocaleDateString()} at {lastBackupDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-              </View>
-            )}
-
-            {/* Export Data Button */}
-            <Pressable
-              onPress={handleExportData}
-              disabled={isExporting}
-              className="rounded-2xl p-4 mb-3 flex-row items-center justify-center"
-              style={{ backgroundColor: isExporting ? theme.textSecondary + "30" : theme.primary }}
-            >
-              <Ionicons name={isExporting ? "hourglass-outline" : "download-outline"} size={20} color="white" />
-              <Text className="text-white font-semibold ml-2">
-                {isExporting ? "Exporting..." : "Export Data"}
-              </Text>
-            </Pressable>
-
-            {/* Import Data Button */}
-            <Pressable
-              onPress={handleImportData}
-              disabled={isImporting}
-              className="rounded-2xl p-4 flex-row items-center justify-center"
-              style={{ backgroundColor: isImporting ? theme.textSecondary + "30" : theme.secondary }}
-            >
-              <Ionicons name={isImporting ? "hourglass-outline" : "cloud-upload-outline"} size={20} color="white" />
-              <Text className="text-white font-semibold ml-2">
-                {isImporting ? "Importing..." : "Import Data"}
-              </Text>
-            </Pressable>
-
-            {/* Info Text - Export Instructions */}
-            <View className="mt-3 rounded-2xl p-3" style={{ backgroundColor: theme.primary + "10" }}>
-              <View className="flex-row items-start mb-2">
-                <Ionicons name="download-outline" size={16} color={theme.primary} style={{ marginRight: 8, marginTop: 2 }} />
-                <View className="flex-1">
-                  <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
-                    Export/Backup:
-                  </Text>
-                  <Text className="text-xs" style={{ color: theme.textSecondary }}>
-                    Creates a backup file with all your tasks, groups, friends, and stats. Save to email, iCloud, Google Drive, or any storage you choose.
-                  </Text>
-                </View>
-              </View>
-
-              <View className="flex-row items-start">
-                <Ionicons name="cloud-upload-outline" size={16} color={theme.secondary} style={{ marginRight: 8, marginTop: 2 }} />
-                <View className="flex-1">
-                  <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
-                    Import/Restore:
-                  </Text>
-                  <Text className="text-xs" style={{ color: theme.textSecondary }}>
-                    Restore from a backup file. Choose &quot;Merge&quot; to keep current data or &quot;Replace All&quot; for complete restore.
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Use Cases */}
-            <View className="mt-2 rounded-2xl p-3" style={{ backgroundColor: theme.secondary + "10" }}>
-              <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
-                When to use:
-              </Text>
-              <Text className="text-xs" style={{ color: theme.textSecondary }}>
-                • Before getting a new device{"\n"}
-                • Weekly backups for safety{"\n"}
-                • Recovering from data loss{"\n"}
-                • Switching between devices
-              </Text>
             </View>
           </View>
 
@@ -952,6 +834,143 @@ const SettingsScreen = ({ navigation }: SettingsScreenProps) => {
                 </View>
               </View>
             </View>
+          </View>
+
+          {/* Backup & Restore Section */}
+          <View className="mb-6">
+            <View className="flex-row items-center justify-between mb-3">
+              <Text className="text-lg font-bold" style={{ color: theme.textPrimary }}>
+                Backup & Restore
+              </Text>
+              <Pressable
+                onPress={() => setShowBackupInstructions(!showBackupInstructions)}
+                className="w-8 h-8 rounded-full items-center justify-center"
+                style={{ backgroundColor: theme.primary + "20" }}
+              >
+                <Ionicons
+                  name="information"
+                  size={18}
+                  color={theme.primary}
+                />
+              </Pressable>
+            </View>
+
+            {/* Data Size Info */}
+            <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center flex-1">
+                  <View
+                    className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                    style={{ backgroundColor: theme.primary + "20" }}
+                  >
+                    <Ionicons name="cloud-outline" size={20} color={theme.primary} />
+                  </View>
+                  <View className="flex-1">
+                    <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                      Your Data Size
+                    </Text>
+                    <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                      {dataSizeKB < 1024 ? `${dataSizeKB} KB` : `${(dataSizeKB / 1024).toFixed(2)} MB`}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* Last Backup Info */}
+            {lastBackupDate && (
+              <View className="rounded-2xl p-4 mb-3" style={{ backgroundColor: theme.cardBackground }}>
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-row items-center flex-1">
+                    <View
+                      className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                      style={{ backgroundColor: theme.secondary + "20" }}
+                    >
+                      <Ionicons name="time-outline" size={20} color={theme.secondary} />
+                    </View>
+                    <View className="flex-1">
+                      <Text className="text-base font-semibold" style={{ color: theme.textPrimary }}>
+                        Last Backup
+                      </Text>
+                      <Text className="text-xs mt-0.5" style={{ color: theme.textSecondary }}>
+                        {lastBackupDate.toLocaleDateString()} at {lastBackupDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Export Data Button */}
+            <Pressable
+              onPress={handleExportData}
+              disabled={isExporting}
+              className="rounded-2xl p-4 mb-3 flex-row items-center justify-center"
+              style={{ backgroundColor: isExporting ? theme.textSecondary + "30" : theme.primary }}
+            >
+              <Ionicons name={isExporting ? "hourglass-outline" : "download-outline"} size={20} color="white" />
+              <Text className="text-white font-semibold ml-2">
+                {isExporting ? "Exporting..." : "Export Data"}
+              </Text>
+            </Pressable>
+
+            {/* Import Data Button */}
+            <Pressable
+              onPress={handleImportData}
+              disabled={isImporting}
+              className="rounded-2xl p-4 flex-row items-center justify-center"
+              style={{ backgroundColor: isImporting ? theme.textSecondary + "30" : theme.secondary }}
+            >
+              <Ionicons name={isImporting ? "hourglass-outline" : "cloud-upload-outline"} size={20} color="white" />
+              <Text className="text-white font-semibold ml-2">
+                {isImporting ? "Importing..." : "Import Data"}
+              </Text>
+            </Pressable>
+
+            {/* Instructions (collapsible) */}
+            {showBackupInstructions && (
+              <>
+                {/* Info Text - Export Instructions */}
+                <View className="mt-3 rounded-2xl p-3" style={{ backgroundColor: theme.primary + "10" }}>
+                  <View className="flex-row items-start mb-2">
+                    <Ionicons name="download-outline" size={16} color={theme.primary} style={{ marginRight: 8, marginTop: 2 }} />
+                    <View className="flex-1">
+                      <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                        Export/Backup:
+                      </Text>
+                      <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                        Creates a backup file with all your tasks, groups, friends, and stats. Save to email, iCloud, Google Drive, or any storage you choose.
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View className="flex-row items-start">
+                    <Ionicons name="cloud-upload-outline" size={16} color={theme.secondary} style={{ marginRight: 8, marginTop: 2 }} />
+                    <View className="flex-1">
+                      <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                        Import/Restore:
+                      </Text>
+                      <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                        Restore from a backup file. Choose &quot;Merge&quot; to keep current data or &quot;Replace All&quot; for complete restore.
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* Use Cases */}
+                <View className="mt-2 rounded-2xl p-3" style={{ backgroundColor: theme.secondary + "10" }}>
+                  <Text className="text-xs font-semibold mb-1" style={{ color: theme.textPrimary }}>
+                    When to use:
+                  </Text>
+                  <Text className="text-xs" style={{ color: theme.textSecondary }}>
+                    • Before getting a new device{"\n"}
+                    • Weekly backups for safety{"\n"}
+                    • Recovering from data loss{"\n"}
+                    • Switching between devices
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Logout Section */}
