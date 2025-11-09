@@ -62,36 +62,6 @@ export const musicLibrary: MusicTrack[] = [
     pixabayUrl: "",
     localFile: require("../../assets/chopin-nocturne-op-9-no-2-slowed-rainmp3.mp3"),
   },
-  {
-    id: "ocean-waves",
-    title: "Ocean Waves",
-    artist: "Nature Sounds",
-    duration: 180,
-    mood: "peaceful",
-    genre: "ambient",
-    pixabayUrl: "",
-    localFile: require("../../assets/ocean-waves-376898.mp3"),
-  },
-  {
-    id: "wind-chime",
-    title: "Wind Chime",
-    artist: "Nature Sounds",
-    duration: 120,
-    mood: "calming",
-    genre: "ambient",
-    pixabayUrl: "",
-    localFile: require("../../assets/wind-chime-small-64660.mp3"),
-  },
-  {
-    id: "gong",
-    title: "Meditation Gong",
-    artist: "Zen Sounds",
-    duration: 90,
-    mood: "peaceful",
-    genre: "ambient",
-    pixabayUrl: "",
-    localFile: require("../../assets/gong-79191.mp3"),
-  },
 ];
 
 class MusicService {
