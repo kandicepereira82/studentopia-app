@@ -33,6 +33,16 @@ export const musicLibrary: MusicTrack[] = [
     pixabayUrl: "",
     localFile: require("../../assets/Calm Soul Meditation - 247330  UniverseBella.-1762652286390.mpeg"),
   },
+  {
+    id: "energetic-classical-music",
+    title: "Classical Music - Energetic & Optimistic",
+    artist: "Pixabay",
+    duration: 180,
+    mood: "uplifting",
+    genre: "classical",
+    pixabayUrl: "https://pixabay.com/music/modern-classical-classical-music-energetic-optimistic-388218/",
+    localFile: require("../../assets/energetic classical music spark optimisum-1762618508659.mpeg"),
+  },
 ];
 
 class MusicService {
