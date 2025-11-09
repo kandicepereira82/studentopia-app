@@ -1447,7 +1447,7 @@ const MindfulnessScreen = () => {
               left: 0,
               right: 0,
               bottom: 0,
-              backgroundColor: "rgba(0,0,0,0.95)",
+              backgroundColor: "white",
               justifyContent: "center",
               alignItems: "center",
             }}
@@ -1459,7 +1459,7 @@ const MindfulnessScreen = () => {
                 top: 50,
                 right: 24,
                 zIndex: 10,
-                backgroundColor: "rgba(255,255,255,0.2)",
+                backgroundColor: theme.primary,
                 borderRadius: 20,
                 padding: 8,
               }}
@@ -1485,7 +1485,7 @@ const MindfulnessScreen = () => {
                 fontSize: 14,
                 fontFamily: "Poppins_500Medium",
                 color: "white",
-                backgroundColor: "rgba(0,0,0,0.6)",
+                backgroundColor: theme.primary,
                 paddingHorizontal: 16,
                 paddingVertical: 8,
                 borderRadius: 12,
