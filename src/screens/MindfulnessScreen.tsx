@@ -55,6 +55,9 @@ const MindfulnessScreen = () => {
   const [isMusicLooping, setIsMusicLooping] = useState(true);
   const [showMusicLibrary, setShowMusicLibrary] = useState(false);
 
+  // Image viewer state
+  const [showImageFullscreen, setShowImageFullscreen] = useState(false);
+
   // Quotes
   const quotes = [
     { text: "The present moment is filled with joy and peace. If you are attentive, you will see it.", author: "Thich Nhat Hanh" },
@@ -1258,16 +1261,39 @@ const MindfulnessScreen = () => {
                   <Text style={{ fontSize: 13, fontFamily: "Poppins_400Regular", color: theme.textSecondary, lineHeight: 20 }}>
                     Use this image to help you find the 5 acupressure points:
                   </Text>
-                  <Image
-                    source={{ uri: "https://images.composerapi.com/019a4f25-c460-7470-8b3b-ce01c08bd9b9/assets/images/add_a_subheading_1762648912924_019a660f-f41c-768d-88d4-4d54a4363f6c.png" }}
-                    style={{
-                      width: "100%",
-                      height: 300,
-                      borderRadius: 12,
-                      backgroundColor: theme.textSecondary + "10",
-                    }}
-                    resizeMode="contain"
-                  />
+                  <Pressable onPress={() => setShowImageFullscreen(true)}>
+                    <Image
+                      source={{ uri: "https://images.composerapi.com/019a4f25-c460-7470-8b3b-ce01c08bd9b9/assets/images/add_a_subheading_1762648912924_019a660f-f41c-768d-88d4-4d54a4363f6c.png" }}
+                      style={{
+                        width: "100%",
+                        height: 300,
+                        borderRadius: 12,
+                        backgroundColor: theme.textSecondary + "10",
+                      }}
+                      resizeMode="contain"
+                    />
+                    <View style={{
+                      position: "absolute",
+                      bottom: 12,
+                      right: 12,
+                      backgroundColor: "rgba(0,0,0,0.6)",
+                      paddingHorizontal: 10,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                      flexDirection: "row",
+                      alignItems: "center",
+                      gap: 4,
+                    }}>
+                      <Ionicons name="expand" size={14} color="white" />
+                      <Text style={{
+                        fontSize: 11,
+                        fontFamily: "Poppins_500Medium",
+                        color: "white",
+                      }}>
+                        Tap to enlarge
+                      </Text>
+                    </View>
+                  </Pressable>
                 </View>
               </View>
             </Animated.View>
@@ -1408,6 +1434,64 @@ const MindfulnessScreen = () => {
                   </Pressable>
                 ))}
               </ScrollView>
+            </View>
+          </View>
+        )}
+
+        {/* Fullscreen Image Viewer Modal */}
+        {showImageFullscreen && (
+          <View
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: "rgba(0,0,0,0.95)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Pressable
+              onPress={() => setShowImageFullscreen(false)}
+              style={{
+                position: "absolute",
+                top: 50,
+                right: 24,
+                zIndex: 10,
+                backgroundColor: "rgba(255,255,255,0.2)",
+                borderRadius: 20,
+                padding: 8,
+              }}
+            >
+              <Ionicons name="close" size={32} color="white" />
+            </Pressable>
+            <Image
+              source={{ uri: "https://images.composerapi.com/019a4f25-c460-7470-8b3b-ce01c08bd9b9/assets/images/add_a_subheading_1762648912924_019a660f-f41c-768d-88d4-4d54a4363f6c.png" }}
+              style={{
+                width: "100%",
+                height: "100%",
+              }}
+              resizeMode="contain"
+            />
+            <View style={{
+              position: "absolute",
+              bottom: 40,
+              left: 0,
+              right: 0,
+              alignItems: "center",
+            }}>
+              <Text style={{
+                fontSize: 14,
+                fontFamily: "Poppins_500Medium",
+                color: "white",
+                backgroundColor: "rgba(0,0,0,0.6)",
+                paddingHorizontal: 16,
+                paddingVertical: 8,
+                borderRadius: 12,
+              }}>
+                Tap X to close
+              </Text>
             </View>
           </View>
         )}
