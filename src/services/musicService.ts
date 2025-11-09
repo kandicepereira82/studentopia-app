@@ -20,6 +20,8 @@ export interface AudioError {
 
 // Curated list of calming classical music and meditation tracks
 // Using local assets for music files
+// Note: Some MPEG files may have compatibility issues with iOS AVFoundation
+// The music service will handle these errors gracefully and show user-friendly messages
 export const musicLibrary: MusicTrack[] = [
   {
     id: "whispers-in-the-wind",
@@ -110,16 +112,6 @@ export const musicLibrary: MusicTrack[] = [
     genre: "ambient",
     pixabayUrl: "",
     localFile: require("../../assets/Midnight Serenade 2.0  Dreamy Copyright Free Background Music-1762660131560.mpeg"),
-  },
-  {
-    id: "relaxing-flute",
-    title: "Relaxing Flute Meditation",
-    artist: "DanaMusic",
-    duration: 285,
-    mood: "calming",
-    genre: "ambient",
-    pixabayUrl: "",
-    localFile: require("../../assets/Relaxing Flute Meditation  by DanaMusic (Royalty-Free Background Music)-1762660117114.mpeg"),
   },
   {
     id: "classical-piano",
