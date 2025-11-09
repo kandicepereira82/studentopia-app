@@ -24,6 +24,16 @@ export interface AudioError {
 // Using simpler audio files for better compatibility
 export const musicLibrary: MusicTrack[] = [
   {
+    id: "calm-soul-meditation",
+    title: "Calm Soul Meditation",
+    artist: "Meditation Music",
+    duration: 240,
+    mood: "peaceful",
+    genre: "ambient",
+    pixabayUrl: "",
+    localFile: require("../../assets/calm-soul-meditation-247330-1762651961496.mpeg"),
+  },
+  {
     id: "ocean-waves",
     title: "Ocean Waves",
     artist: "Nature Sounds",
