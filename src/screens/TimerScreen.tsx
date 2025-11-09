@@ -179,17 +179,22 @@ const TimerScreen = () => {
     musicService.initializeAudio();
 
     // Set up auto-advance when track ends
-    musicService.setOnTrackEndCallback(() => {
+    musicService.setOnTrackEndCallback(async () => {
       if (repeatMode === "one") {
-        // Replay current track
-        musicService.play();
-      } else {
+        // Replay current track - need to reload and play
+        const currentTrack = getCurrentTrack();
+        if (currentTrack) {
+          await musicService.loadTrack(currentTrack);
+          await musicService.play();
+        }
+      } else if (repeatMode === "all" || hasNextTrack()) {
         // Try to advance to next track
         const nextIndex = nextTrack();
         if (nextIndex !== null && playlist[nextIndex]) {
-          handlePlayTrack(playlist[nextIndex], nextIndex);
+          await handlePlayTrack(playlist[nextIndex], nextIndex);
         }
       }
+      // If repeatMode is "off" and no next track, do nothing (stop)
     });
 
     // Update playback status every 500ms
@@ -213,7 +218,7 @@ const TimerScreen = () => {
         previewSound.stopAsync().catch(() => {});
       }
     };
-  }, [musicEnabled, previewSound, repeatMode, playlist, nextTrack]);
+  }, [musicEnabled, previewSound, repeatMode, playlist, nextTrack, hasNextTrack, getCurrentTrack]);
 
   // Watch for timer completion and handle mode switching
   useEffect(() => {
@@ -961,7 +966,7 @@ const TimerScreen = () => {
                     <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 16, marginBottom: 12 }}>
                       <Pressable
                         onPress={handleSkipPrevious}
-                        disabled={!hasPreviousTrack() || playlist.length === 0}
+                        disabled={playlist.length === 0}
                         style={{
                           width: 40,
                           height: 40,
@@ -969,7 +974,7 @@ const TimerScreen = () => {
                           backgroundColor: theme.textSecondary + "20",
                           alignItems: "center",
                           justifyContent: "center",
-                          opacity: hasPreviousTrack() && playlist.length > 0 ? 1 : 0.4,
+                          opacity: playlist.length > 0 ? 1 : 0.4,
                         }}
                       >
                         <Ionicons name="play-skip-back" size={20} color={theme.textPrimary} />
@@ -1010,7 +1015,7 @@ const TimerScreen = () => {
 
                       <Pressable
                         onPress={handleSkipNext}
-                        disabled={!hasNextTrack() || playlist.length === 0}
+                        disabled={playlist.length === 0}
                         style={{
                           width: 40,
                           height: 40,
@@ -1018,7 +1023,7 @@ const TimerScreen = () => {
                           backgroundColor: theme.textSecondary + "20",
                           alignItems: "center",
                           justifyContent: "center",
-                          opacity: hasNextTrack() && playlist.length > 0 ? 1 : 0.4,
+                          opacity: playlist.length > 0 ? 1 : 0.4,
                         }}
                       >
                         <Ionicons name="play-skip-forward" size={20} color={theme.textPrimary} />
@@ -1080,11 +1085,34 @@ const TimerScreen = () => {
                         onPress={handleCycleRepeat}
                         style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
                       >
-                        <Ionicons
-                          name={repeatMode === "one" ? "repeat-outline" : "repeat"}
-                          size={20}
-                          color={repeatMode !== "off" ? theme.primary : theme.textSecondary}
-                        />
+                        <View style={{ position: "relative" }}>
+                          <Ionicons
+                            name="repeat"
+                            size={20}
+                            color={repeatMode !== "off" ? theme.primary : theme.textSecondary}
+                          />
+                          {repeatMode === "one" && (
+                            <View style={{
+                              position: "absolute",
+                              top: -2,
+                              right: -6,
+                              backgroundColor: theme.primary,
+                              borderRadius: 8,
+                              width: 14,
+                              height: 14,
+                              alignItems: "center",
+                              justifyContent: "center"
+                            }}>
+                              <Text style={{
+                                fontSize: 9,
+                                fontFamily: "Poppins_700Bold",
+                                color: "white"
+                              }}>
+                                1
+                              </Text>
+                            </View>
+                          )}
+                        </View>
                         <Text style={{
                           fontSize: 12,
                           fontFamily: "Poppins_500Medium",
