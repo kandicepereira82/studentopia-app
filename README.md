@@ -565,3 +565,4 @@ Built for students by AI, powered by:
 ---
 
 **Made with ❤️ for students everywhere**
+# studentopia-app
